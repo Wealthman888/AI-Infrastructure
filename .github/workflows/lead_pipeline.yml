@@ -1,0 +1,42 @@
+name: Lead Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      query:
+        description: 'Search query (e.g. "HVAC contractor Las Vegas NV")'
+        required: true
+        default: "HVAC contractor Las Vegas NV"
+      max:
+        description: "Max number of leads"
+        required: true
+        default: "60"
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run lead pipeline
+        env:
+          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
+        run: |
+          python lead_pipeline.py \
+            --query "${{ github.event.inputs.query }}" \
+            --max ${{ github.event.inputs.max }} \
+            --out leads.csv
+
+      - name: Upload leads CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: leads-${{ github.run_id }}
+          path: leads.csv
+          retention-days: 30
