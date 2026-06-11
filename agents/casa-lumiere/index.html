@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Casa Lumière — Malibu Coastal Estate — $6,950,000</title>
+  <meta name="description" content="Casa Lumière — A 5-bed, 6-bath, 7,200 sq ft glass-and-stone coastal estate in Malibu, offered at $6,950,000. Represented by Marcus Bell, Axiom Luxury Real Estate.">
+</head>
+<body style="margin:0;padding:0;background:#f6f3ec;">
+
+<div id="luxe-root">
+<style>
+  #luxe-root {
+    --ink: #14130f;
+    --paper: #f6f3ec;
+    --stone: #b9b09c;
+    --line: #d8d1c2;
+    --brass: #9a7b3f;
+    --brass-lo: #c2a878;
+    --serif: "Cormorant Garamond", "Hoefler Text", Georgia, serif;
+    --sans: "Inter", "Helvetica Neue", system-ui, sans-serif;
+    --max: 1180px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap');
+  #luxe-root * { box-sizing: border-box; margin: 0; padding: 0; }
+  #luxe-root .wrap { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+
+  /* ---- top bar ---- */
+  #luxe-root .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 28px; position: sticky; top: 0; z-index: 40;
+    background: rgba(246,243,236,.88); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  #luxe-root .mark {
+    font-family: var(--serif); font-size: 23px; letter-spacing: .14em;
+    font-weight: 500; text-transform: uppercase;
+  }
+  #luxe-root .mark span { color: var(--brass); }
+  #luxe-root .navlinks { display: flex; gap: 30px; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: #6b6557; }
+  #luxe-root .navlinks a { color: inherit; text-decoration: none; transition: color .25s; }
+  #luxe-root .navlinks a:hover { color: var(--brass); }
+  @media (max-width: 720px){ #luxe-root .navlinks { display:none; } }
+
+  /* ---- hero ---- */
+  #luxe-root .hero {
+    position: relative; height: 88vh; min-height: 560px;
+    display: flex; align-items: flex-end;
+    background:
+      linear-gradient(180deg, rgba(20,19,15,.05) 0%, rgba(20,19,15,.55) 78%, rgba(20,19,15,.72) 100%),
+      radial-gradient(120% 80% at 60% 30%, #2d4a52 0%, #1e323a 45%, #0e1618 100%);
+    overflow: hidden;
+  }
+  #luxe-root .hero-media {
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:0;
+  }
+  #luxe-root .hero::after {
+    content:""; position:absolute; inset:0; z-index:1;
+    background: linear-gradient(180deg, rgba(20,19,15,.04) 0%, rgba(20,19,15,.48) 75%, rgba(20,19,15,.74) 100%);
+    pointer-events:none;
+  }
+  #luxe-root .hero-grain {
+    position:absolute; inset:0; opacity:.45; mix-blend-mode:overlay; z-index:1;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  }
+  #luxe-root .hero .wrap { position: relative; z-index: 2; padding-bottom: 54px; width:100%; }
+  #luxe-root .eyebrow {
+    font-size: 12px; letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(246,243,236,.65); margin-bottom: 18px;
+  }
+  #luxe-root .hero h1 {
+    font-family: var(--serif); color: var(--paper);
+    font-weight: 300; font-size: clamp(44px, 7.2vw, 92px);
+    line-height: .96; letter-spacing: -.01em;
+  }
+  #luxe-root .hero h1 em { font-style: italic; color: #e9dfc8; }
+  #luxe-root .hero-meta {
+    display:flex; gap: 36px; margin-top: 28px; color: var(--paper);
+    font-size: 13px; letter-spacing:.1em; flex-wrap:wrap;
+  }
+  #luxe-root .hero-meta b { font-weight: 500; }
+  #luxe-root .hero-meta span { opacity:.65; display:block; font-size:11px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:3px; }
+  #luxe-root .price {
+    font-family: var(--serif); font-size: 32px; color: var(--paper); font-weight:400;
+  }
+
+  /* ---- intro statement ---- */
+  #luxe-root .statement { padding: 100px 0 76px; }
+  #luxe-root .statement p {
+    font-family: var(--serif); font-weight: 300;
+    font-size: clamp(24px, 3.5vw, 42px); line-height: 1.3; letter-spacing: -.01em;
+    max-width: 960px;
+  }
+  #luxe-root .statement .lead-cap::first-letter {
+    color: var(--brass); font-size: 1.2em;
+  }
+
+  /* ---- gallery / visual slots ---- */
+  #luxe-root .gallery { padding: 24px 0 48px; }
+  #luxe-root .gallery-grid {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 14px; height: 540px;
+  }
+  #luxe-root .gallery-grid .col { display:grid; gap:14px; grid-template-rows: 1fr 1fr; }
+  #luxe-root .shot {
+    position: relative; border-radius: 3px; overflow: hidden;
+    display:flex; align-items:center; justify-content:center;
+    color: rgba(246,243,236,.55); font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  }
+  #luxe-root .shot.tall  { background: linear-gradient(145deg,#3a4e56,#1c282e); }
+  #luxe-root .shot.warm  { background: linear-gradient(145deg,#7d6a4f,#473a2a); }
+  #luxe-root .shot.cool  { background: linear-gradient(145deg,#4a5a62,#232d32); }
+  #luxe-root .shot .tag {
+    position:absolute; bottom:14px; left:16px; text-align:left; z-index:2;
+    color: var(--paper); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+    text-shadow: 0 1px 8px rgba(0,0,0,.55);
+  }
+  #luxe-root .shot-media {
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;
+  }
+  #luxe-root .shot::after {
+    content:""; position:absolute; inset:0; z-index:1;
+    background: linear-gradient(180deg, transparent 50%, rgba(14,18,20,.5) 100%);
+  }
+  /* pending slot indicator */
+  #luxe-root .pending-badge {
+    position:absolute; top:14px; right:14px; z-index:3;
+    background: rgba(14,18,20,.55); backdrop-filter:blur(6px);
+    color: rgba(246,243,236,.65); font-size:10px; letter-spacing:.18em;
+    text-transform:uppercase; padding:5px 10px; border-radius:2px;
+    border:1px solid rgba(246,243,236,.18);
+  }
+  @media (max-width:720px){
+    #luxe-root .gallery-grid { grid-template-columns: 1fr; height:auto; }
+    #luxe-root .gallery-grid .col { grid-template-rows:none; }
+    #luxe-root .shot { height: 260px; }
+  }
+
+  /* ---- features ---- */
+  #luxe-root .features { padding: 88px 0; border-top: 1px solid var(--line); margin-top: 60px; }
+  #luxe-root .sec-head { display:flex; align-items:baseline; gap:18px; margin-bottom: 48px; }
+  #luxe-root .sec-head .n { font-family: var(--serif); color: var(--brass); font-size: 15px; font-style: italic; }
+  #luxe-root .sec-head h2 {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(28px,4vw,46px); letter-spacing: -.01em;
+  }
+  #luxe-root .feat-grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--line); border:1px solid var(--line); }
+  #luxe-root .feat {
+    background: var(--paper); padding: 32px 28px;
+  }
+  #luxe-root .feat .v { font-family: var(--serif); font-size: 40px; font-weight:300; line-height:1; }
+  #luxe-root .feat .l { font-size: 12px; letter-spacing:.14em; text-transform: uppercase; color:#6b6557; margin-top:12px; }
+  @media (max-width:720px){ #luxe-root .feat-grid { grid-template-columns:1fr 1fr; } }
+
+  /* ---- highlights prose ---- */
+  #luxe-root .highlights { padding: 80px 0; border-top: 1px solid var(--line); }
+  #luxe-root .hl-grid { display:grid; grid-template-columns:1fr 1fr; gap: 48px 72px; max-width:900px; margin-top:40px; }
+  #luxe-root .hl h4 { font-family:var(--serif); font-size:20px; font-weight:400; margin-bottom:10px; }
+  #luxe-root .hl p { color:#4b463c; font-size:15px; line-height:1.65; }
+  @media (max-width:720px){ #luxe-root .hl-grid { grid-template-columns:1fr; gap:36px; } }
+
+  /* ---- tour / social band ---- */
+  #luxe-root .tour {
+    margin-top: 72px; position: relative; height: 460px; border-radius: 4px; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    background: linear-gradient(155deg,#1e2e35,#0d1518);
+  }
+  #luxe-root .tour-media { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; opacity:.5; }
+  #luxe-root .tour-inner { position:relative; z-index:2; }
+  #luxe-root .tour .play {
+    width: 80px; height:80px; border-radius:50%; border:1px solid rgba(246,243,236,.45);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 24px;
+    transition: border-color .3s;
+  }
+  #luxe-root .tour .play:hover { border-color:rgba(246,243,236,.9); }
+  #luxe-root .tour .play::after { content:""; border-left:16px solid var(--paper); border-top:10px solid transparent; border-bottom:10px solid transparent; margin-left:5px; }
+  #luxe-root .tour h3 { font-family:var(--serif); color:var(--paper); font-weight:300; font-size:32px; }
+  #luxe-root .tour p { color: rgba(246,243,236,.55); font-size:12px; letter-spacing:.22em; text-transform:uppercase; margin-top:14px; }
+
+  /* ---- agent ---- */
+  #luxe-root .agent { padding: 96px 0; display:grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items:center; }
+  #luxe-root .agent .portrait { aspect-ratio: 4/5; border-radius:3px; background:linear-gradient(145deg,#8a7a5e,#4a3f30); position:relative; overflow:hidden; }
+  #luxe-root .agent .portrait span { position:absolute; bottom:14px; left:16px; color:rgba(246,243,236,.45); font-size:10px; letter-spacing:.22em; text-transform:uppercase; }
+  #luxe-root .agent-copy .label { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--stone); margin-bottom:18px; }
+  #luxe-root .agent h2 { font-family:var(--serif); font-weight:400; font-size: clamp(28px,4vw,44px); margin-bottom:22px; line-height:1.1; }
+  #luxe-root .agent p { max-width: 480px; color:#4b463c; margin-bottom: 18px; font-size: 15.5px; line-height:1.7; }
+  #luxe-root .agent .cta {
+    display:inline-block; margin-top:20px; padding: 16px 36px; background: var(--ink); color: var(--paper);
+    text-decoration:none; font-size:11.5px; letter-spacing:.2em; text-transform:uppercase; border-radius:2px;
+    transition: background .25s;
+  }
+  #luxe-root .agent .cta:hover { background: var(--brass); }
+  @media (max-width:720px){ #luxe-root .agent { grid-template-columns:1fr; gap:36px; } }
+
+  /* ---- footer ---- */
+  #luxe-root .foot { border-top:1px solid var(--line); padding: 42px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  #luxe-root .foot .mark { font-size: 18px; }
+  #luxe-root .foot small { color:#8a8473; font-size:11px; letter-spacing:.12em; }
+
+  @media (prefers-reduced-motion: no-preference){
+    #luxe-root .reveal { opacity:0; transform: translateY(22px); transition: opacity .9s ease, transform .9s ease; }
+    #luxe-root .reveal.in { opacity:1; transform:none; }
+  }
+</style>
+
+  <div class="bar">
+    <div class="mark">Axiom <span>&mdash;</span> Luxury Real Estate</div>
+    <nav class="navlinks">
+      <a href="#">The Residence</a>
+      <a href="#">Gallery</a>
+      <a href="#">Film</a>
+      <a href="#inquire">Inquire</a>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <!-- https://d8j0ntlcm91z4.cloudfront.net/user_3De9kqJ8D6aHl3igYXWd7qyVcpb/hf_20260611_050703_42f37cb2-76ee-4881-9229-f3e451943015.mp4: Higgsfield job 42f37cb2 (veo3_1_lite, 6s aerial) -->
+    <!-- https://d8j0ntlcm91z4.cloudfront.net/user_3De9kqJ8D6aHl3igYXWd7qyVcpb/hf_20260611_050704_0241da0b-d2e6-4f56-9316-8dd25075dc43.png: Higgsfield job 0241da0b (exterior still) -->
+    <video class="hero-media" autoplay muted loop playsinline poster="https://d8j0ntlcm91z4.cloudfront.net/user_3De9kqJ8D6aHl3igYXWd7qyVcpb/hf_20260611_050704_0241da0b-d2e6-4f56-9316-8dd25075dc43.png">
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_3De9kqJ8D6aHl3igYXWd7qyVcpb/hf_20260611_050703_42f37cb2-76ee-4881-9229-f3e451943015.mp4" type="video/mp4">
+    </video>
+    <div class="hero-grain"></div>
+    <div class="wrap">
+      <div class="eyebrow">Private Offering &middot; Malibu, California</div>
+      <h1>Casa <em>Lumi&egrave;re</em></h1>
+      <div class="hero-meta">
+        <div><span>Bedrooms</span><b>5</b></div>
+        <div><span>Baths</span><b>6</b></div>
+        <div><span>Interior</span><b>7,200 sq ft</b></div>
+        <div><span>Land</span><b>0.38 acres</b></div>
+        <div><span>Offered at</span><b class="price">$6,950,000</b></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="statement wrap">
+    <p class="lead-cap reveal">Where the Pacific meets the cliffs of Malibu, Casa Lumi&egrave;re rises in glass and stone — a residence composed entirely in light. At golden hour, the ocean dissolves into the floors. At dusk, the infinity pool holds the last color in the sky.</p>
+  </section>
+
+  <section class="gallery wrap">
+    <div class="gallery-grid">
+      <!-- Great room: using interior still (job efd2ce6e) as image; video slot reserved for premium upgrade -->
+      <div class="shot tall reveal">
+        <img class="shot-media" src="https://d8j0ntlcm91z4.cloudfront.net/user_3De9kqJ8D6aHl3igYXWd7qyVcpb/hf_20260611_050706_efd2ce6e-592f-4e8c-ad8b-47dc7974c232.png" alt="Great room, golden hour">
+        <div class="tag">Great Room &middot; Golden Hour</div>
+      </div>
+      <div class="col">
+        <!-- Exterior still: job 0241da0b -->
+        <div class="shot warm reveal">
+          <img class="shot-media" src="https://d8j0ntlcm91z4.cloudfront.net/user_3De9kqJ8D6aHl3igYXWd7qyVcpb/hf_20260611_050704_0241da0b-d2e6-4f56-9316-8dd25075dc43.png" alt="Signature exterior at dusk">
+          <div class="tag">Infinity Pool &middot; Dusk</div>
+        </div>
+        <!-- Primary suite: premium video slot — pending credits -->
+        <div class="shot cool reveal">
+          <img class="shot-media" src="https://d8j0ntlcm91z4.cloudfront.net/user_3De9kqJ8D6aHl3igYXWd7qyVcpb/hf_20260611_050704_0241da0b-d2e6-4f56-9316-8dd25075dc43.png" alt="Primary suite">
+          <div class="pending-badge">Film &mdash; Premium</div>
+          <div class="tag">Primary Suite</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features wrap">
+    <div class="sec-head reveal">
+      <span class="n">i.</span>
+      <h2>The Residence</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat reveal"><div class="v">5</div><div class="l">Bedrooms</div></div>
+      <div class="feat reveal"><div class="v">6</div><div class="l">Full Baths</div></div>
+      <div class="feat reveal"><div class="v">7,200</div><div class="l">Sq Ft Interior</div></div>
+      <div class="feat reveal"><div class="v">60'</div><div class="l">Infinity Edge Pool</div></div>
+      <div class="feat reveal"><div class="v">360°</div><div class="l">Ocean Views</div></div>
+      <div class="feat reveal"><div class="v">0.38</div><div class="l">Private Acres</div></div>
+    </div>
+  </section>
+
+  <section class="highlights wrap">
+    <div class="sec-head reveal">
+      <span class="n">ii.</span>
+      <h2>Points of Distinction</h2>
+    </div>
+    <div class="hl-grid">
+      <div class="hl reveal">
+        <h4>Walls of Pacific Glass</h4>
+        <p>Floor-to-ceiling sliding glass panels dissolve the boundary between interior and coastline — the living room, primary suite, and kitchen all open entirely to the sea breeze and the view.</p>
+      </div>
+      <div class="hl reveal">
+        <h4>Infinity-Edge Pool</h4>
+        <p>The 60-foot vanishing-edge pool runs east-to-west, aligning perfectly with the winter solstice horizon. A fully equipped pool house and outdoor kitchen occupy the lower terrace.</p>
+      </div>
+      <div class="hl reveal">
+        <h4>Primary Suite Sanctuary</h4>
+        <p>A private level unto itself — ocean-facing terrace, spa bath with soaking tub, steam shower, dual dressing rooms, and a morning room that catches the first Pacific light.</p>
+      </div>
+      <div class="hl reveal">
+        <h4>Architect-Designed Kitchen</h4>
+        <p>Leathered Calacatta marble, Gaggenau appliance suite, and a temperature-controlled wine room for 400 bottles. A second catering kitchen serves the terrace and pool level directly.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <!-- Social cut / teaser — premium video slot reserved. Exterior still holds the poster. -->
+    <div class="tour reveal">
+      <img class="tour-media" src="https://d8j0ntlcm91z4.cloudfront.net/user_3De9kqJ8D6aHl3igYXWd7qyVcpb/hf_20260611_050704_0241da0b-d2e6-4f56-9316-8dd25075dc43.png" alt="Casa Lumière exterior">
+      <div class="tour-inner">
+        <div class="play"></div>
+        <h3>Experience the Residence</h3>
+        <p>Cinematic film &middot; Private showing by appointment</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="agent wrap" id="inquire">
+    <div class="portrait reveal"><span>Portrait</span></div>
+    <div class="agent-copy reveal">
+      <div class="label">Represented by</div>
+      <h2>Marcus Bell</h2>
+      <p>Marcus Bell has spent fifteen years placing Malibu's most significant coastal homes with the clients who will treasure them. Known along the Pacific Coast Highway corridor for his discretion, his market knowledge, and his patience — he shows only what is worth showing.</p>
+      <p>Casa Lumi&egrave;re is available by private appointment only. Enquiries handled personally.</p>
+      <a class="cta" href="mailto:marcus@axiomre.com">Request a Private Showing</a>
+    </div>
+  </section>
+
+  <footer class="foot wrap">
+    <div class="mark">Axiom <span style="color:var(--brass)">&mdash;</span> Luxury Real Estate</div>
+    <small>MALIBU, CALIFORNIA &middot; AXIOM LUXURY REAL ESTATE &middot; AI VISUAL LAYER BY HIGGSFIELD</small>
+  </footer>
+
+<script>
+  (function(){
+    var els = document.querySelectorAll('#luxe-root .reveal');
+    if(!('IntersectionObserver' in window)){ els.forEach(function(e){e.classList.add('in');}); return; }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, {threshold:.15});
+    els.forEach(function(e){ io.observe(e); });
+  })();
+</script>
+</div>
+
+</body>
+</html>
