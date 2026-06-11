@@ -1,0 +1,298 @@
+<!-- Axiom — Luxury Listing Spec Sample. Fictional property. -->
+<div id="luxe-root">
+<style>
+  #luxe-root {
+    --ink: #14130f;
+    --paper: #f6f3ec;
+    --stone: #b9b09c;
+    --line: #d8d1c2;
+    --brass: #9a7b3f;
+    --brass-lo: #c2a878;
+    --serif: "Cormorant Garamond", "Hoefler Text", Georgia, serif;
+    --sans: "Inter", "Helvetica Neue", system-ui, sans-serif;
+    --max: 1180px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap');
+  #luxe-root * { box-sizing: border-box; margin: 0; padding: 0; }
+  #luxe-root .wrap { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+
+  /* ---- top bar ---- */
+  #luxe-root .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 28px; position: sticky; top: 0; z-index: 40;
+    background: rgba(246,243,236,.82); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  #luxe-root .mark {
+    font-family: var(--serif); font-size: 23px; letter-spacing: .14em;
+    font-weight: 500; text-transform: uppercase;
+  }
+  #luxe-root .mark span { color: var(--brass); }
+  #luxe-root .navlinks { display: flex; gap: 30px; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: #6b6557; }
+  #luxe-root .navlinks a { color: inherit; text-decoration: none; transition: color .25s; }
+  #luxe-root .navlinks a:hover { color: var(--brass); }
+  @media (max-width: 720px){ #luxe-root .navlinks { display:none; } }
+
+  /* ---- hero ---- */
+  #luxe-root .hero {
+    position: relative; height: 88vh; min-height: 560px;
+    display: flex; align-items: flex-end;
+    background:
+      linear-gradient(180deg, rgba(20,19,15,.05) 0%, rgba(20,19,15,.55) 78%, rgba(20,19,15,.72) 100%),
+      radial-gradient(120% 80% at 70% 20%, #3a4a52 0%, #232f35 45%, #14181b 100%);
+    overflow: hidden;
+  }
+  /* video slot marker */
+  #luxe-root .hero-media {
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:0;
+  }
+  #luxe-root .hero::after {
+    content:""; position:absolute; inset:0; z-index:1;
+    background: linear-gradient(180deg, rgba(20,19,15,.05) 0%, rgba(20,19,15,.5) 78%, rgba(20,19,15,.72) 100%);
+    pointer-events:none;
+  }
+  #luxe-root .hero-grain {
+    position:absolute; inset:0; opacity:.5; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  }
+  #luxe-root .hero .wrap { position: relative; z-index: 2; padding-bottom: 54px; width:100%; }
+  #luxe-root .eyebrow {
+    font-size: 12px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--stone); margin-bottom: 18px;
+  }
+  #luxe-root .hero h1 {
+    font-family: var(--serif); color: var(--paper);
+    font-weight: 300; font-size: clamp(42px, 7vw, 88px);
+    line-height: .98; letter-spacing: -.01em;
+  }
+  #luxe-root .hero h1 em { font-style: italic; color: #e7dcc4; }
+  #luxe-root .hero-meta {
+    display:flex; gap: 34px; margin-top: 26px; color: var(--paper);
+    font-size: 13px; letter-spacing:.1em; flex-wrap:wrap;
+  }
+  #luxe-root .hero-meta b { font-weight: 500; }
+  #luxe-root .hero-meta span { opacity:.7; display:block; font-size:11px; letter-spacing:.16em; text-transform:uppercase; margin-bottom:3px; }
+  #luxe-root .price {
+    font-family: var(--serif); font-size: 30px; color: var(--paper); font-weight:400;
+  }
+
+  /* ---- intro statement ---- */
+  #luxe-root .statement { padding: 96px 0 72px; }
+  #luxe-root .statement p {
+    font-family: var(--serif); font-weight: 300;
+    font-size: clamp(24px, 3.4vw, 40px); line-height: 1.32; letter-spacing: -.01em;
+    max-width: 940px;
+  }
+  #luxe-root .statement .lead-cap::first-letter {
+    color: var(--brass); font-size: 1.2em;
+  }
+
+  /* ---- gallery / visual slots ---- */
+  #luxe-root .gallery { padding: 24px 0 40px; }
+  #luxe-root .gallery-grid {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 14px; height: 520px;
+  }
+  #luxe-root .gallery-grid .col { display:grid; gap:14px; grid-template-rows: 1fr 1fr; }
+  #luxe-root .shot {
+    position: relative; border-radius: 3px; overflow: hidden;
+    display:flex; align-items:center; justify-content:center;
+    color: rgba(246,243,236,.65); font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  }
+  #luxe-root .shot.tall  { background: linear-gradient(150deg,#46403a,#211d19); }
+  #luxe-root .shot.warm  { background: linear-gradient(150deg,#7d6a4f,#473a2a); }
+  #luxe-root .shot.cool  { background: linear-gradient(150deg,#566169,#2c343a); }
+  #luxe-root .shot .tag {
+    position:absolute; bottom:14px; left:16px; text-align:left; z-index:2;
+    color: var(--paper); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+    text-shadow: 0 1px 8px rgba(0,0,0,.5);
+  }
+  #luxe-root .shot-media {
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;
+  }
+  #luxe-root .shot::after {
+    content:""; position:absolute; inset:0; z-index:1;
+    background: linear-gradient(180deg, transparent 55%, rgba(20,19,15,.45) 100%);
+  }
+  @media (max-width:720px){
+    #luxe-root .gallery-grid { grid-template-columns: 1fr; height:auto; }
+    #luxe-root .gallery-grid .col { grid-template-rows:none; }
+    #luxe-root .shot { height: 240px; }
+  }
+
+  /* ---- features ---- */
+  #luxe-root .features { padding: 84px 0; border-top: 1px solid var(--line); margin-top: 60px; }
+  #luxe-root .sec-head { display:flex; align-items:baseline; gap:18px; margin-bottom: 46px; }
+  #luxe-root .sec-head .n { font-family: var(--serif); color: var(--brass); font-size: 15px; font-style: italic; }
+  #luxe-root .sec-head h2 {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(28px,4vw,44px); letter-spacing: -.01em;
+  }
+  #luxe-root .feat-grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--line); border:1px solid var(--line); }
+  #luxe-root .feat {
+    background: var(--paper); padding: 30px 26px;
+  }
+  #luxe-root .feat .v { font-family: var(--serif); font-size: 38px; font-weight:300; line-height:1; }
+  #luxe-root .feat .l { font-size: 12px; letter-spacing:.14em; text-transform: uppercase; color:#6b6557; margin-top:12px; }
+  @media (max-width:720px){ #luxe-root .feat-grid { grid-template-columns:1fr 1fr; } }
+
+  /* ---- tour band ---- */
+  #luxe-root .tour {
+    margin-top: 70px; position: relative; height: 440px; border-radius: 4px; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    background: linear-gradient(160deg,#2c343a,#171b1e);
+  }
+  #luxe-root .tour-media { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; opacity:.55; }
+  #luxe-root .tour-inner { position:relative; z-index:2; }
+  #luxe-root .tour .play {
+    width: 78px; height:78px; border-radius:50%; border:1px solid rgba(246,243,236,.5);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 22px;
+  }
+  #luxe-root .tour .play::after { content:""; border-left:16px solid var(--paper); border-top:10px solid transparent; border-bottom:10px solid transparent; margin-left:4px; }
+  #luxe-root .tour h3 { font-family:var(--serif); color:var(--paper); font-weight:300; font-size: 30px; }
+  #luxe-root .tour p { color: rgba(246,243,236,.6); font-size:12px; letter-spacing:.22em; text-transform:uppercase; margin-top:12px; }
+
+  /* ---- agent ---- */
+  #luxe-root .agent { padding: 90px 0; display:grid; grid-template-columns: 1fr 1.3fr; gap: 60px; align-items:center; }
+  #luxe-root .agent .portrait { aspect-ratio: 4/5; border-radius:3px; background:linear-gradient(150deg,#8a7a5e,#4a3f30); position:relative; }
+  #luxe-root .agent .portrait span { position:absolute; bottom:14px; left:16px; color:rgba(246,243,236,.5); font-size:10px; letter-spacing:.2em; text-transform:uppercase; }
+  #luxe-root .agent h2 { font-family:var(--serif); font-weight:400; font-size: clamp(28px,4vw,42px); margin-bottom:20px; }
+  #luxe-root .agent p { max-width: 460px; color:#4b463c; margin-bottom: 16px; font-size: 15.5px; }
+  #luxe-root .agent .cta {
+    display:inline-block; margin-top:18px; padding: 15px 32px; background: var(--ink); color: var(--paper);
+    text-decoration:none; font-size:12px; letter-spacing:.18em; text-transform:uppercase; border-radius:2px;
+    transition: background .25s;
+  }
+  #luxe-root .agent .cta:hover { background: var(--brass); }
+  @media (max-width:720px){ #luxe-root .agent { grid-template-columns:1fr; gap:32px; } }
+
+  /* ---- footer ---- */
+  #luxe-root .foot { border-top:1px solid var(--line); padding: 40px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  #luxe-root .foot .mark { font-size: 18px; }
+  #luxe-root .foot small { color:#8a8473; font-size:11px; letter-spacing:.12em; }
+
+  @media (prefers-reduced-motion: no-preference){
+    #luxe-root .reveal { opacity:0; transform: translateY(22px); transition: opacity .9s ease, transform .9s ease; }
+    #luxe-root .reveal.in { opacity:1; transform:none; }
+  }
+</style>
+
+  <div class="bar">
+    <div class="mark">Vermeer <span>&amp;</span> Hale</div>
+    <nav class="navlinks">
+      <a href="#">The Residence</a>
+      <a href="#">Gallery</a>
+      <a href="#">Film</a>
+      <a href="#">Inquire</a>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <!-- HERO_VIDEO_URL: Higgsfield prompt 1 (premium video). HERO_POSTER_URL: prompt 3 still. -->
+    <video class="hero-media" autoplay muted loop playsinline poster="HERO_POSTER_URL">
+      <source src="HERO_VIDEO_URL" type="video/mp4">
+    </video>
+    <div class="hero-grain"></div>
+    <div class="wrap">
+      <div class="eyebrow">Private Offering · Ridgeline Estates</div>
+      <h1>Casa <em>Lumière</em><br>on Summit Ridge</h1>
+      <div class="hero-meta">
+        <div><span>Bedrooms</span><b>5</b></div>
+        <div><span>Baths</span><b>6.5</b></div>
+        <div><span>Interior</span><b>8,400 sq ft</b></div>
+        <div><span>Land</span><b>1.9 acres</b></div>
+        <div><span>Offered at</span><b class="price">$6,950,000</b></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="statement wrap">
+    <p class="lead-cap reveal">Perched where the canyon meets the sky, this is a house composed in light — walls of glass that dissolve at dusk, a pool that runs to the horizon, and rooms that hold the quiet of the desert at every hour.</p>
+  </section>
+
+  <section class="gallery wrap">
+    <div class="gallery-grid">
+      <div class="shot tall reveal">
+        <video class="shot-media" autoplay muted loop playsinline poster="GALLERY_2_IMG_URL">
+          <source src="GALLERY_1_VIDEO_URL" type="video/mp4">
+        </video>
+        <div class="tag">Great Room · Golden Hour</div>
+      </div>
+      <div class="col">
+        <div class="shot warm reveal">
+          <img class="shot-media" src="GALLERY_2_IMG_URL" alt="Signature exterior at dusk">
+          <div class="tag">Infinity Pool</div>
+        </div>
+        <div class="shot cool reveal">
+          <video class="shot-media" autoplay muted loop playsinline poster="GALLERY_2_IMG_URL">
+            <source src="SUITE_VIDEO_URL" type="video/mp4">
+          </video>
+          <div class="tag">Primary Suite</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features wrap">
+    <div class="sec-head">
+      <span class="n">i.</span>
+      <h2>The Residence</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat reveal"><div class="v">2026</div><div class="l">Year Built</div></div>
+      <div class="feat reveal"><div class="v">270°</div><div class="l">Canyon Views</div></div>
+      <div class="feat reveal"><div class="v">4</div><div class="l">Car Gallery</div></div>
+      <div class="feat reveal"><div class="v">60'</div><div class="l">Infinity Edge Pool</div></div>
+      <div class="feat reveal"><div class="v">∞</div><div class="l">Smart Glass Walls</div></div>
+      <div class="feat reveal"><div class="v">1.9</div><div class="l">Private Acres</div></div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <!-- TOUR_EMBED_URL: client's real 3D/Matterport tour iframe src. If none, the -->
+    <!-- styled panel below stays and the social cut plays as a teaser instead. -->
+    <div class="tour reveal">
+      <!-- If client has a real tour, skill replaces the whole .tour-media block with:
+           <iframe class="tour-media" src="TOUR_EMBED_URL" allowfullscreen></iframe> -->
+      <video class="tour-media" autoplay muted loop playsinline poster="GALLERY_2_IMG_URL">
+        <source src="SOCIAL_VIDEO_URL" type="video/mp4">
+      </video>
+      <div class="tour-inner">
+        <div class="play"></div>
+        <h3>Walk the Residence</h3>
+        <p>Existing 3D tour integrates here · cinematic film overlay</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="agent wrap">
+    <div class="portrait reveal"><span>Agent portrait</span></div>
+    <div class="reveal">
+      <h2>Represented by<br>Eleanor Hale</h2>
+      <p>Two decades placing the Southwest's most significant residences with the people who will love them. Discretion, patience, and an eye for the homes that don't come twice.</p>
+      <p>Private showings by appointment.</p>
+      <a class="cta" href="#">Request a Private Showing</a>
+    </div>
+  </section>
+
+  <footer class="foot wrap">
+    <div class="mark">Vermeer <span style="color:var(--brass)">&amp;</span> Hale</div>
+    <small>SPEC SAMPLE · BUILT BY AXIOM · FICTIONAL PROPERTY</small>
+  </footer>
+
+<script>
+  (function(){
+    var els = document.querySelectorAll('#luxe-root .reveal');
+    if(!('IntersectionObserver' in window)){ els.forEach(function(e){e.classList.add('in');}); return; }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, {threshold:.15});
+    els.forEach(function(e){ io.observe(e); });
+  })();
+</script>
+</div>
