@@ -2,9 +2,13 @@
 Zillow property listing scraper using ScrapeGraph AI.
 
 Usage:
-    python scripts/scraper_zillow.py                        # scrape default search URL
-    python scripts/scraper_zillow.py --url <zillow_url>     # scrape a specific search page
-    python scripts/scraper_zillow.py --multi                # scrape multiple pages in parallel
+    python scripts/scraper_zillow.py                         # scrape default search URL
+    python scripts/scraper_zillow.py --url <zillow_url>      # scrape a specific search page
+    python scripts/scraper_zillow.py --multi                 # scrape pages 1-3 in parallel
+    python scripts/scraper_zillow.py --contacts              # also scrape agent phone numbers
+    python scripts/scraper_zillow.py --multi --contacts      # full run with contacts
+
+Output is saved to data/<search-name>_YYYY-MM-DD.json
 
 Setup:
     pip install scrapegraphai
@@ -16,7 +20,9 @@ import os
 import json
 import argparse
 import time
+from datetime import date
 from pathlib import Path
+from urllib.parse import urlparse
 
 # ---------------------------------------------------------------------------
 # Config
@@ -26,7 +32,6 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 if not ANTHROPIC_API_KEY:
     raise EnvironmentError("ANTHROPIC_API_KEY is not set. Run: export ANTHROPIC_API_KEY=sk-...")
 
-# Use Haiku for cost-efficient, high-volume scraping (per CLAUDE.md)
 SCRAPE_CONFIG = {
     "llm": {
         "api_key": ANTHROPIC_API_KEY,
@@ -35,77 +40,138 @@ SCRAPE_CONFIG = {
     "verbose": True,
 }
 
-# Fields to extract per listing
-EXTRACT_PROMPT = """
+SEARCH_RESULTS_PROMPT = """
 Extract all property listings visible on the page. For each listing return:
 - address: full street address
 - price: listing price (e.g. "$850,000")
-- beds: number of bedrooms
-- baths: number of bathrooms
-- sqft: square footage
+- beds: number of bedrooms (null for land/lots)
+- baths: number of bathrooms (null for land/lots)
+- sqft: square footage (null for land/lots)
 - price_per_sqft: price per sqft if shown
-- lot_size: lot size if shown
+- lot_size: lot size (acres or sqft) if shown
 - listing_type: "For Sale", "For Rent", "Sold", etc.
 - days_on_zillow: how many days on market if shown
-- listing_url: the URL to the full Zillow listing
+- listing_url: the full URL to the Zillow listing page
 - agent_name: listing agent or brokerage name if shown
 - zestimate: Zestimate value if shown
 
 Return a JSON list of objects, one per listing.
 """
 
-# Default search URL — swap city/state as needed
+CONTACT_PROMPT = """
+Extract the listing agent or seller contact information from this property page:
+- agent_name: full name of the listing agent
+- agent_phone: phone number of the listing agent
+- agent_email: email address if shown
+- brokerage: brokerage or company name
+- agent_photo_url: URL of agent headshot if shown
+
+Return a single JSON object with these fields (use null if not found).
+"""
+
 DEFAULT_URL = "https://www.zillow.com/homes/for_sale/"
 
+DATA_DIR = Path("data")
+
 # ---------------------------------------------------------------------------
-# Scraper functions
+# Helpers
 # ---------------------------------------------------------------------------
 
-def scrape_single(url: str) -> list[dict]:
-    """Scrape one Zillow search results page."""
-    from scrapegraphai.graphs import SmartScraperGraph
-
-    print(f"Scraping: {url}")
-    scraper = SmartScraperGraph(
-        prompt=EXTRACT_PROMPT,
-        source=url,
-        config=SCRAPE_CONFIG,
-    )
-    result = scraper.run()
-
-    # ScrapeGraph may return a dict with a key like "listings" or a bare list
+def flatten_result(result) -> list[dict]:
     if isinstance(result, list):
         return result
     if isinstance(result, dict):
         for val in result.values():
             if isinstance(val, list):
                 return val
-    return [result]
+    return [result] if result else []
+
+
+def deduplicate(listings: list[dict]) -> list[dict]:
+    seen, unique = set(), []
+    for listing in listings:
+        addr = listing.get("address", "")
+        if addr and addr not in seen:
+            seen.add(addr)
+            unique.append(listing)
+        elif not addr:
+            unique.append(listing)
+    return unique
+
+
+def slug_from_url(url: str) -> str:
+    """Turn a Zillow URL into a short filename-safe slug."""
+    path = urlparse(url).path.strip("/").replace("/", "_")
+    return path[:60] if path else "zillow"
+
+
+def output_filename(url: str) -> Path:
+    DATA_DIR.mkdir(exist_ok=True)
+    slug = slug_from_url(url)
+    today = date.today().isoformat()
+    return DATA_DIR / f"{slug}_{today}.json"
+
+
+# ---------------------------------------------------------------------------
+# Scraper functions
+# ---------------------------------------------------------------------------
+
+def scrape_single(url: str) -> list[dict]:
+    from scrapegraphai.graphs import SmartScraperGraph
+    print(f"\nScraping: {url}")
+    scraper = SmartScraperGraph(
+        prompt=SEARCH_RESULTS_PROMPT,
+        source=url,
+        config=SCRAPE_CONFIG,
+    )
+    return flatten_result(scraper.run())
 
 
 def scrape_multi(urls: list[str]) -> list[dict]:
-    """Scrape multiple Zillow pages in parallel."""
     from scrapegraphai.graphs import SmartScraperMultiGraph
-
-    print(f"Scraping {len(urls)} pages in parallel...")
+    print(f"\nScraping {len(urls)} pages in parallel...")
     scraper = SmartScraperMultiGraph(
-        prompt=EXTRACT_PROMPT,
+        prompt=SEARCH_RESULTS_PROMPT,
         source=urls,
         config=SCRAPE_CONFIG,
     )
-    results = scraper.run()
-
-    # Flatten results from all pages into one list
     all_listings = []
-    for page_result in results:
-        if isinstance(page_result, list):
-            all_listings.extend(page_result)
-        elif isinstance(page_result, dict):
-            for val in page_result.values():
-                if isinstance(val, list):
-                    all_listings.extend(val)
-                    break
+    for page_result in scraper.run():
+        all_listings.extend(flatten_result(page_result))
     return all_listings
+
+
+def enrich_with_contacts(listings: list[dict]) -> list[dict]:
+    """Visit each individual listing page to pull agent phone numbers."""
+    from scrapegraphai.graphs import SmartScraperGraph
+
+    total = len(listings)
+    for i, listing in enumerate(listings):
+        url = listing.get("listing_url")
+        if not url:
+            continue
+
+        print(f"  [{i+1}/{total}] Fetching contact for: {listing.get('address', url)}")
+        try:
+            scraper = SmartScraperGraph(
+                prompt=CONTACT_PROMPT,
+                source=url,
+                config=SCRAPE_CONFIG,
+            )
+            contact = scraper.run()
+            if isinstance(contact, dict):
+                listing["agent_phone"] = contact.get("agent_phone")
+                listing["agent_email"] = contact.get("agent_email")
+                if not listing.get("agent_name"):
+                    listing["agent_name"] = contact.get("agent_name")
+                if not listing.get("brokerage"):
+                    listing["brokerage"] = contact.get("brokerage")
+        except Exception as e:
+            print(f"    Warning: could not fetch contact — {e}")
+
+        time.sleep(1)  # polite delay between listing page visits
+
+    return listings
 
 
 # ---------------------------------------------------------------------------
@@ -118,51 +184,47 @@ def main():
     parser.add_argument(
         "--multi",
         action="store_true",
-        help="Scrape multiple pages (pages 1-3 of the default search)",
+        help="Scrape pages 1–3 in parallel (more results)",
     )
     parser.add_argument(
-        "--output", default="output.json", help="Output file path (default: output.json)"
+        "--contacts",
+        action="store_true",
+        help="Visit each listing page to extract agent phone numbers",
+    )
+    parser.add_argument(
+        "--output",
+        default=None,
+        help="Override output file path (default: data/<slug>_<date>.json)",
     )
     args = parser.parse_args()
 
-    # Zillow requires a realistic user-agent; ScrapeGraph + Playwright handles this,
-    # but large-scale runs need proxy rotation to avoid blocks.
-    print("Note: Zillow aggressively blocks scrapers at scale.")
-    print("For production use, add proxy rotation to SCRAPE_CONFIG.")
-    print()
+    print("Note: Zillow blocks scrapers at scale. Add proxy rotation for production runs.")
 
+    # --- Scrape search results ---
     if args.multi:
-        # Scrape pages 1–3 (Zillow paginates via ?searchQueryState= params,
-        # but simple page suffixes work for basic searches)
         base = args.url.rstrip("/")
-        urls = [
-            f"{base}/",
-            f"{base}/2_p/",
-            f"{base}/3_p/",
-        ]
+        urls = [f"{base}/", f"{base}/2_p/", f"{base}/3_p/"]
         listings = scrape_multi(urls)
     else:
         listings = scrape_single(args.url)
 
-    # Deduplicate by address
-    seen = set()
-    unique_listings = []
-    for listing in listings:
-        addr = listing.get("address", "")
-        if addr and addr not in seen:
-            seen.add(addr)
-            unique_listings.append(listing)
-        elif not addr:
-            unique_listings.append(listing)
+    listings = deduplicate(listings)
+    print(f"\nFound {len(listings)} unique listings.")
 
-    # Save output
-    output_path = Path(args.output)
-    output_path.write_text(json.dumps(unique_listings, indent=2))
+    # --- Enrich with agent contacts ---
+    if args.contacts:
+        print(f"\nFetching agent contact info for {len(listings)} listings...")
+        listings = enrich_with_contacts(listings)
 
-    print(f"\nExtracted {len(unique_listings)} listings → {output_path}")
-    if unique_listings:
+    # --- Save ---
+    output_path = Path(args.output) if args.output else output_filename(args.url)
+    output_path.parent.mkdir(exist_ok=True)
+    output_path.write_text(json.dumps(listings, indent=2))
+
+    print(f"\nSaved {len(listings)} listings → {output_path}")
+    if listings:
         print("\nSample (first listing):")
-        print(json.dumps(unique_listings[0], indent=2))
+        print(json.dumps(listings[0], indent=2))
 
 
 if __name__ == "__main__":
