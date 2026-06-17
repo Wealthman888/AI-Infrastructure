@@ -136,6 +136,7 @@ config = {
 | LinkedIn profiles | Name, title, company, location, skills, experience |
 | Amazon products | Name, price, rating, review count, ASIN, availability |
 | Zillow listings | Address, price, beds/baths, sqft, agent, listing URL |
+| LandWatch land listings | Acreage, price, county, parcel #, agent, listing URL (lighter bot protection than Zillow) |
 | Glassdoor reviews | Company, rating, pros, cons, role, date |
 | Twitter/X profiles | Bio, follower count, recent posts |
 | Job boards | Title, company, location, salary, description, apply URL |
