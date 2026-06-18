@@ -15,7 +15,7 @@ Body:
 Hi [Agent First Name],
 
 I came across your listing at [Property Address] and built a quick
-cinematic version of it — AI-generated hero film, gallery stills, and
+cinematic version of it — studio-grade hero film, gallery stills, and
 a branded one-page site, the way buyers would experience it if they
 clicked from Instagram instead of the MLS.
 
@@ -77,7 +77,7 @@ Use when the agent posts a new listing — comment isn't enough, go to DM same d
 ### DM 1 (Day 0, same day as their listing post)
 ```
 Hey [First Name] — saw your new listing at [Property Address], it's
-stunning. I build cinematic AI listing sites (hero film + branded page)
+stunning. I build cinematic listing sites (hero film + branded page)
 for agents like you — put together a free demo of yours, want me to
 send it over?
 ```

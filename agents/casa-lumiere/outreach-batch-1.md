@@ -17,31 +17,31 @@ Sourced from Vibe Prospecting (no emails available yet — pending credit top-up
 ### 1. James Suarez (The Suarez Team)
 ```
 Hi James — saw The Suarez Team is #1 in LA for Keller Williams, that's
-serious production. I build cinematic AI listing sites (hero film +
-branded page) for top agents — want me to put together a free demo
-using one of your current Silicon Beach listings?
+serious production. I build cinematic listing sites (studio-grade hero
+film + branded page) for top agents — want me to put together a free
+demo using one of your current Silicon Beach listings?
 ```
 
 ### 2. Clarence Chavis (Trust Properties USA)
 ```
 Hi Clarence — Trust Properties USA's probate/trust angle is unique,
 those properties often have a story worth telling well. I build
-cinematic AI listing sites (hero film + branded page) for agents —
-want a free demo built from one of your current listings?
+cinematic listing sites (studio-grade hero film + branded page) for
+agents — want a free demo built from one of your current listings?
 ```
 
 ### 3. Chase Ishino (Stanfield Real Estate Group)
 ```
 Hey Chase — saw Stanfield's a top-10 team nationally, congrats on that.
-I build cinematic AI listing pages (hero film + gallery) for agents in
-OC/Newport — put together a free demo for one of your active listings,
-want me to send it over?
+I build cinematic listing pages (studio-grade hero film + gallery) for
+agents in OC/Newport — put together a free demo for one of your active
+listings, want me to send it over?
 ```
 
 ### 4. Jenny Handy (RE/MAX Proper)
 ```
 Hi Jenny — love the Proper brand, feels modern for RE/MAX. I build
-AI-generated cinematic listing sites (motion + stills) for agents —
+cinematic listing sites (studio-grade motion + stills) for agents —
 happy to build a free demo using one of your current listings if
 you're curious what it'd look like.
 ```
@@ -49,9 +49,9 @@ you're curious what it'd look like.
 ### 5. Kathleen Cook (Mint Real Estate)
 ```
 Hi Kathleen — Mint's branding already feels premium, figured this
-would be a natural fit. I build cinematic AI listing sites (hero film
-+ branded page) for agents — want a free demo built from one of your
-current listings?
+would be a natural fit. I build cinematic listing sites (studio-grade
+hero film + branded page) for agents — want a free demo built from
+one of your current listings?
 ```
 
 ---
