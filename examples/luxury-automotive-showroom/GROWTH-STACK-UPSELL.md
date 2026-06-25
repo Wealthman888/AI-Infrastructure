@@ -43,17 +43,36 @@ Lead with a number specific to them if you have it: "You've gotten {{lead_count}
 
 ---
 
-## Tier 3: Full Growth Retainer (Bundles Tier 1 + Tier 2)
+## Tier 3: AI Visibility / GEO (Generative Engine Optimization)
+
+**What it does:** Makes sure {{dealership_name}} actually gets surfaced when buyers ask AI tools (ChatGPT, Perplexity, Google AI Overviews, Gemini) questions like "best exotic car dealership in {{city}}" or "where to buy a [brand] near me." This is a different discipline from traditional SEO — AI answer engines pull from structured data, review signals, and content that directly answers buyer questions, not keyword-stuffed pages.
+
+**What's included:**
+- Audit of current AI visibility — we test actual prompts buyers would use and show them whether they show up at all (most don't, and seeing themselves missing is the strongest sales moment in this tier)
+- Structured data/schema markup so AI crawlers can correctly parse inventory, location, and reviews
+- AI-citable content pages (FAQ-style buyer-question pages, e.g. "How much is a [model] worth right now," "What to know before buying a [model]") written specifically to get quoted by AI answer engines
+- Review and citation building across the sources AI models weight most (Google Business Profile, niche automotive directories, press mentions)
+- Monthly re-testing against a fixed prompt set to track visibility movement over time
+
+**Why it works as this upsell:** Lead response and content automation optimize what happens *after* someone finds the site. GEO determines whether AI-driven buyers — a fast-growing share of high-intent shoppers who now ask ChatGPT or Perplexity before Googling — ever discover {{dealership_name}} in the first place. It's the next frontier past SEO, and almost no dealership in this category is doing it yet, so the competitive gap is wide open right now.
+
+**Investment:** $2,500–$5,000 one-time audit + setup, + $750–$1,500/month for ongoing content, citation building, and visibility tracking.
+
+**Proof point to use:** Run the audit live on the call — ask ChatGPT or Perplexity "best exotic car dealership in {{city}}" in front of them. If they're not in the answer (most won't be), that's the entire pitch. "Your competitors aren't in here either — yet. First mover in this category wins disproportionately, the same way first movers on Google Maps optimization did a decade ago."
+
+---
+
+## Tier 4: Full Growth Retainer (Bundles Tier 1 + Tier 2 + Tier 3)
 
 **What it includes:**
-- Everything in Tier 1 and Tier 2, managed as one relationship
-- Monthly performance review call — lead volume, response times, conversion rates
+- Everything in Tier 1, Tier 2, and Tier 3, managed as one relationship
+- Monthly performance review call — lead volume, response times, conversion rates, AI visibility tracking
 - Quarterly site refresh (new media, seasonal messaging, inventory-driven landing page tweaks)
 - Priority support — same-week turnaround on any request
 
-**Investment:** $1,500–$2,500/month (replaces the standalone $500-1.5K/mo retainer in CLIENT-PROPOSAL.md once they're on the full stack — position as "we roll the build-phase retainer into this once you're ready to scale").
+**Investment:** $2,000–$3,500/month (replaces the standalone $500-1.5K/mo retainer in CLIENT-PROPOSAL.md once they're on the full stack — position as "we roll the build-phase retainer into this once you're ready to scale").
 
-**Proof point to use:** Frame this as the difference between "a website" and "a growth system." The site got them in the door; this is what keeps them ahead of every other dealership in their market for the next two years, not just at launch.
+**Proof point to use:** Frame this as the difference between "a website" and "a growth system." The site got them in the door; this is what keeps them ahead of every other dealership in their market for the next two years, not just at launch — including in the channels their buyers haven't even started using yet.
 
 ---
 
@@ -61,8 +80,9 @@ Lead with a number specific to them if you have it: "You've gotten {{lead_count}
 
 1. Never pitch Tier 1 before launch — it dilutes the core offer and creates decision fatigue. Wait until they've seen real lead volume.
 2. Don't bundle Tier 1 + Tier 2 in the same pitch. Sell Tier 1 first, prove it works for 30 days, then introduce Tier 2 as "the natural next step now that leads are being handled."
-3. The Tier 3 retainer pitch only happens after both Tier 1 and Tier 2 are live and the client has seen results from each — it's a consolidation offer, not a cold pitch.
-4. If a client declines Tier 1, don't push Tier 2 — diagnose why first (budget, trust, or they don't see the lead-volume problem yet) before offering anything else.
+3. Tier 3 (GEO) can actually be pitched earlier than Tier 1/2 if the live-audit demo lands well — unlike the other tiers, it doesn't depend on the client having adopted anything else first, since it's about discovery, not what happens after a lead arrives. Use judgment: if a prospect reacts strongly to the "you're invisible on ChatGPT" demo during the original sales call, it's fine to introduce GEO as an immediate add-on rather than waiting for the 2-3 week post-launch window.
+4. The Tier 4 retainer pitch only happens after at least two of Tier 1/2/3 are live and the client has seen results from each — it's a consolidation offer, not a cold pitch.
+5. If a client declines Tier 1, don't push Tier 2 — diagnose why first (budget, trust, or they don't see the lead-volume problem yet) before offering anything else. GEO is the exception to this rule (see #3).
 
 ---
 
@@ -74,3 +94,5 @@ Lead with a number specific to them if you have it: "You've gotten {{lead_count}
 | "We don't want it to feel robotic" | Show the qualifying-question script — it's written in their voice, not a generic bot tone. Offer a one-week trial before committing. |
 | "How is this different from what [CRM tool] already does?" | Most dealership CRMs notify a human — they don't carry on a qualifying conversation or respond in real time at 2am. This is the layer between "form submitted" and "human takes over." |
 | "We want to see results from the site first" | Correct instinct — that's exactly why this is pitched at week 2-3, not week 1. Suggest revisiting in 2 weeks with their actual lead numbers. |
+| "We already rank fine on Google" (GEO objection) | "Google ranking and AI-answer visibility are separate systems now — being #1 on Google doesn't mean ChatGPT or Perplexity mention you when someone asks for a recommendation. Worth checking — want me to run the prompt live right now?" |
+| "Does anyone actually buy a car based on what ChatGPT says?" (GEO objection) | "Not yet at huge volume — which is exactly why it's worth claiming the space now, before it's competitive. The dealerships visible in AI answers in 2 years will be the ones who started showing up now, the same way early Google Business Profile adopters won local search for a decade." |

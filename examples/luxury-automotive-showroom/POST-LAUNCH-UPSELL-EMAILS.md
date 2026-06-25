@@ -12,6 +12,7 @@
 | `{{dealership_name}}` | CRM/client record | Velocity Exotics |
 | `{{launch_date}}` | Project record | June 2 |
 | `{{lead_count}}` | Form submissions since launch (manual or webhook count) | 14 |
+| `{{geo_visibility_result}}` | Manual — result of testing "best [category] in {{city}}" on ChatGPT/Perplexity | "didn't come up at all" |
 | `{{sender_name}}` | Static | — |
 | `{{sender_calendar_link}}` | Static | — |
 
@@ -65,6 +66,32 @@ Want me to walk you through it on a quick call? 15 minutes.
 
 ---
 
+### Email 2.5 (Day 20, can run independent of Tier 1/2 adoption): INTRODUCE TIER 3 (AI VISIBILITY / GEO)
+
+**Subject:** Quick test — does ChatGPT even know {{dealership_name}} exists?
+**Preview:** Ran a live test, thought you'd want to see the result
+
+---
+
+{{first_name}},
+
+Ran a quick test out of curiosity — asked ChatGPT and Perplexity "best exotic car dealership in {{city}}." {{dealership_name}} {{geo_visibility_result}} (e.g. "didn't come up at all" / "came up once, on page two of the answer").
+
+This is a separate thing from Google ranking — AI answer engines pull from structured data and review signals, not traditional SEO. Almost nobody in this category has done anything about it yet, which means whoever shows up first has a real head start.
+
+Want me to send over the full test results and what it'd take to fix?
+
+{{sender_name}}
+
+---
+
+**CTA:** "Want me to send over the full test results?"
+**CTA Link:** None — let them opt in, then follow up with the GEO audit findings
+**Goal:** Introduce Tier 3 (AI Visibility/GEO) — this can run independently of whether Tier 1/2 have been adopted, since it addresses discovery rather than post-lead handling
+**Segmentation:** Safe to send to any live client regardless of Tier 1/2 status. If they react strongly, it's fine to skip straight to a call rather than waiting on the Email 3/4 gating logic below.
+
+---
+
 ### Email 3 (Day 30, only if Tier 1 was purchased and live for 1-2 weeks): INTRODUCE TIER 2
 
 **Subject:** What's next for {{dealership_name}}'s inventory
@@ -91,7 +118,7 @@ Happy to show you what that'd look like specifically for {{dealership_name}} —
 
 ---
 
-### Email 4 (Day 45-60, only if both Tier 1 and Tier 2 are live): INTRODUCE THE RETAINER
+### Email 4 (Day 45-60, only if at least two of Tier 1/2/3 are live): INTRODUCE THE RETAINER
 
 **Subject:** Bringing it all together for {{dealership_name}}
 **Preview:** One conversation to simplify how we work together going forward
@@ -100,7 +127,7 @@ Happy to show you what that'd look like specifically for {{dealership_name}} —
 
 {{first_name}},
 
-Between the lead response automation and the inventory content running now, you've effectively got a small growth team running in the background. At this point it usually makes sense to bring it under one simple monthly arrangement instead of piecing it together — a single retainer that covers both, plus a monthly check-in on what's working and a quarterly refresh of the site itself as your inventory and brand evolve.
+Between the lead response automation, the inventory content, and the AI visibility work running now, you've effectively got a small growth team running in the background. At this point it usually makes sense to bring it under one simple monthly arrangement instead of piecing it together — a single retainer that covers all of it, plus a monthly check-in on what's working and a quarterly refresh of the site itself as your inventory and brand evolve.
 
 No pressure to change anything that's working — just want to put the option in front of you. Worth a quick call?
 
