@@ -3,6 +3,8 @@ const STATS = [
   { value: '99.99%', label: 'Platform uptime' },
   { value: '150+', label: 'Countries supported' },
   { value: '<200ms', label: 'Median settlement' },
+  { value: '40+', label: 'Currencies orchestrated' },
+  { value: '63%', label: 'Avg. fraud loss reduction' },
 ];
 
 export default function Stats() {
