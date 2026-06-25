@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:fal.run)",
+      "WebFetch(domain:*.fal.ai)",
+      "WebFetch(domain:*.fal.media)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
