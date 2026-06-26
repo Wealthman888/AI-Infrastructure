@@ -46,8 +46,9 @@ Quick reference for every skill installed in this repo and how to call it. See `
 | ads report | `/ads report` | PDF audit report generation for client deliverables |
 | ads dna | `/ads dna <url>` | Extract brand DNA from a website → `brand-profile.json` |
 | ads create | `/ads create` | Campaign concepts + copy briefs → `campaign-brief.md` |
-| ads generate | `/ads generate` | AI ad image generation from brief — **requires `banana-claude` (not installed)** |
-| ads photoshoot | `/ads photoshoot` | Product photography in 5 styles — **requires `banana-claude` (not installed)** |
+| ads generate | `/ads generate` | AI ad image generation from brief — requires `/banana setup` first (see below) |
+| ads photoshoot | `/ads photoshoot` | Product photography in 5 styles — requires `/banana setup` first (see below) |
+| banana | `/banana [generate\|edit\|chat\|inspire\|batch\|setup\|preset\|cost] <idea/path>` | AI image generation via Gemini Nano Banana — run `/banana setup` once with a free key from aistudio.google.com/apikey before first use |
 
 ## Auto-triggered skills (no slash command — describe what you want)
 
