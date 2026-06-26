@@ -43,10 +43,11 @@ End-to-end automated job-search agent: finds jobs across 1000+ sources, tailors 
 
 ## Learnings — Developer Utilities
 
-### #5 — MarkItDown (+7.3k stars)
+### #5 — MarkItDown (+7.3k stars) — **wired up: `.claude/skills/markitdown`**
 Microsoft's open-source tool for converting files (PDF, Word, Excel, PowerPoint, plain text, and more) to clean, structured Markdown.
 - `pip install markitdown` — CLI or Python library
 - Markdown output is AI/RAG-friendly and removes formatting noise
+- Auto-installed every session via `.claude/hooks/session-start.sh`; just ask Claude to convert a file, no setup
 - Use case: good fit for any `tools/` wrapper that needs to feed documents into an agent's context
 
 ---
