@@ -24,6 +24,30 @@ Quick reference for every skill installed in this repo and how to call it. See `
 | market report-pdf | `/market report-pdf <url>` | Compiled marketing report (PDF) → `MARKETING-REPORT.pdf` |
 | market seo | `/market seo <url>` | SEO content audit → `SEO-AUDIT.md` |
 | market brand | `/market brand <url>` | Brand voice analysis + guidelines → `BRAND-VOICE.md` |
+| ads | `/ads <subcommand>` | Paid-advertising audit suite orchestrator — routes to the 22 sub-skills below |
+| ads audit | `/ads audit` | Full multi-platform audit via 6 parallel subagents, 0-100 health score |
+| ads google | `/ads google` | Google Ads deep analysis (Search, PMax, AI Max, Display, YouTube, Demand Gen) |
+| ads meta | `/ads meta` | Meta Ads deep analysis (FB, IG, Threads, Advantage+) |
+| ads youtube | `/ads youtube` | YouTube Ads specific analysis |
+| ads linkedin | `/ads linkedin` | LinkedIn Ads deep analysis (B2B, Lead Gen, ABM) |
+| ads tiktok | `/ads tiktok` | TikTok Ads deep analysis (Creative, Shop, Smart+) |
+| ads microsoft | `/ads microsoft` | Microsoft/Bing Ads deep analysis (Copilot, Import) |
+| ads apple | `/ads apple` | Apple Search Ads deep analysis (AdAttributionKit, CPPs) |
+| ads amazon | `/ads amazon` | Amazon Ads deep analysis (Sponsored Products/Brands/Display, ACOS/TACOS) |
+| ads attribution | `/ads attribution` | Cross-platform attribution audit (AAK, GA4, Consent Mode V2, MMP) |
+| ads tracking | `/ads tracking` | Server-side tracking pipeline audit (sGTM, CAPI Gateway) |
+| ads creative | `/ads creative` | Cross-platform creative quality + fatigue audit |
+| ads landing | `/ads landing` | Landing page quality assessment for ad campaigns |
+| ads budget | `/ads budget` | Budget allocation and bidding strategy review |
+| ads plan | `/ads plan <industry>` | Strategic ad plan from 12 industry templates |
+| ads competitor | `/ads competitor` | Competitor ad intelligence (Meta Ad Library, Google Transparency Center) |
+| ads math | `/ads math` | PPC financial calculator (CPA, ROAS, break-even, MER) |
+| ads test | `/ads test` | A/B test design (hypothesis, significance, sample size) |
+| ads report | `/ads report` | PDF audit report generation for client deliverables |
+| ads dna | `/ads dna <url>` | Extract brand DNA from a website → `brand-profile.json` |
+| ads create | `/ads create` | Campaign concepts + copy briefs → `campaign-brief.md` |
+| ads generate | `/ads generate` | AI ad image generation from brief — **requires `banana-claude` (not installed)** |
+| ads photoshoot | `/ads photoshoot` | Product photography in 5 styles — **requires `banana-claude` (not installed)** |
 
 ## Auto-triggered skills (no slash command — describe what you want)
 

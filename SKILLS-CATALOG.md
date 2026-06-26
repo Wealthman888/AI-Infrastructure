@@ -17,6 +17,17 @@ Gives an AI agent internet access from a single CLI — Twitter/X, GitHub, Reddi
 - Real source: `Panniantong/agent-reach` (the likely original; several near-identical forks exist — installed from this one specifically), installed via `npx skills add Panniantong/agent-reach` — fully self-contained, works as installed
 - Use case: pair with Last30Days-Skill when an agent needs raw source access instead of a pre-synthesized summary
 
+## Resources — Paid Advertising Audit
+
+### #11 — Claude-Ads (+6.5k stars) — **wired up: `.claude/skills/ads` + 22 sub-skills**
+Multi-platform paid advertising audit & optimization skill: 250+ checks across Google, Meta, YouTube, LinkedIn, TikTok, Microsoft, Apple, and Amazon Ads, with weighted scoring, parallel subagents, 12 industry templates, AI creative generation, PPC math, A/B test design, and PDF report generation.
+- Real source: `AgriciDaniel/claude-ads` (not a fork; 6.5k stars, 964 forks, MIT license, actively maintained). Note: the repo's own `plugin.json`/`marketplace.json`/`install.sh` point to `AI-Marketing-Hub/claude-ads`, which returns 404 on both the GitHub web UI and API — that org/repo doesn't currently exist publicly. Installed directly from the verified-working `AgriciDaniel/claude-ads` source instead (via `codeload.github.com` tarball, mirroring the career-ops workaround), bypassing the broken documented install path.
+- Installed per the layout the repo's own `install.sh` specifies, scoped to this project instead of `~/.claude`: top-level router + 25 reference files at `.claude/skills/ads/`, each of the 22 `skills/ads-*` directories copied to its own `.claude/skills/ads-*/`, the 10 subagent definitions (6 audit + 4 creative) copied to `.claude/agents/`, and the Python helper scripts + `requirements.txt` copied to `.claude/skills/ads/scripts/`.
+- `pip install -r .claude/skills/ads/requirements.txt` installs `requests`, `playwright`, `urllib3`, `Pillow`, `reportlab`, `matplotlib`. Same Playwright/Chromium revision mismatch as career-ops (pinned revision unavailable behind the sandboxed proxy) hit `analyze_landing.py` and `capture_screenshot.py`; patched both to accept `executable_path=os.environ.get("CLAUDE_ADS_CHROMIUM_PATH")`, pointed at the environment's pre-cached Chromium via `.claude/hooks/session-start.sh`. Verified with a direct `chromium.launch()` test — succeeds.
+- `.claude/hooks/session-start.sh` now also runs the `ads` requirements install and exports `CLAUDE_ADS_CHROMIUM_PATH` every session, so it's ready with zero manual setup (mirrors the career-ops pattern).
+- `/ads generate` and `/ads photoshoot` (AI ad image generation) additionally require a separate skill, `banana-claude` (`AgriciDaniel/claude-banana`) — **not installed**. Every other command (`audit`, `google`, `meta`, `youtube`, `linkedin`, `tiktok`, `microsoft`, `apple`, `amazon`, `attribution`, `tracking`, `creative`, `landing`, `budget`, `plan`, `competitor`, `math`, `test`, `report`, `dna`, `create`) works without it.
+- Use case: drop an ad account export, pasted metrics, or a business description to run a multi-platform paid-advertising audit; `/ads audit` for the full parallel-subagent sweep, `/ads plan <industry>` for a strategic plan with industry-specific templates.
+
 ## Resources — Knowledge Management
 
 ### #9 — Container (+4.3k stars)
