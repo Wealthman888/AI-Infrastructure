@@ -169,6 +169,7 @@ Do not build the cron or CRM pieces speculatively — confirm the CRM platform a
 - If a `--repo`/`--cloud`/`--iac` path is provided but inaccessible, fall back to the Discovery-phase check for that category and say so explicitly — never silently downgrade without flagging it.
 - Never attempt anything beyond passive, read-only checks against a website during the Discovery phase — no auth bypass, no brute force, no scanning beyond the documented public paths.
 - If the Google Drive upload fails (auth, quota, permissions), still report success on the local file and surface the Drive error as a separate, non-fatal note.
+- `external_scan.py` flags a sensitive path as `"uncertain": true` (instead of `"exposed": true`) when the site returns HTTP 200 for that path but the response body is statistically indistinguishable from a deliberately-nonexistent control path — i.e. a "soft 404" catch-all page, common on Squarespace/Wix/Webflow sites. Treat `uncertain` findings as needing a quick manual check before they go in a client report, never as confirmed exposures.
 
 ## Cross-Skill Integration
 - Consumes `market-audit` and the `infra-audit` sub-skills as-is; this skill sequences and merges their output, it doesn't reimplement their methodology.

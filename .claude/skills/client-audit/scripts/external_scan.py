@@ -11,8 +11,10 @@ SecurityHeaders.com or SSL Labs already do against any public site.
 
 import sys
 import json
+import random
 import socket
 import ssl
+import string
 import datetime
 import urllib.request
 import urllib.error
@@ -26,12 +28,13 @@ SENSITIVE_PATHS = [
     "/.env.local",
     "/wp-config.php.bak",
     "/phpinfo.php",
-    "/.well-known/security.txt",
     "/server-status",
     "/.DS_Store",
     "/backup.zip",
     "/.aws/credentials",
 ]
+# NOTE: /.well-known/security.txt is intentionally excluded -- its presence (RFC 9116)
+# is a *positive* signal, not an exposure, so it must never be scored as a sensitive hit.
 
 SECURITY_HEADERS = [
     "Strict-Transport-Security",
@@ -97,14 +100,33 @@ def check_http_to_https_redirect(domain):
     return {"status": status, "redirects_to_https": redirects, "location": location}
 
 
-def check_sensitive_paths(base_url):
+def get_soft_404_baseline(base_url):
+    """Many sites return HTTP 200 with a custom catch-all page for any unmapped path
+    instead of a real 404 (a "soft 404"). Without this baseline, every sensitive-path
+    probe against such a site would be misreported as exposed. Fetch a deliberately
+    nonexistent path once and use its body length as a fingerprint for "this is just
+    the site's not-found page," not a real exposure."""
+    nonce = "".join(random.choices(string.ascii_lowercase + string.digits, k=24))
+    status, _, body = fetch(base_url.rstrip("/") + f"/__audit_nonexistent_check_{nonce}__", method="GET", timeout=8)
+    return {"status": status, "length": len(body)}
+
+
+def check_sensitive_paths(base_url, baseline):
     findings = []
     for path in SENSITIVE_PATHS:
         status, _, body = fetch(base_url.rstrip("/") + path, method="GET", timeout=8)
+        looks_like_real_200 = status == 200 and len(body) > 0
+        is_soft_404 = (
+            looks_like_real_200
+            and baseline["status"] == 200
+            and baseline["length"] > 0
+            and abs(len(body) - baseline["length"]) <= max(50, baseline["length"] * 0.05)
+        )
         findings.append({
             "path": path,
             "status": status,
-            "exposed": status == 200 and len(body) > 0,
+            "exposed": looks_like_real_200 and not is_soft_404,
+            "uncertain": is_soft_404,
         })
     return findings
 
@@ -148,8 +170,10 @@ def scan(url):
 
     body_text = body.decode("utf-8", errors="replace")
     security_headers = {h: (h in headers) for h in SECURITY_HEADERS}
-    sensitive_paths = check_sensitive_paths(base_url)
+    baseline = get_soft_404_baseline(base_url)
+    sensitive_paths = check_sensitive_paths(base_url, baseline)
     exposed = [f for f in sensitive_paths if f["exposed"]]
+    uncertain = [f for f in sensitive_paths if f["uncertain"]]
 
     return {
         "url": url,
@@ -166,6 +190,8 @@ def scan(url):
         "sensitive_paths": sensitive_paths,
         "exposed_path_count": len(exposed),
         "exposed_paths": exposed,
+        "uncertain_path_count": len(uncertain),
+        "uncertain_paths": uncertain,
         "robots": check_robots(base_url),
         "cms_detected": detect_cms(body_text),
     }
