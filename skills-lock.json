@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-reach": {
+      "source": "Panniantong/agent-reach",
+      "sourceType": "github",
+      "skillPath": "agent_reach/skill/SKILL.md",
+      "computedHash": "c9fa09a33f4d41de0a9752162c693aab9a402fcb20e51923954585f621b465ee"
+    },
+    "career-ops": {
+      "source": "santifer/career-ops",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/career-ops/SKILL.md",
+      "computedHash": "1eae80d84bd0fcfcef55336370ea3d2188557d023993588576dc402a9dc920b7"
+    },
+    "last30days": {
+      "source": "mvanhorn/last30days-skill",
+      "sourceType": "github",
+      "skillPath": "skills/last30days/SKILL.md",
+      "computedHash": "a9386ba6f5498fcf5e24b73580378c82141fb3e812753574c28e4529497153da"
+    }
+  }
+}

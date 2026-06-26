@@ -4,15 +4,17 @@ A running list of notable open-source AI tools/skills worth evaluating for this 
 
 ## Resources — Research & Internet Agents
 
-### #1 — Last30Days-Skill (+12.4k stars)
+### #1 — Last30Days-Skill (+12.4k stars) — **wired up: `.claude/skills/last30days`**
 AI agent skill that researches any topic across Reddit, X (Twitter), YouTube, Hacker News, Polymarket, and the web, then synthesizes a grounded summary.
 - Cross-platform research in one pass — no manual digging across six sources
 - Output is a single grounded summary, not raw search results
+- Real source: `mvanhorn/last30days-skill`, installed via the official `skills` CLI (`npx skills add mvanhorn/last30days-skill`) — fully self-contained, works as installed
 - Use case: drop into an agent's skill set as a research partner
 
-### #6 — Agent-Reach (+5.2k stars)
+### #6 — Agent-Reach (+5.2k stars) — **wired up: `.claude/skills/agent-reach`**
 Gives an AI agent internet access from a single CLI — Twitter/X, GitHub, Reddit, YouTube, Bilibili, news, and blogs.
 - No API fees, no rate limits, free forever
+- Real source: `Panniantong/agent-reach` (the likely original; several near-identical forks exist — installed from this one specifically), installed via `npx skills add Panniantong/agent-reach` — fully self-contained, works as installed
 - Use case: pair with Last30Days-Skill when an agent needs raw source access instead of a pre-synthesized summary
 
 ## Resources — Knowledge Management
@@ -36,9 +38,11 @@ Open-source copilot covering the full product manager workflow: idea-to-plan, PR
 - Ships built-in frameworks: RICE, AARRR, JTBD, SWOT, S.W.A.N, KANO
 - Use case: useful if this repo starts generating PRDs/roadmaps for agent features
 
-### #8 — Career-Ops (+4.7k stars)
+### #8 — Career-Ops (+4.7k stars) — **partially wired: `.claude/skills/career-ops` (INCOMPLETE, non-functional)**
 End-to-end automated job-search agent: finds jobs across 1000+ sources, tailors resumes per role, auto-applies, tracks progress, sends AI-written follow-ups, and preps interview Q&A.
 - Free and open source, zero manual hassle once configured
+- Real source: `santifer/career-ops` — turns out to be a full Node.js app (Playwright automation, PDF/LaTeX generation, tracker dashboard), not a portable skill
+- Current state: only the thin router `SKILL.md` got installed. It references `modes/*.md` files and scripts (`generate-pdf.mjs`, `scan.mjs`, `check-liveness.mjs`) that live at the repo root and weren't pulled in — **does not work yet**. Needs one of: (1) full clone + `npm install` into this repo, (2) copy `modes/*.md` prose only (script-backed modes like `pdf`/`scan`/`apply` degrade), or (3) remove it as not fitting this repo's skill pattern
 - Use case: less relevant to this infra's purpose (agent/automation backend), kept for reference only
 
 ## Learnings — Developer Utilities
