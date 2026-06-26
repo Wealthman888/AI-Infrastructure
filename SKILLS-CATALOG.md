@@ -38,12 +38,14 @@ Open-source copilot covering the full product manager workflow: idea-to-plan, PR
 - Ships built-in frameworks: RICE, AARRR, JTBD, SWOT, S.W.A.N, KANO
 - Use case: useful if this repo starts generating PRDs/roadmaps for agent features
 
-### #8 — Career-Ops (+4.7k stars) — **partially wired: `.claude/skills/career-ops` (INCOMPLETE, non-functional)**
+### #8 — Career-Ops (+4.7k stars) — **wired up: `.claude/skills/career-ops`**
 End-to-end automated job-search agent: finds jobs across 1000+ sources, tailors resumes per role, auto-applies, tracks progress, sends AI-written follow-ups, and preps interview Q&A.
 - Free and open source, zero manual hassle once configured
-- Real source: `santifer/career-ops` — turns out to be a full Node.js app (Playwright automation, PDF/LaTeX generation, tracker dashboard), not a portable skill
-- Current state: only the thin router `SKILL.md` got installed. It references `modes/*.md` files and scripts (`generate-pdf.mjs`, `scan.mjs`, `check-liveness.mjs`) that live at the repo root and weren't pulled in — **does not work yet**. Needs one of: (1) full clone + `npm install` into this repo, (2) copy `modes/*.md` prose only (script-backed modes like `pdf`/`scan`/`apply` degrade), or (3) remove it as not fitting this repo's skill pattern
-- Use case: less relevant to this infra's purpose (agent/automation backend), kept for reference only
+- Real source: `santifer/career-ops` — a full Node.js app (Playwright automation, PDF/LaTeX generation, tracker dashboard), not a thin portable skill, so the official `skills` CLI only pulled the router `SKILL.md` and left it non-functional. Fixed by fully cloning the upstream repo (via `codeload.github.com` tarball, since the git proxy only permits this repo) into `.claude/skills/career-ops/` so `modes/*.md`, `data/`, and the root-level `.mjs` scripts (`generate-pdf.mjs`, `scan.mjs`, `check-liveness.mjs`, etc.) all exist as the siblings the router expects, then copying the nested `.agents/skills/career-ops/SKILL.md` up to the top level so Claude Code's skill loader finds it
+- `npm install` installs `@google/generative-ai`, `dotenv`, `js-yaml`, `playwright`. The pinned Playwright Chromium revision can't download in this sandboxed environment (proxy blocks `cdn.playwright.dev`), so `check-liveness.mjs`, `doctor.mjs`, `generate-pdf.mjs`, `liveness-browser.mjs`, `scan-ats-full.mjs`, and `scan.mjs` were patched to fall back to `executablePath: process.env.CAREER_OPS_CHROMIUM_PATH`, pointed at the environment's pre-cached Chromium (`/opt/pw-browsers/chromium`) via `.claude/hooks/session-start.sh`. Verified working with `node doctor.mjs` (`✓ Playwright chromium installed`). Note: this patch lives in upstream "system layer" files, so re-running `node update-system.mjs apply` will overwrite it — reapply if that happens.
+- `node_modules/` is gitignored; `.claude/hooks/session-start.sh` now runs `npm install` for career-ops every session so it's ready with zero manual setup
+- First use still requires onboarding (CV, profile, target roles — see the skill's own onboarding flow) before evaluations/scans will run
+- Use case: drop a job posting URL or paste a JD to run the full evaluation pipeline; `tracker`/`oferta`/`deep`/`pdf` etc. work without Playwright, `scan`/`apply`/`pdf` rely on the patched Chromium path above
 
 ## Learnings — Developer Utilities
 
