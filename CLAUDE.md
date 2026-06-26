@@ -61,3 +61,10 @@ Use Claude Code's `/schedule` skill to create cron-based remote agents. Store cr
 This environment has MCP servers configured for Gmail, Google Calendar, and Google Drive. When building tools that wrap these services, prefer the MCP tool calls over raw API calls — they handle auth automatically.
 
 Available MCP namespaces: `mcp__claude_ai_Gmail__*`, `mcp__claude_ai_Google_Calendar__*`, `mcp__claude_ai_Google_Drive__*`.
+
+## Skill Suites
+
+`.claude/skills/` contains two productized skill suites, each with a main orchestrator skill that routes to specialist sub-skills:
+
+- **`market`** — AI Marketing Suite. Audits and generates marketing content (`market-audit`, `market-seo`, `market-copy`, etc.). See `.claude/skills/market/SKILL.md`.
+- **`infra-audit`** — AI Infrastructure & Operations Auditor. Audits client infrastructure across security (`trivy-scan`), cost (`infracost-audit`, `cloud-waste-scout`), code/stack health (`stack-hygiene-analyzer`), operational resilience (`silent-failure-hunter`), and compliance (`audit-tools`). See `.claude/skills/infra-audit/SKILL.md`.
