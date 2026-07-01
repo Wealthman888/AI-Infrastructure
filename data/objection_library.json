@@ -1,0 +1,46 @@
+{
+  "objections": [
+    {
+      "name": "too_expensive",
+      "triggers": ["too expensive", "too much money", "can't afford", "cost too much", "out of budget"],
+      "strategy": "Anchor to missed-job cost, not the price tag.",
+      "response": "Totally get it. Worth keeping in mind the audit itself is free, and the number we quoted is usually less than one missed job a month costs you. Want me to show you the math for your business specifically?"
+    },
+    {
+      "name": "already_have_website",
+      "triggers": ["already have a website", "have a site", "already have a web", "already got a website"],
+      "strategy": "Pivot from web presence to after-hours lead capture, which a website alone doesn't solve.",
+      "response": "Makes sense, the site itself might be fine. What we usually find is the gap isn't the website, it's what happens after someone leaves it, especially after hours. That's the piece worth a look."
+    },
+    {
+      "name": "referrals_only",
+      "triggers": ["referrals only", "we only get referrals", "word of mouth", "don't need marketing"],
+      "strategy": "Reframe: referral prospects still Google the business before calling.",
+      "response": "Referrals are great, and most of your competitors would kill for that. One thing worth thinking about though: what do those referrals find when they Google you before calling? That's usually where the leak is."
+    },
+    {
+      "name": "need_to_think",
+      "triggers": ["need to think", "let me think", "have to think about it", "get back to you"],
+      "strategy": "Surface the specific concern instead of letting it go cold.",
+      "response": "Fair enough, no rush. Out of curiosity, what would you need to see to feel confident about it? Happy to send that over directly instead of you waiting on me."
+    },
+    {
+      "name": "can_you_do_it_cheaper",
+      "triggers": ["cheaper", "lower price", "discount", "any way to reduce", "less expensive option"],
+      "strategy": "Offer the $397 stripped-down quick-win entry, upsell month 2.",
+      "response": "Yeah, there's a lighter option. We can just fix the #1 flagged issue for $397 flat, no retainer. Most people upgrade once they see it working, but zero pressure either way."
+    },
+    {
+      "name": "not_now_timing",
+      "triggers": ["not right now", "bad timing", "too busy right now", "maybe next quarter"],
+      "strategy": "Leave the door open, no pressure, set up for the 60-day nurture.",
+      "response": "No problem at all. I'll leave your file open and check back in a bit, no pressure in the meantime. If anything changes on your end sooner, just reply here."
+    },
+    {
+      "name": "who_is_this",
+      "triggers": ["who is this", "how did you get my", "how did you find", "who are you"],
+      "strategy": "Be direct and specific, name the exact public source, no evasiveness.",
+      "response": "Fair question. I run audits on local service businesses and came across your Google listing/website while looking at businesses in your area. Happy to show you exactly what I found."
+    }
+  ]
+}

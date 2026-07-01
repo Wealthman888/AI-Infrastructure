@@ -1,0 +1,23 @@
+{
+  "_readme": "PLACEHOLDER DATA. Replace every row with the real 15 pre-warmed inboxes (domains, DNS status, actual dates) before scripts/scaling_calendar.py or the dashboard scaling panel mean anything. cohort_start_date = day the inbox entered warmup in Instantly. status: warming | live | rested. Once INSTANTLY_API_KEY is set, dashboard/server.py can pull this straight from the Instantly /accounts endpoint instead of this file -- this file remains useful for domains/DNS status Instantly doesn't track (SPF/DKIM/DMARC verification, purchase records).",
+  "domains": [
+    {
+      "domain": "REPLACE-domain-1.com",
+      "spf": "TBD",
+      "dkim": "TBD",
+      "dmarc": "TBD",
+      "purchased_date": "TBD",
+      "inboxes": [
+        {"email": "REPLACE@REPLACE-domain-1.com", "cohort_start_date": "TBD", "status": "TBD", "daily_cap": null}
+      ]
+    }
+  ],
+  "cohorts": [
+    {
+      "cohort_label": "Week 0 (existing 15)",
+      "cohort_start_date": "TBD",
+      "inbox_count": 15,
+      "note": "The 15 pre-warmed inboxes being imported per Section 1. Fill in real domains above, then this cohort entry can be derived from them."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GemLabs Outreach Command Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>Outreach Command Dashboard <span id="demo-badge" class="demo-badge" hidden>DEMO DATA</span></h1>
+    <div class="meta">GemLabs cold email machine — Instantly.ai · GHL · HeyGen</div>
+  </div>
+  <div class="meta" id="last-polled">—</div>
+</header>
+
+<main>
+  <section class="panel" id="panel-health">
+    <h2>Infrastructure Health</h2>
+    <div class="tile-row" id="health-tiles"></div>
+    <div id="health-rates"></div>
+    <div id="domain-list"></div>
+  </section>
+
+  <section class="panel" id="panel-scaling">
+    <h2>Scaling Tracker</h2>
+    <div id="cohort-table"></div>
+    <div id="alert-queue"></div>
+  </section>
+
+  <section class="panel wide" id="panel-funnel">
+    <h2>Funnel Metrics</h2>
+    <div id="funnel-body"></div>
+    <div class="benchmark-note">
+      Benchmark bands: baseline cold email 40–60% open / 3–8% reply · GemLabs proven 47–62% open / 15–30% reply
+    </div>
+  </section>
+
+  <section class="panel" id="panel-sentiment">
+    <h2>Reply Sentiment Split</h2>
+    <div id="sentiment-body"></div>
+  </section>
+
+  <section class="panel" id="panel-revenue">
+    <h2>Revenue Attribution</h2>
+    <div class="tile-row" id="revenue-tiles"></div>
+    <div id="tier-breakdown"></div>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

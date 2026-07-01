@@ -1,0 +1,52 @@
+{
+  "detailing": {
+    "niche_pain": "missed call = lost job",
+    "local_proof": "a Reno detailer started catching after-hours bookings within a week of turning on 24/7 capture",
+    "avg_job_value": 175
+  },
+  "cleaning": {
+    "niche_pain": "rebooking automation = 40% more recurring revenue",
+    "local_proof": "a Boise cleaning crew added 6 recurring clients in their first month just from automated rebooking reminders",
+    "avg_job_value": 150
+  },
+  "handyman": {
+    "niche_pain": "invisible online while competitors get found",
+    "local_proof": "a Tampa handyman went from page 3 to getting booked calls the same week his listing got fixed",
+    "avg_job_value": 275
+  },
+  "landscaping": {
+    "niche_pain": "missed call = lost job",
+    "local_proof": "a Phoenix landscaping crew stopped losing quote requests to voicemail after adding after-hours capture",
+    "avg_job_value": 400
+  },
+  "fitness": {
+    "niche_pain": "intake and follow-up automation",
+    "local_proof": "a Henderson gym cut no-show rate in half after automating intake follow-up",
+    "avg_job_value": 120
+  },
+  "pest_control": {
+    "niche_pain": "recurring reminders = zero churn",
+    "local_proof": "a Dallas pest control company recovered 9 lapsed accounts in the first month of automated reminders",
+    "avg_job_value": 90
+  },
+  "salons": {
+    "niche_pain": "Instagram-to-booking funnel + ChatGPT/AI-search visibility",
+    "local_proof": "a Henderson salon started getting clients from ChatGPT after we fixed this exact thing",
+    "avg_job_value": 85
+  },
+  "notary": {
+    "niche_pain": "24/7 service but no 24/7 booking",
+    "local_proof": "a mobile notary in Vegas picked up 3 after-hours signings in her first two weeks with 24/7 booking live",
+    "avg_job_value": 75
+  },
+  "food_trucks": {
+    "niche_pain": "first-mover digital presence",
+    "local_proof": "a food truck in Austin started showing up in local search before any of the trucks parked next to them",
+    "avg_job_value": 500
+  },
+  "pressure_washing": {
+    "niche_pain": "missed call = lost job",
+    "local_proof": "a pressure washing crew in Charlotte stopped losing quote requests to voicemail after adding after-hours capture",
+    "avg_job_value": 300
+  }
+}
