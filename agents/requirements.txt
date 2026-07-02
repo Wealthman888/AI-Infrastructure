@@ -1,0 +1,9 @@
+anthropic
+firecrawl-py
+crawl4ai
+markitdown
+scrapling
+autoscraper
+browser-use
+langchain-anthropic
+httpx
