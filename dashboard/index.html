@@ -60,7 +60,8 @@
   }
 
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; overflow-x: hidden; }
+  html, body { margin: 0; padding: 0; }
+  html { overflow-x: hidden; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -276,16 +277,124 @@
     align-self: center;
   }
   .division-tag {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     font-size: 10.5px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 2px 7px;
+    padding: 2px 8px 2px 6px;
     border-radius: 5px;
     margin-top: 2px;
     width: fit-content;
-    color: #fff;
+    color: var(--text-dim);
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+  }
+  .division-tag .swatch {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
     background: var(--division-color);
+    flex: none;
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 680px) {
+    .overview-grid { grid-template-columns: 1fr; }
+  }
+  .gauge-card, .bars-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .card-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin: 0 0 16px;
+  }
+  .gauge-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .gauge-figure {
+    position: relative;
+    width: 100%;
+    max-width: 200px;
+  }
+  .gauge-figure svg { width: 100%; height: auto; display: block; }
+  .gauge-figure circle { transition: stroke-dasharray 0.4s ease; }
+  .gauge-value {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 30%;
+    text-align: center;
+  }
+  .gauge-value .num {
+    font-size: 32px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .gauge-caption {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    text-align: center;
+    margin: 0;
+  }
+
+  .bar-chart { display: flex; flex-direction: column; gap: 3px; }
+  .bar-row {
+    display: grid;
+    grid-template-columns: minmax(72px, 116px) 1fr 28px;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .bar-row:hover, .bar-row:focus-visible { background: var(--bg-sunken); }
+  .bar-row .bname {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-track {
+    position: relative;
+    height: 13px;
+    border-radius: 4px;
+    background: var(--bg-sunken);
+    background-image: repeating-linear-gradient(to right, var(--border) 0, var(--border) 1px, transparent 1px, transparent 10%);
+    overflow: hidden;
+  }
+  .bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    border-radius: 4px;
+    min-width: 4px;
+    transition: width 0.4s ease;
+  }
+  .bar-row .bcount {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
   }
 
   .empty-state {
@@ -355,6 +464,22 @@
   <div class="status-bar" id="statusBar"></div>
 
   <div class="stats-row" id="statsRow"></div>
+
+  <section class="panel">
+    <div class="overview-grid">
+      <div class="gauge-card">
+        <p class="card-title">Integration Health</p>
+        <div class="gauge-wrap">
+          <div class="gauge-figure" id="gaugeFigure"></div>
+          <p class="gauge-caption" id="gaugeCaption"></p>
+        </div>
+      </div>
+      <div class="bars-card">
+        <p class="card-title">Agents by Division</p>
+        <div class="bar-chart" id="barChart"></div>
+      </div>
+    </div>
+  </section>
 
   <section class="panel">
     <div class="panel-head">
@@ -443,6 +568,57 @@
   const countsByDivision = {};
   DATA.agents.forEach(a => { countsByDivision[a.division] = (countsByDivision[a.division] || 0) + 1; });
 
+  // Integration health gauge (270-degree radial, threshold-colored)
+  (function renderGauge() {
+    const total = STATUS.length;
+    const good = STATUS.filter(s => s.state === 'good').length;
+    const percent = Math.round((good / total) * 100);
+    const color = percent === 100 ? 'var(--good)' : percent >= 50 ? 'var(--warn)' : 'var(--bad)';
+
+    const r = 50, cx = 60, cy = 60;
+    const circumference = 2 * Math.PI * r;
+    const arcFraction = 0.75; // 270 of 360 degrees
+    const arcLen = circumference * arcFraction;
+    const progressLen = Math.max(arcLen * (percent / 100), 0.001);
+
+    document.getElementById('gaugeFigure').innerHTML = `
+      <svg viewBox="0 0 120 120">
+        <g transform="rotate(135 ${cx} ${cy})">
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" style="stroke:var(--border-strong)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${arcLen} ${circumference}"></circle>
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" style="stroke:${color}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${progressLen} ${circumference}"></circle>
+        </g>
+      </svg>
+      <div class="gauge-value"><span class="num display" style="color:${color}">${percent}%</span></div>
+    `;
+    document.getElementById('gaugeCaption').textContent = `${good} of ${total} systems connected`;
+  })();
+
+  // Agents-by-division bar chart, sorted descending, categorical fill from divisions.json
+  (function renderBarChart() {
+    const barChart = document.getElementById('barChart');
+    const maxCount = Math.max(...Object.values(countsByDivision), 1);
+    Object.entries(DATA.divisions)
+      .map(([key, meta]) => ({ key, meta, count: countsByDivision[key] || 0 }))
+      .sort((a, b) => b.count - a.count)
+      .forEach(d => {
+        const pct = (d.count / maxCount) * 100;
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.tabIndex = 0;
+        row.innerHTML = `
+          <span class="bname">${d.meta.label}</span>
+          <span class="bar-track"><span class="bar-fill" style="width:${pct}%; background:${d.meta.color}"></span></span>
+          <span class="bcount">${d.count}</span>`;
+        row.addEventListener('click', () => {
+          activeDivision = activeDivision === d.key ? null : d.key;
+          render();
+          document.getElementById('agentList').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+        row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); row.click(); } });
+        barChart.appendChild(row);
+      });
+  })();
+
   Object.entries(DATA.divisions).forEach(([key, meta]) => {
     const card = document.createElement('button');
     card.type = 'button';
@@ -483,7 +659,7 @@
           <div class="agent-name-cell">
             <span class="agent-name">${a.name}</span>
             <span class="agent-slug">${a.slug}</span>
-            <span class="division-tag" style="--division-color:${meta.color}">${meta.label}</span>
+            <span class="division-tag" style="--division-color:${meta.color}"><span class="swatch"></span>${meta.label}</span>
           </div>
           <div class="agent-desc">${a.description}</div>`;
         agentListEl.appendChild(row);
