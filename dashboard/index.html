@@ -60,7 +60,7 @@
   }
 
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
+  html, body { margin: 0; padding: 0; overflow-x: hidden; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -248,11 +248,14 @@
   }
   .agent-row {
     display: grid;
-    grid-template-columns: minmax(140px, 220px) 1fr;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
     gap: 16px;
     padding: 12px 16px;
     border-bottom: 1px solid var(--border);
     background: var(--bg-raised);
+  }
+  @media (max-width: 520px) {
+    .agent-row { grid-template-columns: 1fr; gap: 4px; }
   }
   .agent-row:last-child { border-bottom: none; }
   .agent-row:nth-child(even) { background: var(--bg-sunken); }
