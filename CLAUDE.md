@@ -14,6 +14,7 @@ tools/       # Reusable tool wrappers for external APIs
 scripts/     # One-off or scheduled automation scripts
 .claude/
   skills/    # Custom Claude Code skills for this project
+  agents/    # Claude Code subagent definitions (council personas)
 ```
 
 ## Development Setup
@@ -55,6 +56,23 @@ Cache TTL is 5 minutes. Build agents to stay within a cache window when running 
 ## Scheduled Automation
 
 Use Claude Code's `/schedule` skill to create cron-based remote agents. Store cron definitions and their purpose in `scripts/` alongside the agent code they invoke.
+
+## Council of High Intelligence
+
+The `/council` skill (from [0xnyk/council-of-high-intelligence](https://github.com/0xnyk/council-of-high-intelligence)) runs structured multi-persona deliberation for decisions that deserve more than one reasoning path. The coordinator protocol lives in `.claude/skills/council/SKILL.md`; the 18 persona subagents live in `.claude/agents/council-*.md`.
+
+Usage:
+
+```
+/council [problem]                     # auto-selects members
+/council --quick Should we add caching here?
+/council --duo Should we use microservices or monolith?
+/council --triad architecture Should we use a monorepo or polyrepo?
+/council --full What is the right pricing strategy?
+/council --members socrates,feynman,ada Is our caching strategy correct?
+```
+
+Provider-routing config templates are in `.claude/skills/council/configs/`.
 
 ## MCP Integrations
 
