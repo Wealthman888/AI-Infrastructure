@@ -137,7 +137,20 @@ each prospect their own pre-written sequence.
 **Compliance:** include a real business identity, honor opt-outs immediately (CAN-SPAM), and only
 email business addresses relevant to the offer.
 
-## Stage 6 — Replies & iteration
+## Stage 6 — Replies, the offer ladder & iteration
+
+**The offer ladder (see offer.md):** cold email sells ONLY the free scoped audit. On the audit
+call, pitch implementation directly ($4,500 entry build → $7.5K–$20K stack). For interested-but-
+not-ready prospects, downsell the **$1,500 Deep Audit, fully credited toward any build** — it
+monetizes hesitation and keeps them in motion. Downsell line for reply handling:
+
+> "Totally fair. If it helps, we also do a full written diagnostic — systems, ad accounts, and
+> content — with a 90-day roadmap. It's $1,500 and we credit all of it toward any build if you
+> move forward. Want the one-pager?"
+
+**Authority track:** run AUTHORITY-SPRINT.md in parallel — every audit feeds the proof loop
+(case-study numbers, Clutch reviews, LinkedIn teardown posts). Around day 90, A/B a paid-audit
+CTA against the free control and flip when it books ≥60% as well.
 
 - Answer positive replies within 1 hour where possible (reply speed ≈ booking rate)
 - Log replies by segment/angle; after ~150 sends compare reply rate per ICP and per hook type,

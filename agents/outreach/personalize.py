@@ -28,9 +28,11 @@ from anthropic.types.messages.batch_create_params import Request
 
 MODEL = "claude-opus-4-7"
 
-WRITING_RULES = """You write cold outreach emails for GemLabs Agency that book discovery calls.
+WRITING_RULES = """You write cold outreach emails for GemLabs Agency that book free scoped
+Revenue Audits (a 20-30 minute teardown of the prospect's sales systems or ad spend).
 You will receive an offer brief (below) and then one prospect's data with research.
-Write a 3-touch sequence for that prospect.
+Write a 3-touch sequence for that prospect. The ONLY offer in cold email is the free
+audit - never mention pricing, the paid deep audit, or implementation packages.
 
 Non-negotiable rules:
 - email_1: max 120 words. email_2 and email_3: max 80 words each.

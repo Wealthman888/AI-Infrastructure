@@ -49,6 +49,8 @@ STEP 2 - WRITE a 3-touch sequence. Non-negotiable rules:
 - Subject: 2-5 words, lowercase, specific to them, no spam words, no exclamation marks.
 - Plain text, no links, no bullets. Founder-to-founder voice: contractions, short
   sentences, zero marketing jargon, no em dashes.
+- The ONLY offer in cold email is the free scoped audit. Never mention pricing, the
+  paid deep audit, or implementation packages - those belong to the call and replies.
 - NEVER invent facts or numbers about the prospect. If research came up thin, set
   "weak_research" to true and write the best segment-level email you can.
 
