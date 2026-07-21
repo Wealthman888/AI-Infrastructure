@@ -84,6 +84,21 @@ python agents/outreach/generate_emails.py prospects.csv \
 Resumable — re-running skips rows that already have generated emails. Rows where research came up
 thin are flagged `weak_research` for QA.
 
+**Tier-2 deep research (`deep_research.py`) — for the top 10–15% of the list.** The bulk pass
+costs pennies per prospect; the tier-2 pass spends dollars on the prospects worth $10K–$20K.
+It fetches the target's actual website (home, pricing, careers — hiring signals live there),
+then runs an OpenAI web-search agent over the evidence: founder activity, funding, ad-library
+activity, competitor pressure, visible funnel gaps. Output feeds two places:
+- `deep_hooks`/`deep_summary` columns → automatically picked up by the email writer → sharper
+  tier-2 emails
+- `teardown_preview` → 3 concrete findings about THEIR funnel — the "audit preview" asset for
+  reply handling (send to hesitant repliers as proof of work) and the opening of the audit call.
+
+```bash
+export OPENAI_API_KEY=sk-...
+python agents/outreach/deep_research.py top_targets.csv --limit 30 --out prospects_tier2.csv
+```
+
 **Origami Agents (origamiagents.com)** still slots in as a continuous signal source: export its
 pre-qualified leads to CSV and feed them straight into `generate_emails.py` — any signal columns
 it adds are passed into the prompt automatically.
