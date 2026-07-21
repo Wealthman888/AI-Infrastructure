@@ -108,10 +108,19 @@ Claude wrote 300 emails; you review ~30 minutes:
 
 ## Stage 5 — Sending (deliverability is the whole game)
 
-**Never send 300 cold emails from your main domain.** Setup:
-- 2–3 lookalike domains (getgemlabs.com, gemlabshq.com), SPF + DKIM + DMARC on each
-- 2 inboxes per domain, **warmed 2–3 weeks** before the first cold send
-- **20–30 emails/inbox/day** → 6 inboxes = 120–180/day → the full 300-sequence runs comfortably
+**Current infrastructure: 15 pre-warmed inboxes.** Capacity and cadence:
+
+- 15 inboxes × 25 cold sends/day = **~375 sends/day capacity**; plan to ~300/day (20% headroom
+  for warmup upkeep and reply traffic)
+- Each prospect consumes 3 sends over 7 days, so steady-state intake = **~100 new prospects/day**
+- → the 300-prospect batch enters sequence in **3 days**; full monthly capacity ≈ **2,000–2,200
+  prospects** if list building and research keep up
+- **Ramp even though inboxes are warmed** — warming ≠ cold-send history. Week 1: 10–15 cold/inbox/day,
+  week 2: ~20, week 3: 25–30. Keep warmup emails running in the background throughout.
+- Spread inboxes across domains: max 2–3 inboxes per domain. 15 inboxes should sit on 5–8 lookalike
+  domains (never the main gemlabsagency.com domain), each with SPF + DKIM + DMARC.
+- If one inbox's bounce or spam-complaint rate spikes, pull it from rotation immediately — one burned
+  inbox is recoverable, a burned domain is not.
 - Plain text, no links in email #1, no images, no tracking pixel if you can live without opens
 
 **Sequencer:** import `emails.csv` into Instantly or Smartlead ($37–$97/mo) — they handle rotation,
@@ -130,6 +139,8 @@ email business addresses relevant to the offer.
 - Answer positive replies within 1 hour where possible (reply speed ≈ booking rate)
 - Log replies by segment/angle; after ~150 sends compare reply rate per ICP and per hook type,
   then re-run Stages 1–3 weighted toward what worked
+- At full capacity (~300 sends/day, 3–8% reply rate) expect **9–24 replies/day** — assign an owner
+  and a same-day SLA before scaling past the first batch, or booked-call rate collapses
 - Feed objections back into `offer.md` (e.g. recurring "we already have a VA" → add that proof point)
 
 ---
