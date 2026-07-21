@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GemLabs — Market Domination Roadmap</title>
+<style>
+  :root{
+    --navy:#101c2e; --navy2:#1b2c46; --gold:#c9a227; --gold-soft:#f4ead0;
+    --ink:#22262b; --muted:#5c6570; --line:#dfe3e8; --bg:#ffffff; --soft:#f6f7f9;
+    --good:#1c7c4a; --warn:#b26a00; --crit:#b3261e;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  body{font-family:"Helvetica Neue",Arial,sans-serif; color:var(--ink); background:var(--bg);
+       font-size:13.5px; line-height:1.55; max-width:980px; margin:0 auto; padding:0 28px 60px;}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif; color:var(--navy); line-height:1.25;}
+  h1{font-size:34px;} h2{font-size:22px; margin:34px 0 6px; padding-top:10px;}
+  h3{font-size:16px; margin:20px 0 6px;}
+  p{margin:8px 0;} .muted{color:var(--muted);}
+  em{color:var(--navy2);}
+  .cover{background:var(--navy); color:#f2f4f8; margin:0 -28px; padding:56px 48px 44px;}
+  .cover h1{color:#fff;} .cover .tag{color:var(--gold); font-size:13px; letter-spacing:.22em;
+    text-transform:uppercase; margin-bottom:14px; font-weight:600;}
+  .cover p{color:#c8d0dc; max-width:640px;}
+  .cover .mission{border-left:3px solid var(--gold); padding-left:16px; margin-top:20px;
+    font-family:Georgia,serif; font-size:16px; color:#fff;}
+  .kpis{display:flex; gap:14px; margin-top:26px; flex-wrap:wrap;}
+  .kpi{background:var(--navy2); border-radius:8px; padding:12px 18px; min-width:150px;}
+  .kpi b{display:block; font-size:20px; color:var(--gold); font-family:Georgia,serif;}
+  .kpi span{font-size:11.5px; color:#aeb9c9; text-transform:uppercase; letter-spacing:.06em;}
+  .rule{height:3px; background:linear-gradient(90deg,var(--gold),transparent); border:0; margin:6px 0 14px;}
+  table{width:100%; border-collapse:collapse; margin:10px 0 18px; font-size:12.5px;}
+  th{background:var(--navy); color:#fff; text-align:left; padding:7px 10px; font-weight:600;
+     font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;}
+  td{padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  tr:nth-child(even) td{background:var(--soft);}
+  .cb{width:20px; text-align:center; font-size:14px; color:var(--muted);}
+  code{background:var(--soft); border:1px solid var(--line); border-radius:4px;
+       padding:1px 5px; font-family:Menlo,Consolas,monospace; font-size:11.5px; color:var(--navy2);}
+  pre{background:var(--navy); color:#e8ecf2; border-radius:8px; padding:12px 16px; overflow-x:auto;
+      font-family:Menlo,Consolas,monospace; font-size:11.5px; line-height:1.6; margin:10px 0 16px;}
+  .phase{border:1px solid var(--line); border-radius:10px; margin:18px 0; overflow:hidden;
+         page-break-inside:avoid;}
+  .phase-head{background:var(--gold-soft); padding:12px 18px; display:flex; align-items:baseline;
+              gap:12px; border-bottom:1px solid var(--line);}
+  .phase-head .num{font-family:Georgia,serif; font-size:24px; color:var(--gold); font-weight:700;}
+  .phase-head h2{margin:0; padding:0; font-size:19px;}
+  .phase-head .when{margin-left:auto; font-size:12px; color:var(--muted); font-weight:600;
+                    text-transform:uppercase; letter-spacing:.05em;}
+  .phase-body{padding:6px 18px 14px;}
+  .goal{background:var(--soft); border-left:3px solid var(--gold); padding:8px 12px;
+        margin:10px 0; font-size:12.5px;}
+  .goal b{color:var(--navy);}
+  .callout{background:var(--gold-soft); border:1px solid #e6d9ae; border-radius:8px;
+           padding:12px 16px; margin:14px 0; page-break-inside:avoid;}
+  .callout.red{background:#fdecea; border-color:#f2b8b5;}
+  .callout b{color:var(--navy);}
+  .pill{display:inline-block; font-size:10.5px; font-weight:700; padding:1px 8px;
+        border-radius:10px; text-transform:uppercase; letter-spacing:.04em;}
+  .pill.crit{background:#fdecea; color:var(--crit);} .pill.hi{background:var(--gold-soft); color:var(--warn);}
+  .pill.med{background:#e8f0e9; color:var(--good);}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 26px;}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+  footer{margin-top:44px; padding-top:14px; border-top:2px solid var(--navy);
+         font-size:11px; color:var(--muted); display:flex; justify-content:space-between;}
+  @media print{
+    body{padding:0 8px; font-size:12px; max-width:100%;}
+    .cover{margin:0 -8px;}
+    h2{page-break-after:avoid;} .phase{page-break-inside:avoid;}
+    a{color:inherit; text-decoration:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="tag">GemLabs Agency — Internal Execution Document</div>
+  <h1>Market Domination Roadmap</h1>
+  <p>Every task, tool, and instruction to go from zero to the premium AI revenue-systems
+     agency in the SaaS niche — outbound machine, authority engine, and a team that delivers.</p>
+  <p class="mission">We own one number — <b>speed-to-lead</b> — we guarantee it, and our own
+     client acquisition runs on the systems we sell. We are the demo.</p>
+  <div class="kpis">
+    <div class="kpi"><b>2–6</b><span>Calls / first batch</span></div>
+    <div class="kpi"><b>~$24K</b><span>Month-1 profit target</span></div>
+    <div class="kpi"><b>$48K</b><span>MRR by month 6</span></div>
+    <div class="kpi"><b>~$253K</b><span>Month-6 revenue target</span></div>
+  </div>
+</div>
+
+<h2>The System at a Glance</h2>
+<hr class="rule">
+<table>
+  <tr><th>Stage</th><th>Engine</th><th>Repo asset</th></tr>
+  <tr><td>List building</td><td>Apify (Apollo scraper actor) + Origami signals</td><td><code>apify_pull.py</code></td></tr>
+  <tr><td>Research + writing (everyone)</td><td>Perplexity Sonar — live web research + 3-touch sequence in one call</td><td><code>generate_emails.py</code></td></tr>
+  <tr><td>Deep research (top 10–15%)</td><td>OpenAI web-search agent + direct site scraping → audit-preview asset</td><td><code>deep_research.py</code></td></tr>
+  <tr><td>Sending</td><td>15 warmed inboxes (+5 domains/mo), Instantly/Smartlead, 20–30/inbox/day</td><td><code>PLAYBOOK.md</code> §5</td></tr>
+  <tr><td>Offer</td><td>Free audit → $1,500 credited Deep Audit → $4.5K–$20K builds + retainers</td><td><code>offer.md</code></td></tr>
+  <tr><td>Authority &amp; GEO</td><td>Clutch, case studies, LinkedIn, portfolio hub, AI-engine citations</td><td><code>AUTHORITY-SPRINT.md</code></td></tr>
+  <tr><td>Financial model</td><td>Month 1–6 P&amp;L, hiring plan, capacity map, 19 conversion levers</td><td><code>SCALING-MODEL.md</code></td></tr>
+</table>
+
+<div class="callout red"><b>The one rule that protects everything:</b> nothing goes into a cold
+email, call, or published page that we cannot name a source for. Fabricated numbers destroy the
+premium position permanently. Until real case studies exist, we sell honest process proof:
+<em>“this email was researched and written by the system we’d build you.”</em></div>
+
+<!-- PHASE 0 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">0</span><h2>Foundations &amp; Proof</h2><span class="when">Week 1–2</span></div>
+  <div class="phase-body">
+    <div class="goal"><b>Exit criteria:</b> site readable by crawlers · Clutch live · 15 inboxes
+    verified across 5–8 domains · sequencer ready · 1–2 proof engagements secured.</div>
+    <table>
+      <tr><th class="cb">✓</th><th>Task</th><th>Tool / Instruction</th><th>Priority</th></tr>
+      <tr><td class="cb">☐</td><td>Fix site rendering (SPA → crawlable HTML)</td>
+          <td>Prerender.io (~$9–45/mo, 1–2 hrs) or Next.js SSR. Verify: <code>curl -A "GPTBot" gemlabsagency.com</code> returns real content</td>
+          <td><span class="pill crit">Critical</span></td></tr>
+      <tr><td class="cb">☐</td><td>Claim Clutch.co + request 3 reviews; create Google Business Profile</td>
+          <td>clutch.co (free) — #1 B2B agency trust signal; positive repliers WILL check</td>
+          <td><span class="pill crit">Critical</span></td></tr>
+      <tr><td class="cb">☐</td><td>Secure 1–2 proof clients (discounted or free-for-case-study builds)</td>
+          <td>Network / past contacts. Real before/after numbers are worth more than month-1 revenue</td>
+          <td><span class="pill crit">Critical</span></td></tr>
+      <tr><td class="cb">☐</td><td>Verify inbox infrastructure</td>
+          <td>15 inboxes across 5–8 lookalike domains (max 2–3/domain, never main domain); SPF+DKIM+DMARC on each; warmup running</td>
+          <td><span class="pill crit">Critical</span></td></tr>
+      <tr><td class="cb">☐</td><td>Set up sequencer + booking</td>
+          <td>Instantly or Smartlead ($37–97/mo); Calendly/Cal.com with 3 qualification questions (team size, ad spend, CRM)</td>
+          <td><span class="pill hi">High</span></td></tr>
+      <tr><td class="cb">☐</td><td>Rewrite homepage hero + add real founder identity</td>
+          <td>Outcome-led copy (GEMLABS-ACTION-PLAN.md Option A/B); named founder + photo + email in header</td>
+          <td><span class="pill hi">High</span></td></tr>
+      <tr><td class="cb">☐</td><td>Gather API credentials</td>
+          <td><code>APIFY_TOKEN</code> · <code>PERPLEXITY_API_KEY</code> · <code>OPENAI_API_KEY</code> · verifier account (MillionVerifier/NeverBounce)</td>
+          <td><span class="pill hi">High</span></td></tr>
+      <tr><td class="cb">☐</td><td>Finalize <code>offer.md</code></td>
+          <td>Speed-to-lead positioning + 30-day guarantee are in; replace proof placeholders with honest process claims until Phase-0 clients produce numbers</td>
+          <td><span class="pill hi">High</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- PHASE 1 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">1</span><h2>Launch Batch One</h2><span class="when">Week 2–3</span></div>
+  <div class="phase-body">
+    <div class="goal"><b>Exit criteria:</b> 300 prospects in sequence · real reply rate measured
+    at ~500 sends · first audits booked.</div>
+    <table>
+      <tr><th class="cb">✓</th><th>Task</th><th>Tool / Instruction</th></tr>
+      <tr><td class="cb">☐</td><td>Build ICP search &amp; pull list</td>
+          <td>Apollo: Founder/CEO/Co-Founder · 11–50 employees · US · Software/SaaS. Copy URL → <code>apollo_input.json</code> → <code>python apify_pull.py --input apollo_input.json --out prospects.csv</code></td></tr>
+      <tr><td class="cb">☐</td><td>Verify every email — non-negotiable</td>
+          <td>MillionVerifier (~$0.001/email). Target &lt;2% bounce; scraped lists unverified will burn all 15 inboxes</td></tr>
+      <tr><td class="cb">☐</td><td>Generate sequences (everyone)</td>
+          <td><code>python generate_emails.py prospects.csv --offer offer.md --out emails.csv</code> — research + 3-touch writing in one Perplexity call/prospect (~$5–15/300)</td></tr>
+      <tr><td class="cb">☐</td><td>Tier-2 deep research (top 30)</td>
+          <td><code>python deep_research.py top_targets.csv --limit 30</code> — OpenAI agent + site scraping → deep hooks + audit-preview bullets</td></tr>
+      <tr><td class="cb">☐</td><td>QA pass (30 min)</td>
+          <td>Spot-check 20–30 rows; drop/rewrite <code>weak_research</code> rows; verify zero invented claims</td></tr>
+      <tr><td class="cb">☐</td><td>Load sequencer &amp; launch on ramp</td>
+          <td>Map columns to custom variables. Week 1: 10–15/inbox/day · Week 2: ~20 · Week 3+: 25–30. Plain text, no links in email #1</td></tr>
+      <tr><td class="cb">☐</td><td>Stand up the metrics sheet</td>
+          <td>Reply rate by segment + hook type, booking rate, no-show rate, bounce rate — reviewed weekly, from day one</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- PHASE 2 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">2</span><h2>Convert &amp; Optimize</h2><span class="when">Week 3–6</span></div>
+  <div class="phase-body">
+    <div class="goal"><b>Exit criteria:</b> same-day reply SLA held · no-shows ≤15% · audit call
+    scripted · first 3–5 builds closed · every client in the proof-capture loop.</div>
+    <table>
+      <tr><th class="cb">✓</th><th>Task</th><th>Tool / Instruction</th></tr>
+      <tr><td class="cb">☐</td><td>Speed-to-lead on our own replies (&lt;1 hr, target 15 min)</td>
+          <td>Gmail-MCP draft-responder agent (this repo) — instant drafted replies, human approves. Practice what we sell</td></tr>
+      <tr><td class="cb">☐</td><td>No-show system</td>
+          <td>Instant confirmation + 1-page agenda in invite + 24h and 1h reminders (SMS if collected). 25% → 10–15% no-show</td></tr>
+      <tr><td class="cb">☐</td><td>Scripted audit call</td>
+          <td>Findings (screen-share teardown) → cost of inaction in THEIR numbers → two options only → next onboarding slot. Deposit link while on the call; 48h proposal expiry</td></tr>
+      <tr><td class="cb">☐</td><td>Deploy the audit-preview asset</td>
+          <td><code>teardown_preview</code> bullets from tier-2 → send to hesitant repliers as proof-of-work</td></tr>
+      <tr><td class="cb">☐</td><td>Downsell in reply handling</td>
+          <td>“Interested but not ready” → $1,500 Deep Audit, fully credited toward any build (script in PLAYBOOK §6)</td></tr>
+      <tr><td class="cb">☐</td><td>A/B engine running</td>
+          <td>2 subjects × 2 hook styles per 50-send cell; kill bottom performer weekly; log reply rate per hook type</td></tr>
+      <tr><td class="cb">☐</td><td>LinkedIn pre-touch</td>
+          <td>Founder profile view + connect 1–2 days before email #1 (Apify actor, &lt;50/day). +20–30% reply</td></tr>
+      <tr><td class="cb">☐</td><td>Weekly deliverability check</td>
+          <td>GlockApps/MailReach seed test; pull any inbox whose placement slides — one inbox is recoverable, a domain is not</td></tr>
+      <tr><td class="cb">☐</td><td>Proof-capture loop live</td>
+          <td>Every audit: record 1–2 real numbers · every close: baseline metrics for the day-30 case study · every delivery: testimonial ask → Clutch</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- PHASE 3 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">3</span><h2>Authority &amp; GEO Engine</h2><span class="when">Month 2–3</span></div>
+  <div class="phase-body">
+    <div class="goal"><b>Exit criteria:</b> 3 case studies live · 5+ Clutch reviews · /work hub +
+    8–10 posts published · appearing in AI-engine answers for 2+ target queries.</div>
+    <table>
+      <tr><th class="cb">✓</th><th>Task</th><th>Tool / Instruction</th></tr>
+      <tr><td class="cb">☐</td><td>Build /work portfolio hub</td>
+          <td>One page per project: problem → system → <b>before/after numbers</b> → stack → quote. Numbers are what AI engines cite</td></tr>
+      <tr><td class="cb">☐</td><td>Publishing cadence (zero extra budget)</td>
+          <td>Every audit → anonymized teardown post ≤48h · every day-30 client → case study · monthly aggregate-data post (“what 15 audits taught us”) · LinkedIn 3×/week</td></tr>
+      <tr><td class="cb">☐</td><td>Schema + FAQ markup</td>
+          <td><code>ProfessionalService</code>, <code>Article</code>, <code>FAQPage</code>, <code>Review</code>; FAQ blocks with real answers (“How much does an AI SDR system cost?”)</td></tr>
+      <tr><td class="cb">☐</td><td>Directory footprint</td>
+          <td>G2, Sortlist, DesignRush, UpCity + 2 “best AI agency” roundups — these are what AI answers cite most</td></tr>
+      <tr><td class="cb">☐</td><td>Monthly GEO check</td>
+          <td>Ask ChatGPT/Perplexity/Claude the target queries (“AI automation agency for SaaS”, “AI SDR setup service”…); log appearances</td></tr>
+      <tr><td class="cb">☐</td><td>First hires (month 3)</td>
+          <td>Closer #1 ($4K + 10% comm) + Systems Engineer #1 ($7K). Hire only after two consecutive months of justifying revenue</td></tr>
+      <tr><td class="cb">☐</td><td>Referral engine on</td>
+          <td>Every delivered build: ask for 2 intros + 10% referral fee. Partnerships: web-design/CRO/HubSpot agencies, 10–20% rev share</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- PHASE 4 -->
+<div class="phase">
+  <div class="phase-head"><span class="num">4</span><h2>Scale &amp; Dominate</h2><span class="when">Month 3–6</span></div>
+  <div class="phase-body">
+    <div class="goal"><b>Exit criteria:</b> paid-audit flip done · full team hired · ~$250K/mo
+    revenue run-rate · $48K MRR · waitlist for builds.</div>
+    <table>
+      <tr><th class="cb">✓</th><th>Task</th><th>Tool / Instruction</th></tr>
+      <tr><td class="cb">☐</td><td>+5 domains (~12 inboxes) every month</td>
+          <td>3-week warmup before cold; productive the following month. Capacity: M4 ≈ 51 inboxes → M6 ≈ 75</td></tr>
+      <tr><td class="cb">☐</td><td>Paid-audit flip (≈ day 90)</td>
+          <td>A/B $1,500 systems &amp; content audit (credited) vs. free control on one segment; flip fully when paid books ≥60% of free</td></tr>
+      <tr><td class="cb">☐</td><td>Ads at 20% of prior-month profit (M4+)</td>
+          <td>Start with retargeting outreach clickers + case-study amplification (cheap); cold audit-funnel traffic second. Expect ugly first-month CAC (~$600/booked audit → ~$400 by M6)</td></tr>
+      <tr><td class="cb">☐</td><td>Complete the team</td>
+          <td>M4: closer #2 + engineer #2 · M5: COO ($10K) · M6: engineer #3 · 60+ retainer clients → support/CS hire</td></tr>
+      <tr><td class="cb">☐</td><td>Manage the build bottleneck by design</td>
+          <td>2–3 week waitlist (closers sell the scarcity) + price rises toward $10–12K avg. Never hire to absorb ALL demand — let price absorb it</td></tr>
+      <tr><td class="cb">☐</td><td>Expansion revenue</td>
+          <td>Free 90-day re-audit for every client (books at onboarding) → system #2 pitch; 30% attach target. Retainer ladder $800 → $1,500 → $2,500</td></tr>
+      <tr><td class="cb">☐</td><td>Recycling</td>
+          <td>Non-repliers re-run at 90 days with new hook type (50–70% of fresh-list performance, $0 data cost); monthly closed-lost nurture email</td></tr>
+      <tr><td class="cb">☐</td><td>Cash-flow rules</td>
+          <td>50% deposits at close · hire after 2 months of justifying revenue · first 500 sends validate reply rate before any offer letter</td></tr>
+    </table>
+  </div>
+</div>
+
+<h2>Financial Targets (Base Case — replace with actuals monthly)</h2>
+<hr class="rule">
+<table>
+  <tr><th></th><th>M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th><th>M6</th></tr>
+  <tr><td>Prospects contacted</td><td>2,000</td><td>3,300</td><td>5,500</td><td>7,700</td><td>9,500</td><td>11,500</td></tr>
+  <tr><td>Audits held</td><td>15</td><td>28</td><td>48</td><td>65</td><td>80</td><td>95</td></tr>
+  <tr><td>Builds delivered</td><td>4</td><td>9</td><td>12</td><td>12–14</td><td>14</td><td>~18</td></tr>
+  <tr><td>Total revenue</td><td>$27K</td><td>$67K</td><td>$106K</td><td>$193K</td><td>$213K</td><td>$253K</td></tr>
+  <tr><td>Retainer MRR</td><td>$3K</td><td>$10K</td><td>$20K</td><td>$28K</td><td>$38K</td><td>$48K</td></tr>
+  <tr><td><b>Profit</b></td><td><b>~$24K</b></td><td><b>~$60K</b></td><td><b>~$86K</b></td><td><b>~$139K</b></td><td><b>~$135K</b></td><td><b>~$166K</b></td></tr>
+</table>
+<p class="muted">Assumptions: 4.5% reply improving to 6% as authority compounds · 25–30% audit→build
+close · $800+/mo retainers, 5% churn · staggered hiring · full model in <code>SCALING-MODEL.md</code>.</p>
+
+<h2>Tools &amp; Credentials Master List</h2>
+<hr class="rule">
+<table>
+  <tr><th>Tool</th><th>Role</th><th>Setup</th><th>~Cost</th></tr>
+  <tr><td>Apify</td><td>List building (Apollo scraper + LinkedIn/ads actors)</td><td><code>APIFY_TOKEN</code></td><td>$1–2 / 1K leads</td></tr>
+  <tr><td>Perplexity API</td><td>Research + email writing (tier 1, everyone)</td><td><code>PERPLEXITY_API_KEY</code></td><td>$5–15 / 300</td></tr>
+  <tr><td>OpenAI API</td><td>Tier-2 deep research agent + audit previews</td><td><code>OPENAI_API_KEY</code></td><td>$1–3 / prospect</td></tr>
+  <tr><td>MillionVerifier / NeverBounce</td><td>Email verification before every send</td><td>Account</td><td>~$1 / 1K</td></tr>
+  <tr><td>Instantly / Smartlead</td><td>Sending, rotation, warmup, reply detection</td><td>Import emails.csv</td><td>$37–97/mo</td></tr>
+  <tr><td>GlockApps / MailReach</td><td>Weekly inbox-placement tests</td><td>Seed list</td><td>~$30/mo</td></tr>
+  <tr><td>Prerender.io</td><td>Make site readable by Google + AI crawlers</td><td>CDN/Nginx snippet</td><td>$9–45/mo</td></tr>
+  <tr><td>Calendly / Cal.com</td><td>Audit booking + qualification questions</td><td>3-question form</td><td>Free–$12/mo</td></tr>
+  <tr><td>Clutch / G2 / directories</td><td>Trust + the sources AI engines cite</td><td>Profiles + reviews</td><td>Free</td></tr>
+  <tr><td>Origami Agents</td><td>Continuous buying-signal feed (optional)</td><td>CSV export → pipeline</td><td>Subscription</td></tr>
+  <tr><td>Claude (this repo)</td><td>Pipeline orchestration, batch writing alternative, Gmail drafts</td><td><code>ANTHROPIC_API_KEY</code></td><td>~$10–50/mo</td></tr>
+</table>
+
+<h2>Operating Cadence — How We Stay on Track</h2>
+<hr class="rule">
+<div class="grid2">
+  <div>
+    <h3>Weekly (30 min, non-negotiable)</h3>
+    <p>Reply rate by segment &amp; hook · booking rate · no-show rate · inbox placement ·
+    pipeline value. <em>Kill the worst angle, scale the best.</em></p>
+    <h3>Monthly</h3>
+    <p>Update SCALING-MODEL.md with actuals · re-forecast 3 months · price review vs. waitlist ·
+    authority scorecard (Clutch reviews, case studies, posts, citations).</p>
+  </div>
+  <div>
+    <h3>Quarterly</h3>
+    <p>GEO citation check on target queries · offer-ladder review (free vs. paid audit) ·
+    retainer churn autopsy · re-run of the 90-day no-reply recycling batch.</p>
+    <h3>One metric per phase</h3>
+    <p>M1–2: <b>reply → booked audits.</b> M3: <b>close rate.</b> M4+: <b>delivery quality &amp;
+    churn.</b> The moment fulfillment slips, proof stops compounding — cap intake, raise prices.</p>
+  </div>
+</div>
+
+<div class="callout"><b>The edge, in one paragraph.</b> Everyone sells “AI.” We sell a named
+number (speed-to-lead), a guarantee no tool-seller can match (“under 10 minutes in 30 days or we
+work free”), proof in the client’s own data (the audit), and the unfakeable demo — our own growth
+runs on the systems we install. Premium isn’t a price point; it’s measured outcomes, owned
+monthly, in writing.</div>
+
+<footer>
+  <span>GemLabs Agency — Market Domination Roadmap</span>
+  <span>Source of truth: <code>agents/outreach/</code> · July 2026</span>
+</footer>
+
+</body>
+</html>
