@@ -23,9 +23,22 @@ The lever that moves reply rate from 1% → 5%+ is **research-driven relevance**
 
 ---
 
-## Stage 1 — List building (Clay MCP / Vibe Prospecting)
+## Stage 1 — List building (Apify — primary; Clay MCP / Vibe Prospecting — alternate)
 
-Do this conversationally in Claude — both MCPs are connected in this workspace.
+**Primary: Apify** (`apify_pull.py`). Build the search in Apollo.io (free account is enough to
+build the search URL), then run the Apollo scraper actor via Apify to extract the leads with
+work emails — typically $1–2 per 1,000 leads in actor costs vs. credit-based pricing elsewhere.
+
+1. In Apollo: People search → titles (Founder, CEO, Co-Founder), company size 11–50, location US,
+   industry Software/SaaS. Add signals where possible (e.g. currently hiring sales roles).
+2. Copy the search URL into `apollo_input.json` with `totalRecords` (300–400) and
+   `getWorkEmails: true`, then `python apify_pull.py --input apollo_input.json --out prospects.csv`.
+3. Other useful actors for signal-based lists: LinkedIn job-posts scrapers (companies hiring
+   SDRs/AEs right now = best "systems audit" targets), G2/product-review scrapers, and ad-library
+   scrapers (companies actively running Meta ads = best "ad audit" targets).
+
+**Alternate: Clay MCP / Vibe Prospecting MCP** — conversational list building in Claude
+(credit-based; better firmographic filters and intent topics).
 
 **ICP (pick ONE per batch — segment-consistent batches convert better):**
 - SaaS founders/RevOps, 11–50 employees, US, hiring SDRs or showing sales-automation intent
@@ -54,42 +67,32 @@ Do this conversationally in Claude — both MCPs are connected in this workspace
 **Hygiene:** verify emails before sending (MillionVerifier/NeverBounce, ~$0.001/email). Remove
 catch-alls or send them from a separate inbox. Target <2% bounce.
 
-## Stage 2 — Research (Origami Agents + Perplexity)
+## Stages 2+3 — Research AND personalization in one pass (Perplexity)
 
-Two complementary layers:
-
-**Origami Agents (origamiagents.com)** — runs continuously against your ICP definition and surfaces
-buying signals (funding, strategic hires, tech shifts) from unstructured web data. Use it as a
-*source of pre-qualified rows*: export Origami leads to CSV and merge with the Clay/Vibe export.
-Any columns you keep (signal descriptions, qualification notes) are automatically fed into the
-personalization prompt by `personalize.py`.
-
-**Perplexity (`research.py` in this folder)** — per-prospect deep research at generation time. For
-each row it asks Perplexity Sonar for: what the company does, recent news/launches/funding, how they
-likely generate revenue today, and 2–3 specific personalization hooks. Costs ~$1.50–$3 per 300
-prospects with `sonar`; use `sonar-pro` for higher-value targets.
+**Primary: `generate_emails.py`** — one Perplexity Sonar call per prospect. Sonar searches the web
+live, so research and writing happen together: it looks up the company/person (news, funding,
+sales hiring, ad activity), extracts verifiable hooks, then writes the full 3-touch sequence
+against the offer brief. ~$5–15 per 300 prospects with `sonar`; use `--model sonar-pro` for
+deeper research on high-value targets.
 
 ```bash
 export PERPLEXITY_API_KEY=pplx-...
-python agents/outreach/research.py prospects.csv --out prospects_researched.csv
-```
-
-Resumable — re-running skips rows that already have research.
-
-## Stage 3 — Personalization at scale (`personalize.py`)
-
-Claude generates a 3-touch sequence per prospect (initial + 2 follow-ups) using:
-- **Message Batches API** → 50% cost discount, perfect for 300 non-urgent generations
-- **Prompt caching** → the offer doc + writing rules are a shared cached prefix (per CLAUDE.md)
-- **`claude-opus-4-7`** → per this repo's convention for reasoning-heavy generation
-
-```bash
-export ANTHROPIC_API_KEY=sk-...
-python agents/outreach/personalize.py prospects_researched.csv \
+python agents/outreach/generate_emails.py prospects.csv \
     --offer agents/outreach/offer.md --out emails.csv
 ```
 
-The system prompt enforces the rules that actually drive replies:
+Resumable — re-running skips rows that already have generated emails. Rows where research came up
+thin are flagged `weak_research` for QA.
+
+**Origami Agents (origamiagents.com)** still slots in as a continuous signal source: export its
+pre-qualified leads to CSV and feed them straight into `generate_emails.py` — any signal columns
+it adds are passed into the prompt automatically.
+
+**Alternate writer:** `research.py` + `personalize.py` decouple the steps and use Claude
+(Batch API, 50% discount, prompt caching, `claude-opus-4-7`) for the writing — worth A/B testing
+against the Perplexity-written emails on reply rate.
+
+The writing rules baked into both writers are what actually drive replies:
 - ≤120 words, one idea, one low-friction CTA (interest-based, not "book 30 minutes")
 - Opens with the prospect-specific observation (the research hook), never "I hope this finds you well"
 - No em-dashes-and-buzzwords AI voice; reads like a founder typed it
