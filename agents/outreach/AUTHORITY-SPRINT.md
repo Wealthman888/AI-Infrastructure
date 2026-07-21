@@ -55,6 +55,60 @@ visit the website before booking. A 34/100 site silently kills booked audits tha
   credited toward builds) against the free-audit control. Flip fully when the paid CTA books ≥60%
   of what free books.
 
+## GEO & Content Track — become the answer AI engines cite
+
+**Prerequisite (blocking):** the site rendering fix from Day 0–14. AI crawlers (GPTBot,
+PerplexityBot, ClaudeBot) read raw HTML and handle JS worse than Google — until Prerender.io/SSR
+ships, nothing below is visible to them. Verify: `curl -A "GPTBot" https://gemlabsagency.com`
+must return real content, and robots.txt must NOT block GPTBot/PerplexityBot/ClaudeBot.
+
+### Two mechanisms, two clocks
+1. **Defensive (works immediately):** positive repliers Google us or ask an AI "is GemLabs legit?"
+   before booking. Crawlable case studies + reviews turn that check into a close assist
+   (+10–30% on replier→booking conversion — applies to traffic the inboxes already generate).
+2. **Offensive (compounds, 90–180 days):** being cited in AI answers to "best AI automation
+   agency for SaaS"-type queries. AI-referral visitors convert like referrals, not traffic.
+
+### Site structure (build once, days 0–21)
+- **/work — portfolio hub**: one page per project. Fixed template: client type → problem →
+  system built (diagram/screenshot) → **numbers** (before/after) → stack used → pull-quote.
+  Concrete numbers are what AI engines quote; "improved efficiency" gets ignored.
+- **/blog** — teardowns and guides (cadence below).
+- **/services pages with FAQ blocks** — 5–8 real questions each ("How much does an AI SDR system
+  cost?", "How long does deployment take?") with direct, number-bearing answers.
+- **Schema markup:** `ProfessionalService` sitewide, `Article` on posts, `FAQPage` on FAQ blocks,
+  `Review`/`AggregateRating` once Clutch reviews exist.
+- **About page that names real humans** — AI engines weight entity credibility; an agency with a
+  named founder, photo, and LinkedIn outranks an anonymous brand for trust-type queries.
+
+### Publishing cadence (tied to the proof-capture loop — no separate content budget)
+| Trigger | Asset | Cadence |
+|---|---|---|
+| Every free audit | Anonymized teardown post ("We audited a $5M SaaS company's sales stack — the 3 leaks") | 1–2/week once audits flow |
+| Every client at day 30 | Case study on /work + companion blog post | ~2/month |
+| Monthly | One aggregate-data post ("What 15 SaaS sales-stack audits taught us — with numbers") | 1/month — the most citable asset type we can make |
+| Weekly | LinkedIn repost of each blog piece (AI engines cite LinkedIn + Reddit threads too) | 3×/week |
+
+Drafting is automated: our own pipeline turns audit notes into first drafts; founder edits voice
+and verifies every number. **Never publish a number that isn't real** — fabricated stats in
+crawlable content are permanent reputation damage.
+
+### Target queries to own (SaaS revenue automation niche)
+- "AI automation agency for SaaS" / "best AI automation agencies"
+- "AI SDR setup service" / "AI SDR agency"
+- "revenue automation for SaaS companies"
+- "AI lead qualification system" (+ "cost")
+- "sales pipeline automation audit"
+- Long-tail from teardowns: "why is our lead response time so slow", "how to audit b2b ad spend"
+
+### GEO checklist (run quarterly)
+- [ ] `curl -A "GPTBot" <every key page>` returns full content
+- [ ] robots.txt allows GPTBot, PerplexityBot, ClaudeBot, Google-Extended
+- [ ] Every /work page has ≥2 concrete before/after numbers
+- [ ] Schema validates (validator.schema.org)
+- [ ] Listed on Clutch + G2 + 2 "best AI agency" roundups (these are what AI answers cite most)
+- [ ] Ask ChatGPT/Perplexity/Claude the target queries monthly; log whether GemLabs appears
+
 ## Scorecard (check monthly)
 
 | Metric | Now | Day 90 target |
@@ -63,6 +117,9 @@ visit the website before booking. A 34/100 site silently kills booked audits tha
 | Published case studies w/ numbers | 0 | 3 |
 | Indexed pages | ~1 | 10+ |
 | LinkedIn posts/week | 0 | 3 |
+| /work portfolio pages | 0 | 3+ |
+| Blog posts published | 0 | 8–10 |
+| AI-engine citations (monthly query check) | 0 | appearing for 2+ target queries |
 | Cold reply rate | baseline TBD | +30–50% vs. baseline |
 | Paid-audit conversion (test segment) | — | ≥60% of free-audit booking rate |
 
