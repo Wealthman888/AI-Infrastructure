@@ -1,0 +1,1420 @@
+{% layout 'smoketo' %}
+{% comment %}
+  templates/page.smoketo-weekly.liquid
+  Standalone subscription onboarding — 5-step plan selector.
+  Self-contained CSS/JS. Uses theme layout (Crave nav stays visible).
+  DO NOT modify any other theme file.
+{% endcomment %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+.sb-wrap {
+  font-family: 'DM Sans', sans-serif;
+  background: #f7f5f2;
+  color: #1c1c1c;
+  min-height: 80vh;
+  padding: 0 0 100px;
+}
+.sb-wrap *, .sb-wrap *::before, .sb-wrap *::after {
+  box-sizing: border-box;
+}
+.sb-progress-wrap {
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 20px 5%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.sb-progress-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.sb-progress-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 10px;
+}
+.sb-prog-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #e8e8e8;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .68rem;
+  font-weight: 700;
+  color: #bbb;
+  flex-shrink: 0;
+  transition: all .3s;
+  z-index: 1;
+  position: relative;
+}
+.sb-prog-dot.done { background: #b85c2a; border-color: #b85c2a; color: #fff; }
+.sb-prog-dot.active { border-color: #b85c2a; color: #b85c2a; box-shadow: 0 0 0 3px rgba(184,92,42,.15); }
+.sb-prog-line { flex: 1; height: 2px; background: #e8e8e8; transition: background .3s; }
+.sb-prog-line.done { background: #b85c2a; }
+.sb-progress-labels { display: flex; justify-content: space-between; padding: 0 2px; }
+.sb-prog-label { font-size: .62rem; color: #bbb; text-align: center; width: 28px; transition: color .3s; }
+.sb-prog-label.active { color: #b85c2a; font-weight: 600; }
+.sb-prog-label.done { color: #888; }
+.sb-step { display: none; max-width: 860px; margin: 0 auto; padding: 40px 5%; }
+.sb-step.active { display: block; }
+.sb-step-heading { font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; margin-bottom: 6px; line-height: 1.2; }
+.sb-step-heading em { color: #b85c2a; font-style: italic; }
+.sb-step-sub { font-size: .88rem; color: #888; margin-bottom: 32px; line-height: 1.6; }
+.sb-plan-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }
+@media (max-width: 860px) { .sb-plan-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .sb-plan-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+.sb-plan-card { background: #fff; border: 2px solid #e8e8e8; border-radius: 18px; padding: 22px 16px 18px; cursor: pointer; transition: all .22s; position: relative; text-align: center; user-select: none; }
+.sb-plan-card:hover { border-color: #ccc; transform: translateY(-2px); }
+.sb-plan-card.sel { border-color: #b85c2a; background: #fdf1ea; box-shadow: 0 0 0 3px rgba(184,92,42,.12); }
+.sb-plan-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: #b85c2a; color: #fff; font-size: .58rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.sb-plan-badge.alt { background: #1c1c1c; }
+.sb-plan-meals { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; color: #b85c2a; line-height: 1; margin-bottom: 2px; }
+.sb-plan-freq { font-size: .7rem; color: #888; margin-bottom: 6px; }
+.sb-plan-price { font-size: .95rem; font-weight: 700; color: #b85c2a; margin-bottom: 2px; }
+.sb-plan-per { font-size: .68rem; color: #888; }
+.sb-plan-check { position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; border-radius: 50%; background: #b85c2a; color: #fff; font-size: .65rem; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .2s; }
+.sb-plan-card.sel .sb-plan-check { opacity: 1; }
+.sb-chip-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+.sb-chip { padding: 10px 18px; border-radius: 50px; border: 1.5px solid #e8e8e8; background: #fff; font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 500; color: #555; cursor: pointer; transition: all .18s; user-select: none; }
+.sb-chip:hover { border-color: #b85c2a; color: #b85c2a; }
+.sb-chip.sel { border-color: #b85c2a; background: #b85c2a; color: #fff; font-weight: 700; }
+.sb-meal-counter { background: #fff; border: 1px solid #e8e8e8; border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.sb-counter-text { font-size: .88rem; color: #666; }
+.sb-counter-text strong { color: #1c1c1c; font-size: 1rem; }
+.sb-counter-bar-wrap { flex: 1; min-width: 120px; height: 6px; background: #f0f0f0; border-radius: 50px; overflow: hidden; }
+.sb-counter-bar { height: 100%; background: #b85c2a; border-radius: 50px; transition: width .3s ease; }
+.sb-counter-limit { font-size: .72rem; color: #c0392b; font-weight: 600; display: none; }
+.sb-counter-limit.show { display: block; }
+.sb-meal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+@media (max-width: 760px) { .sb-meal-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+@media (max-width: 420px) { .sb-meal-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+.sb-meal-card { background: #fff; border: 1.5px solid #e8e8e8; border-radius: 14px; overflow: hidden; transition: all .22s; position: relative; }
+.sb-meal-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.08); transform: translateY(-2px); }
+.sb-meal-card.selected { border-color: #b85c2a; }
+.sb-meal-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: #f0ece8; }
+.sb-meal-img-fallback { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, #fff8f4, #f5ebe3); display: flex; align-items: center; justify-content: center; font-size: 2.4rem; }
+.sb-meal-badge-bar { position: absolute; top: 8px; left: 8px; }
+.sb-meal-tag { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: .55rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.sb-t-keto { background: #eaf4ed; color: #2d6a3f; }
+.sb-t-breakfast { background: #e8f0fb; color: #2c5fad; }
+.sb-t-seafood { background: #faf0e8; color: #c0692a; }
+.sb-t-bowl { background: #f3f0fb; color: #6741d9; }
+.sb-t-default { background: #fdf1ea; color: #b85c2a; }
+.sb-meal-body { padding: 11px 12px 13px; }
+.sb-meal-name { font-weight: 700; font-size: .83rem; color: #1c1c1c; line-height: 1.3; margin-bottom: 4px; }
+.sb-meal-desc { font-size: .71rem; color: #888; line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sb-macros { display: flex; gap: 0; background: #f7f5f2; border-radius: 10px; padding: 8px 6px; margin-bottom: 10px; border: 1px solid #e8e8e8; }
+.sb-macro { flex: 1; text-align: center; position: relative; }
+.sb-macro + .sb-macro::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1px; height: 60%; background: #e8e8e8; }
+.sb-macro-v { display: block; font-weight: 800; font-size: .78rem; color: #1c1c1c; }
+.sb-macro-l { display: block; font-size: .5rem; color: #aaa; text-transform: uppercase; letter-spacing: .05em; margin-top: 1px; }
+.sb-variant-wrap { margin-bottom: 10px; }
+.sb-variant-select { width: 100%; padding: 7px 10px; border: 1.5px solid #e8e8e8; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: .74rem; color: #1c1c1c; background: #fff; cursor: pointer; outline: none; }
+.sb-variant-select:focus { border-color: #b85c2a; }
+.sb-meal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.sb-add-btn { padding: 6px 14px; border-radius: 50px; border: none; background: #1c1c1c; color: #fff; font-family: 'DM Sans', sans-serif; font-size: .74rem; font-weight: 700; cursor: pointer; transition: all .2s; white-space: nowrap; width: 100%; }
+.sb-add-btn:hover { background: #b85c2a; }
+.sb-add-btn:disabled { background: #e8e8e8; color: #bbb; cursor: not-allowed; }
+.sb-qty-ctrl { display: none; align-items: center; justify-content: center; gap: 6px; width: 100%; }
+.sb-meal-card.selected .sb-qty-ctrl { display: flex; }
+.sb-meal-card.selected .sb-add-btn { display: none; }
+.sb-qty-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #e8e8e8; background: #fff; font-size: .9rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .18s; font-family: 'DM Sans', sans-serif; }
+.sb-qty-btn:hover { background: #b85c2a; color: #fff; border-color: #b85c2a; }
+.sb-qty-num { font-weight: 800; font-size: .85rem; min-width: 18px; text-align: center; }
+.sb-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 560px) { .sb-form-row { grid-template-columns: 1fr; } }
+.sb-field { margin-bottom: 18px; }
+.sb-label { display: block; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: #666; margin-bottom: 7px; }
+.sb-input, .sb-select, .sb-textarea { width: 100%; padding: 13px 16px; border: 1.5px solid #e8e8e8; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .9rem; color: #1c1c1c; background: #fff; transition: border-color .2s, box-shadow .2s; outline: none; -webkit-appearance: none; appearance: none; }
+.sb-input:focus, .sb-select:focus, .sb-textarea:focus { border-color: #1c1c1c; box-shadow: 0 0 0 3px rgba(28,28,28,.06); }
+.sb-input::placeholder, .sb-textarea::placeholder { color: #bbb; }
+.sb-input.error, .sb-select.error { border-color: #c0392b; }
+.sb-error-msg { font-size: .73rem; color: #c0392b; margin-top: 5px; display: none; }
+.sb-error-msg.show { display: block; }
+.sb-textarea { resize: vertical; min-height: 80px; }
+.sb-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+.sb-review-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 18px; overflow: hidden; margin-bottom: 16px; }
+.sb-review-hdr { background: #1c1c1c; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.sb-review-plan-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 900; color: #fff; }
+.sb-review-plan-name em { color: #b85c2a; font-style: italic; }
+.sb-review-plan-count { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: #b85c2a; }
+.sb-review-body { padding: 0; }
+.sb-review-section { padding: 16px 22px; border-bottom: 1px solid #f0f0f0; }
+.sb-review-section:last-child { border-bottom: none; }
+.sb-review-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #aaa; margin-bottom: 10px; }
+.sb-review-meal-row { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-bottom: 1px solid #f7f5f2; font-size: .83rem; }
+.sb-review-meal-row:last-child { border-bottom: none; }
+.sb-review-meal-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #f0ece8; }
+.sb-review-meal-name { flex: 1; font-weight: 600; }
+.sb-review-meal-qty { color: #888; font-size: .78rem; }
+.sb-start-btn { display: block; width: 100%; padding: 16px 24px; background: #b85c2a; color: #fff; border: none; border-radius: 50px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; text-align: center; transition: all .25s; margin-bottom: 12px; }
+.sb-start-btn:hover { background: #a0501f; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,92,42,.3); }
+.sb-fine-print { text-align: center; font-size: .72rem; color: #aaa; }
+.sb-nav-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+.sb-btn-back { padding: 12px 24px; border-radius: 50px; border: 1.5px solid #e8e8e8; background: #fff; color: #555; font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+.sb-btn-back:hover { border-color: #1c1c1c; color: #1c1c1c; }
+.sb-btn-next { padding: 13px 32px; border-radius: 50px; border: none; background: #1c1c1c; color: #fff; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; transition: all .22s; margin-left: auto; }
+.sb-btn-next:hover { background: #b85c2a; transform: translateY(-1px); }
+.sb-btn-next:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+.sb-upsell-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 12px 0; border-bottom: 1px solid #f0ede8; }
+.sb-upsell-row:last-child { border-bottom: none; }
+.sb-upsell-thumb { width: 44px; height: 44px; border-radius: 9px; object-fit: cover; flex-shrink: 0; background: #f0ece8; }
+.sb-upsell-thumb-fallback { width: 44px; height: 44px; border-radius: 9px; background: linear-gradient(135deg, #fff8f4, #f5ebe3); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.sb-upsell-info { flex: 1 1 150px; min-width: 150px; }
+.sb-upsell-name { font-weight: 600; font-size: .88rem; }
+.sb-upsell-desc { font-size: .72rem; color: #888; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sb-upsell-badge { display: inline-block; font-size: .6rem; font-weight: 700; padding: 2px 7px; border-radius: 50px; margin-left: 6px; background: #f0f9f0; color: #2d6a2d; }
+.sb-upsell-ctrl { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
+.sb-upsell-price { font-weight: 700; color: #b85c2a; white-space: nowrap; }
+.sb-upsell-qty, .sb-upsell-mode { border: 1.5px solid #e0dbd4; border-radius: 8px; padding: 6px 10px; font-size: .78rem; background: #fff; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+@media (max-width: 420px) {
+  .sb-upsell-ctrl { width: 100%; justify-content: space-between; margin-left: 56px; width: calc(100% - 56px); }
+}
+.sb-freeship-wrap { margin-top: 14px; padding-top: 14px; border-top: 1px solid #e8e2da; }
+.sb-freeship-track { height: 7px; background: #f0ece8; border-radius: 50px; overflow: hidden; margin-bottom: 8px; }
+.sb-freeship-fill { height: 100%; width: 0%; background: #b85c2a; border-radius: 50px; transition: width .3s ease, background .3s; }
+.sb-freeship-fill.complete { background: #2d6a3f; }
+.sb-freeship-msg { font-size: .78rem; color: #555; text-align: center; }
+
+/* ── MEAL DETAIL POP-OUT ── */
+.sb-meal-img, .sb-meal-name { cursor: pointer; }
+.sb-view-btn { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255,255,255,.92); color: #b85c2a; font-size: .95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,.14); transition: transform .18s, background .18s; z-index: 2; }
+.sb-view-btn:hover { transform: scale(1.08); background: #fff; }
+.sbm-back { position: fixed; inset: 0; background: rgba(10,10,10,.74); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9500; display: none; align-items: center; justify-content: center; padding: 16px; }
+.sbm-back.open { display: flex; animation: sbmFade .25s ease; }
+@keyframes sbmFade { from { opacity: 0; } to { opacity: 1; } }
+.sbm-box { position: relative; background: #fff; border-radius: 24px; width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,.28); animation: sbmSlide .4s cubic-bezier(.16,1,.3,1); }
+@keyframes sbmSlide { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.sbm-close { position: absolute; top: 14px; right: 15px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.92); border: none; color: #3d3d3d; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(0,0,0,.18); z-index: 4; transition: background .2s; }
+.sbm-close:hover { background: #fff; }
+.sbm-nav { position: absolute; top: 130px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.92); border: none; color: #b85c2a; font-size: 1.5rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.2); z-index: 4; transition: transform .18s, background .18s; }
+.sbm-nav:hover { transform: scale(1.08); background: #fff; }
+.sbm-prev { left: 12px; }
+.sbm-next { right: 12px; }
+.sbm-img { width: 100%; height: 280px; overflow: hidden; position: relative; border-radius: 24px 24px 0 0; background: linear-gradient(135deg,#fff8f4,#f5ebe3); }
+.sbm-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sbm-img-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; }
+.sbm-badge-bar { position: absolute; bottom: 0; left: 0; right: 0; padding: 13px 20px; background: linear-gradient(to top, rgba(0,0,0,.7), transparent); display: flex; gap: 7px; }
+.sbm-badge { padding: 4px 11px; border-radius: 20px; font-size: .62rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #fff; background: #b85c2a; }
+.sbm-body { padding: 22px 24px 26px; }
+.sbm-name { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; margin-bottom: 9px; color: #1c1c1c; }
+.sbm-desc { color: #6b6b6b; font-size: .88rem; line-height: 1.7; margin-bottom: 18px; white-space: pre-line; }
+.sbm-macros { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; padding: 13px; background: #f7f5f2; border-radius: 13px; border: 1px solid #e8e8e8; margin-bottom: 18px; }
+.sbm-mg { text-align: center; }
+.sbm-mg-v { display: block; font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #b85c2a; }
+.sbm-mg-l { display: block; font-size: .56rem; color: #6b6b6b; letter-spacing: .07em; text-transform: uppercase; margin-top: 2px; }
+.sbm-var { margin-bottom: 16px; }
+.sbm-var-label { display: block; font-size: .66rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6b6b6b; margin-bottom: 8px; }
+.sbm-var select { width: 100%; border: 1.5px solid #d0d0d0; border-radius: 10px; padding: 10px 12px; font-size: .85rem; background: #fff; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.sbm-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.sbm-tag { padding: 3px 10px; border-radius: 50px; border: 1px solid #e8e8e8; font-size: .68rem; color: #3d3d3d; }
+.sbm-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid #eee; padding-top: 18px; }
+.sbm-add { flex: 1; min-width: 180px; padding: 13px 20px; border-radius: 50px; background: #1c1c1c; color: #fff; font-weight: 700; font-size: .9rem; border: none; cursor: pointer; transition: transform .2s, box-shadow .2s, background .2s; }
+.sbm-add:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+.sbm-add:disabled { background: #cfcac3; cursor: not-allowed; }
+.sbm-add.in-box { background: #2d6a3f; }
+.sbm-qty { display: flex; align-items: center; gap: 14px; border: 1.5px solid #e0dbd4; border-radius: 50px; padding: 6px 14px; }
+.sbm-qty button { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #d0d0d0; background: #fff; font-size: 1.1rem; line-height: 1; cursor: pointer; color: #b85c2a; }
+.sbm-qty span { min-width: 20px; text-align: center; font-weight: 700; }
+@media (max-width: 480px) {
+  .sbm-img { height: 210px; }
+  .sbm-macros { grid-template-columns: repeat(2,1fr); }
+  .sbm-nav { top: auto; bottom: 20px; }
+  .sbm-name { font-size: 1.3rem; }
+}
+</style>
+
+{%- comment -%}Serialize products to JS at render time — no price data needed{%- endcomment -%}
+{%- comment -%}Breakfast / add-on / upsell items live on Step 4 only — excluded here even though some share the box-meal tag.{%- endcomment -%}
+{%- assign smoketo_meals = collections['box-meals'].products -%}
+
+{%- comment -%}
+  Box-tier products, looked up by fixed handle (each is a single-variant
+  product). Weekly price, per-meal price, and the box's variant ID all come
+  from the live product — repricing in Shopify Admin needs zero code changes.
+{%- endcomment -%}
+{%- assign box5  = all_products['smoketo-weekly-box-5-meals'] -%}
+{%- assign box8  = all_products['smoketo-weekly-box-8-meals'] -%}
+{%- assign box13 = all_products['smoketo-weekly-box-13-meals'] -%}
+{%- assign box21 = all_products['smoketo-weekly-box-21-meals'] -%}
+{%- assign pm5  = box5.price  | divided_by: 5.0  | round -%}
+{%- assign pm8  = box8.price  | divided_by: 8.0  | round -%}
+{%- assign pm13 = box13.price | divided_by: 13.0 | round -%}
+{%- assign pm21 = box21.price | divided_by: 21.0 | round -%}
+{%- assign wk_r13 = pm13 | times: 1.0 | divided_by: pm5 -%}
+{%- assign wk_save13 = 1.0 | minus: wk_r13 | times: 100 | round -%}
+{%- assign wk_r21 = pm21 | times: 1.0 | divided_by: pm5 -%}
+{%- assign wk_save21 = 1.0 | minus: wk_r21 | times: 100 | round -%}
+
+{%- comment -%}
+  Step 4 upsells (breakfast items + true add-ons) — scoped to this collection
+  only, never rendered on the homepage or in the Step 3 box-meal grid. Each
+  item's subscription option (if any) comes from its own selling plan groups;
+  one-time is always available. Never hardcoded.
+{%- endcomment -%}
+{%- assign upsell_products = collections['breakfast-add-ons-extras'].products -%}
+{%- assign delivery_fee_product = all_products['delivery-fee'] -%}
+
+<script>
+var SK_MEALS = [
+  {%- assign sk_printed = 0 -%}
+  {% for meal in smoketo_meals %}
+  {%- unless meal.tags contains 'breakfast' or meal.tags contains 'add-on' or meal.tags contains 'one-time' or meal.tags contains 'upsell' -%}
+  {% if sk_printed > 0 %},{% endif %}
+  {
+    id: {{ meal.id }},
+    title: {{ meal.title | json }},
+    handle: {{ meal.handle | json }},
+    image: {% if meal.featured_image %}{{ meal.featured_image | image_url: width: 500 | json }}{% else %}null{% endif %},
+    desc: {{ meal.description | strip_html | truncate: 220 | json }},
+    full: {{ meal.description | strip_html | json }},
+    tags: {{ meal.tags | json }},
+    available: {{ meal.available }},
+    cal:  {{ meal.metafields.nutrition.calories | default: '' | json }},
+    prot: {{ meal.metafields.nutrition.protein | default: '' | json }},
+    fat:  {{ meal.metafields.nutrition.fat      | default: '' | json }},
+    carbs:{{ meal.metafields.nutrition.netcarbs | default: meal.metafields.nutrition.totalcarb | default: '' | json }},
+    variants: [
+      {%- for v in meal.variants -%}
+      { id: {{ v.id }}, title: {{ v.title | json }}, available: {{ v.available }}, price: {{ v.price | divided_by: 100.0 | round: 2 }} }
+      {%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+  {%- assign sk_printed = sk_printed | plus: 1 -%}
+  {%- endunless -%}
+  {% endfor %}
+];
+{% comment %} Appstle box selling plan ID — set once the Build-a-Box plan is created in the Appstle app {% endcomment %}
+var SK_SELLING_PLAN_ID = 692247331121; // Appstle "Weekly Subscription" plan — applied to every meal in the box
+
+var SK_UPSELLS = [
+  {%- for p in upsell_products -%}
+  {% if forloop.index0 > 0 %},{% endif %}
+  {
+    id: {{ p.id }},
+    title: {{ p.title | json }},
+    handle: {{ p.handle | json }},
+    image: {% if p.featured_image %}{{ p.featured_image | image_url: width: 300 | json }}{% else %}null{% endif %},
+    desc: {{ p.description | strip_html | truncate: 120 | json }},
+    variantId: {{ p.selected_or_first_available_variant.id }},
+    price: {{ p.price | divided_by: 100.0 | round: 2 }},
+    tags: {{ p.tags | json }},
+    subscriptionPlanId: {% if p.selling_plan_groups.size > 0 %}{{ p.selling_plan_groups.first.selling_plans.first.id }}{% else %}null{% endif %},
+    requiresSub: {{ p.requires_selling_plan | default: false }}
+  }
+  {%- endfor -%}
+];
+var SK_DELIVERY_FEE_PRICE = {{ delivery_fee_product.price | divided_by: 100.0 | round: 2 }};
+var SK_DELIVERY_FEE_VARIANT  = 55016006680881; // the one allowed hardcode — delivery-fee product's variant ID
+</script>
+
+<div class="sb-wrap">
+
+  <div class="sb-progress-wrap">
+    <div class="sb-progress-inner">
+      <div class="sb-progress-track" id="sb-prog-track">
+        <div class="sb-prog-dot active" data-step="1">1</div>
+        <div class="sb-prog-line" data-line="1"></div>
+        <div class="sb-prog-dot" data-step="2">2</div>
+        <div class="sb-prog-line" data-line="2"></div>
+        <div class="sb-prog-dot" data-step="3">3</div>
+        <div class="sb-prog-line" data-line="3"></div>
+        <div class="sb-prog-dot" data-step="4">4</div>
+        <div class="sb-prog-line" data-line="4"></div>
+        <div class="sb-prog-dot" data-step="5">5</div>
+      </div>
+      <div class="sb-progress-labels">
+        <span class="sb-prog-label active">Plan</span>
+        <span class="sb-prog-label">Diet</span>
+        <span class="sb-prog-label">Meals</span>
+        <span class="sb-prog-label">Delivery</span>
+        <span class="sb-prog-label">Review</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb-step active" id="sb-s1">
+    <h1 class="sb-step-heading">Choose your <em>box</em></h1>
+    <p class="sb-step-sub">Pick how many meals you want delivered every week.</p>
+
+    <div class="sb-plan-grid" id="sb-plan-grid">
+      <div class="sb-plan-card" data-plan="0" onclick="selPlan(0)">
+        <div class="sb-plan-check">✓</div>
+        <div class="sb-plan-meals">5</div>
+        <div class="sb-plan-freq">meals / week</div>
+        <div class="sb-plan-price">{{ box5.price | money }}/wk</div>
+        <div class="sb-plan-per">{{ pm5 | money }}/meal</div>
+      </div>
+      <div class="sb-plan-card" data-plan="1" onclick="selPlan(1)">
+        <div class="sb-plan-badge">Most Popular</div>
+        <div class="sb-plan-check">✓</div>
+        <div class="sb-plan-meals">8</div>
+        <div class="sb-plan-freq">meals / week</div>
+        <div class="sb-plan-price">{{ box8.price | money }}/wk</div>
+        <div class="sb-plan-per">{{ pm8 | money }}/meal</div>
+      </div>
+      <div class="sb-plan-card" data-plan="2" onclick="selPlan(2)">
+        <div class="sb-plan-badge alt">Best Value</div>
+        <div class="sb-plan-check">✓</div>
+        <div class="sb-plan-meals">13</div>
+        <div class="sb-plan-freq">meals / week</div>
+        <div class="sb-plan-price">{{ box13.price | money }}/wk</div>
+        <div class="sb-plan-per">{{ pm13 | money }}/meal · Save {{ wk_save13 }}%</div>
+      </div>
+      <div class="sb-plan-card" data-plan="3" onclick="selPlan(3)">
+        <div class="sb-plan-check">✓</div>
+        <div class="sb-plan-meals">21</div>
+        <div class="sb-plan-freq">meals / week</div>
+        <div class="sb-plan-price">{{ box21.price | money }}/wk</div>
+        <div class="sb-plan-per">{{ pm21 | money }}/meal · Save {{ wk_save21 }}%</div>
+      </div>
+    </div>
+
+    <div class="sb-nav-row">
+      <div></div>
+      <button class="sb-btn-next" id="s1-next" onclick="goStep(2)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <div class="sb-step" id="sb-s2">
+    <h1 class="sb-step-heading">What are your <em>preferences?</em></h1>
+    <p class="sb-step-sub">Select all that apply. We'll highlight meals that match your diet.</p>
+
+    <div class="sb-chip-grid" id="sb-chip-grid">
+      <button class="sb-chip" data-diet="Keto" onclick="togChip(this)">🥩 Keto</button>
+      <button class="sb-chip" data-diet="Gluten-Free" onclick="togChip(this)">🌾 Gluten-Free</button>
+      <button class="sb-chip" data-diet="High Protein" onclick="togChip(this)">💪 High Protein</button>
+      <button class="sb-chip" data-diet="Dairy-Free" onclick="togChip(this)">🥛 Dairy-Free</button>
+      <button class="sb-chip" data-diet="Low Carb" onclick="togChip(this)">📉 Low Carb</button>
+      <button class="sb-chip" data-diet="No Shellfish" onclick="togChip(this)">🦐 No Shellfish</button>
+      <button class="sb-chip" data-diet="No Pork" onclick="togChip(this)">🐷 No Pork</button>
+      <button class="sb-chip" data-diet="No Beef" onclick="togChip(this)">🐄 No Beef</button>
+      <button class="sb-chip" data-diet="No Eggs" onclick="togChip(this)">🥚 No Eggs</button>
+      <button class="sb-chip sel" data-diet="No Allergies" onclick="togChip(this)">✅ No Allergies</button>
+    </div>
+
+    <div class="sb-nav-row">
+      <button class="sb-btn-back" onclick="goStep(1)">← Back</button>
+      <button class="sb-btn-next" onclick="goStep(3)">Next →</button>
+    </div>
+  </div>
+
+  <div class="sb-step" id="sb-s3">
+    <h1 class="sb-step-heading" id="s3-heading">Pick your <em>meals</em></h1>
+    <p class="sb-step-sub" id="s3-sub">Add meals until you hit your box limit.</p>
+
+    <div class="sb-meal-counter">
+      <div class="sb-counter-text">
+        <strong id="cnt-sel">0</strong>
+        <span id="cnt-of"> of </span>
+        <strong id="cnt-total">—</strong>
+        <span> selected</span>
+      </div>
+      <div class="sb-counter-bar-wrap">
+        <div class="sb-counter-bar" id="cnt-bar" style="width:0%"></div>
+      </div>
+      <span class="sb-counter-limit" id="cnt-limit">Remove a meal to add another.</span>
+    </div>
+
+    <div class="sb-meal-grid" id="sb-meal-grid">
+    </div>
+
+    <div class="sb-nav-row">
+      <button class="sb-btn-back" onclick="goStep(2)">← Back</button>
+      <button class="sb-btn-next" id="s3-next" onclick="goStep(4)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <div class="sb-step" id="sb-s4">
+    <h1 class="sb-step-heading">Delivery <em>details</em></h1>
+    <p class="sb-step-sub">We deliver every Monday and Tuesday to Southern Nevada (ZIP codes starting with 89).</p>
+
+    <div class="sb-form-row">
+      <div class="sb-field">
+        <label class="sb-label" for="d-zip">Delivery ZIP Code</label>
+        <input class="sb-input" id="d-zip" type="text" inputmode="numeric"
+          placeholder="e.g. 89101" maxlength="5" pattern="[0-9]{5}"
+          oninput="validateZip(this)">
+        <p class="sb-error-msg" id="zip-err">Sorry, we only deliver to Southern Nevada (89xxx).</p>
+      </div>
+      <div class="sb-field">
+        <label class="sb-label" for="d-day">Preferred Delivery Day</label>
+        <select class="sb-select" id="d-day" required onchange="this.classList.remove('error');document.getElementById('day-err').classList.remove('show');">
+          <option value="">Select a day</option>
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+        </select>
+        <p class="sb-error-msg" id="day-err">Please select a preferred delivery day.</p>
+      </div>
+    </div>
+
+    <div class="sb-field">
+      <label class="sb-label" for="d-addr1">Address Line 1</label>
+      <input class="sb-input" id="d-addr1" type="text" placeholder="123 Desert Palm Dr" autocomplete="address-line1">
+    </div>
+    <div class="sb-field">
+      <label class="sb-label" for="d-addr2">Address Line 2 (optional)</label>
+      <input class="sb-input" id="d-addr2" type="text" placeholder="Apt, Suite, Unit" autocomplete="address-line2">
+    </div>
+
+    <div class="sb-form-row">
+      <div class="sb-field">
+        <label class="sb-label" for="d-city">City</label>
+        <input class="sb-input" id="d-city" type="text" placeholder="Las Vegas" autocomplete="address-level2">
+      </div>
+      <div class="sb-field">
+        <label class="sb-label" for="d-state">State</label>
+        <input class="sb-input" id="d-state" type="text" value="Nevada" readonly style="background:#f7f5f2;color:#888;">
+      </div>
+    </div>
+
+    <div class="sb-field">
+      <label class="sb-label" for="d-notes">Special Delivery Instructions (optional)</label>
+      <textarea class="sb-textarea" id="d-notes" placeholder="Gate code, leave at door, ring bell, etc."></textarea>
+    </div>
+
+    <div class="sb-nav-row">
+      <button class="sb-btn-back" onclick="goStep(3)">← Back</button>
+      <button class="sb-btn-next" id="s4-next" onclick="tryGoStep5()">Next →</button>
+    </div>
+  </div>
+
+  <div class="sb-step" id="sb-s5">
+    <h1 class="sb-step-heading">Review your <em>box</em></h1>
+    <p class="sb-step-sub">Everything looks good? Start your subscription below.</p>
+
+    <div class="sb-review-card">
+      <div class="sb-review-hdr">
+        <div class="sb-review-plan-name" id="rv-plan-name">— Box</div>
+        <div class="sb-review-plan-count" id="rv-plan-count">— meals/week</div>
+        <div id="rv-price" style="font-size:1.4rem;font-weight:800;color:#b85c2a;margin-top:4px;"></div>
+      </div>
+      <div class="sb-review-body">
+        <div class="sb-review-section">
+          <div class="sb-review-label">Your Meals</div>
+          <div id="rv-meals"></div>
+        </div>
+        <div class="sb-review-section">
+          <div class="sb-review-label">Delivery</div>
+          <div id="rv-delivery" style="font-size:.84rem;color:#555;line-height:1.8;"></div>
+        </div>
+        <div class="sb-review-section" id="rv-addons-section" style="display:none;">
+          <div class="sb-review-label">Add-Ons</div>
+          <div id="rv-addons-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1.5px solid #e8e2da;border-radius:16px;padding:20px 22px;margin:16px 0;">
+      <div style="font-weight:700;font-size:.95rem;margin-bottom:14px;color:#1c1c1c;">Enhance Your Box <span style="font-size:.75rem;font-weight:400;color:#888;">(optional)</span></div>
+
+      <div id="sb-upsell-list"></div>
+
+      <div id="delivery-fee-notice" style="display:none;background:#fff8f5;border:1px solid #f0ddd0;border-radius:10px;padding:10px 14px;margin-top:14px;font-size:.8rem;color:#7a3a12;">
+        📦 A <strong id="delivery-fee-amt"></strong> delivery fee applies — add <strong id="delivery-fee-remaining"></strong> more to unlock free delivery.
+      </div>
+
+      <div id="addon-total-row" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid #e8e2da;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:.82rem;color:#555;">Add-on total</span>
+        <span id="addon-total-val" style="font-weight:700;color:#1c1c1c;"></span>
+      </div>
+
+      <div class="sb-freeship-wrap">
+        <div class="sb-freeship-track"><div class="sb-freeship-fill" id="sb-freeship-fill"></div></div>
+        <div class="sb-freeship-msg" id="sb-freeship-msg"></div>
+      </div>
+    </div>
+
+    <button class="sb-start-btn" id="sb-start-btn" onclick="startPlan()">
+      🔥 Start My Box →
+    </button>
+    <p class="sb-fine-print">Cancel anytime &nbsp;·&nbsp; No contracts &nbsp;·&nbsp; Have a promo code? Enter it at checkout.</p>
+
+    <div class="sb-nav-row" style="margin-top:20px;">
+      <button class="sb-btn-back" onclick="goStep(4)">← Back</button>
+      <div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var PLANS = [
+    { name: 'Starter',  meals: 5,  weekly: {{ box5.price  | divided_by: 100.0 | round: 2 }},  perMeal: {{ pm5  | divided_by: 100.0 | round: 2 }}, boxVariantId: {{ box5.selected_or_first_available_variant.id }} },
+    { name: 'Popular',  meals: 8,  weekly: {{ box8.price  | divided_by: 100.0 | round: 2 }}, perMeal: {{ pm8  | divided_by: 100.0 | round: 2 }}, boxVariantId: {{ box8.selected_or_first_available_variant.id }} },
+    { name: 'Growth',   meals: 13, weekly: {{ box13.price | divided_by: 100.0 | round: 2 }}, perMeal: {{ pm13 | divided_by: 100.0 | round: 2 }}, boxVariantId: {{ box13.selected_or_first_available_variant.id }} },
+    { name: 'Elite',    meals: 21, weekly: {{ box21.price | divided_by: 100.0 | round: 2 }}, perMeal: {{ pm21 | divided_by: 100.0 | round: 2 }}, boxVariantId: {{ box21.selected_or_first_available_variant.id }} }
+  ];
+  var state = {
+    step: 1,
+    planIdx: -1,
+    diets: [],
+    cart: {},
+    delivery: {},
+    upsells: {}
+  };
+
+  function updateProgress(step) {
+    document.querySelectorAll('.sb-prog-dot').forEach(function (dot) {
+      var s = parseInt(dot.dataset.step);
+      dot.classList.toggle('done', s < step);
+      dot.classList.toggle('active', s === step);
+    });
+    document.querySelectorAll('.sb-prog-line').forEach(function (line) {
+      var l = parseInt(line.dataset.line);
+      line.classList.toggle('done', l < step);
+    });
+    var labels = document.querySelectorAll('.sb-prog-label');
+    labels.forEach(function (lbl, i) {
+      lbl.classList.toggle('done', i + 1 < step);
+      lbl.classList.toggle('active', i + 1 === step);
+    });
+  }
+
+  window.goStep = function (n) {
+    document.querySelectorAll('.sb-step').forEach(function (s) {
+      s.classList.remove('active');
+    });
+    document.getElementById('sb-s' + n).classList.add('active');
+    state.step = n;
+    updateProgress(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (n === 3) renderMeals();
+    if (n === 5) buildReview();
+  };
+
+  window.selPlan = function (idx) {
+    state.planIdx = idx;
+    state.cart = {};
+    document.querySelectorAll('.sb-plan-card').forEach(function (c) {
+      c.classList.toggle('sel', parseInt(c.dataset.plan) === idx);
+    });
+    document.getElementById('s1-next').disabled = false;
+    try { localStorage.setItem('sk_plan', JSON.stringify({ meals: PLANS[idx].meals })); } catch (e) {}
+  };
+
+  window.togChip = function (el) {
+    var val = el.dataset.diet;
+    if (val === 'No Allergies') {
+      document.querySelectorAll('.sb-chip').forEach(function (c) { c.classList.remove('sel'); });
+      el.classList.add('sel');
+      state.diets = [];
+      return;
+    }
+    document.querySelectorAll('.sb-chip[data-diet="No Allergies"]').forEach(function (c) { c.classList.remove('sel'); });
+    el.classList.toggle('sel');
+    state.diets = Array.from(document.querySelectorAll('.sb-chip.sel')).map(function (c) { return c.dataset.diet; });
+  };
+
+  function tagClass(tags) {
+    var t = (tags || []).join(',').toLowerCase();
+    if (t.includes('breakfast')) return 'sb-t-breakfast';
+    if (t.includes('seafood') || t.includes('shellfish') || t.includes('shrimp')) return 'sb-t-seafood';
+    if (t.includes('bowl')) return 'sb-t-bowl';
+    if (t.includes('keto')) return 'sb-t-keto';
+    return 'sb-t-default';
+  }
+  function tagLabel(tags) {
+    var t = (tags || []).join(',').toLowerCase();
+    if (t.includes('breakfast')) return 'Breakfast';
+    if (t.includes('seafood') || t.includes('shellfish') || t.includes('shrimp')) return 'Seafood';
+    if (t.includes('bowl')) return 'Bowl';
+    if (t.includes('keto')) return 'Keto';
+    return 'Meal';
+  }
+
+  function totalSelected() {
+    var n = 0;
+    Object.values(state.cart).forEach(function (v) { n += v.qty; });
+    return n;
+  }
+
+  function updateCounter() {
+    if (state.planIdx < 0) return;
+    var plan = PLANS[state.planIdx];
+    var sel = totalSelected();
+    document.getElementById('cnt-sel').textContent = sel;
+    document.getElementById('cnt-total').textContent = plan.meals;
+    var pct = Math.min(100, Math.round((sel / plan.meals) * 100));
+    document.getElementById('cnt-bar').style.width = pct + '%';
+    var limit = sel >= plan.meals;
+    document.getElementById('cnt-limit').classList.toggle('show', limit);
+    document.getElementById('s3-next').disabled = sel !== plan.meals;
+    document.querySelectorAll('.sb-add-btn').forEach(function (btn) {
+      if (!btn.closest('.sb-meal-card').classList.contains('selected')) {
+        btn.disabled = limit;
+      }
+    });
+  }
+
+  window.renderMeals = function () {
+    if (state.planIdx < 0) return;
+    var plan = PLANS[state.planIdx];
+    document.getElementById('s3-heading').innerHTML = 'Pick your <em>' + plan.meals + ' meals</em> for this week';
+    document.getElementById('s3-sub').textContent = 'Tap a meal to add it to your weekly box.';
+    document.getElementById('cnt-total').textContent = plan.meals;
+
+    var grid = document.getElementById('sb-meal-grid');
+    grid.innerHTML = SK_MEALS.map(function (m) {
+      var key = m.variants[0].id;
+      var inCart = state.cart[key];
+      var qty = inCart ? inCart.qty : 0;
+      var curVariantIdx = inCart ? inCart.variantIdx : 0;
+      var sel = qty > 0;
+      var multiVariant = m.variants.length > 1;
+      var imgHtml = (m.image
+        ? '<img class="sb-meal-img" src="' + m.image + '" alt="' + m.title.replace(/"/g, '&quot;') + '" loading="lazy" onclick="skOpenMeal(' + m.id + ')">'
+        : '<div class="sb-meal-img-fallback" onclick="skOpenMeal(' + m.id + ')" style="cursor:pointer">🥩</div>')
+        + '<button class="sb-view-btn" onclick="skOpenMeal(' + m.id + ')" title="View details" aria-label="View meal details">👁</button>';
+      var varHtml = '';
+      if (multiVariant) {
+        varHtml = '<div class="sb-variant-wrap"><select class="sb-variant-select" onchange="changeVariant(' + m.id + ',this.value)">'
+          + m.variants.map(function (v, i) {
+            var label = v.title + (v.price > 0 ? ' (+$' + v.price.toFixed(2) + ')' : '');
+            return '<option value="' + i + '"' + (i === curVariantIdx ? ' selected' : '') + '>' + label + '</option>';
+          }).join('')
+          + '</select></div>';
+      }
+      var macroHtml = (m.cal || m.prot || m.fat || m.carbs)
+        ? '<div class="sb-macros">'
+          + '<div class="sb-macro"><span class="sb-macro-v">' + (m.cal || '—') + '</span><span class="sb-macro-l">kcal</span></div>'
+          + '<div class="sb-macro"><span class="sb-macro-v">' + (m.prot || '—') + '</span><span class="sb-macro-l">protein</span></div>'
+          + '<div class="sb-macro"><span class="sb-macro-v">' + (m.fat || '—') + '</span><span class="sb-macro-l">fat</span></div>'
+          + '<div class="sb-macro"><span class="sb-macro-v">' + (m.carbs || '—') + '</span><span class="sb-macro-l">carbs</span></div>'
+          + '</div>'
+        : '';
+      return '<div class="sb-meal-card' + (sel ? ' selected' : '') + '" id="mc-' + key + '">'
+        + imgHtml
+        + '<div class="sb-meal-badge-bar"><span class="sb-meal-tag ' + tagClass(m.tags) + '">' + tagLabel(m.tags) + '</span></div>'
+        + '<div class="sb-meal-body">'
+        + '<div class="sb-meal-name" onclick="skOpenMeal(' + m.id + ')">' + m.title + '</div>'
+        + '<div class="sb-meal-desc">' + (m.desc || '') + '</div>'
+        + macroHtml
+        + varHtml
+        + '<div class="sb-meal-footer">'
+        + '<button class="sb-add-btn" onclick="addMeal(' + m.id + ')"' + ((!sel && totalSelected() >= plan.meals) ? ' disabled' : '') + '>Add</button>'
+        + '<div class="sb-qty-ctrl">'
+        + '<button class="sb-qty-btn" onclick="adjMeal(event,' + m.id + ',-1)">−</button>'
+        + '<span class="sb-qty-num" id="qn-' + key + '">' + (qty || 1) + '</span>'
+        + '<button class="sb-qty-btn" onclick="adjMeal(event,' + m.id + ',1)">+</button>'
+        + '</div>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+    updateCounter();
+  };
+
+  function saveBoxToStorage() {
+    try {
+      var box = {};
+      Object.keys(state.cart).forEach(function (vid) {
+        box[vid] = { qty: state.cart[vid].qty };
+      });
+      localStorage.setItem('sk_box', JSON.stringify(box));
+    } catch (e) {}
+  }
+
+  window.addMeal = function (mealId) {
+    if (state.planIdx < 0) return;
+    var plan = PLANS[state.planIdx];
+    if (totalSelected() >= plan.meals) return;
+    var meal = SK_MEALS.find(function (m) { return m.id === mealId; });
+    if (!meal) return;
+    var vid = meal.variants[0].id;
+    state.cart[vid] = { meal: meal, variantIdx: 0, qty: 1 };
+    saveBoxToStorage();
+    var card = document.getElementById('mc-' + vid);
+    if (card) card.classList.add('selected');
+    updateCounter();
+  };
+
+  window.adjMeal = function (e, mealId, delta) {
+    e.stopPropagation();
+    var meal = SK_MEALS.find(function (m) { return m.id === mealId; });
+    if (!meal) return;
+    var key = null;
+    for (var k in state.cart) { if (state.cart[k].meal.id === mealId) { key = k; break; } }
+    if (!key) return;
+    var plan = PLANS[state.planIdx];
+    var cur = state.cart[key].qty;
+    var next = cur + delta;
+    if (next <= 0) {
+      delete state.cart[key];
+      var card = document.getElementById('mc-' + key);
+      if (card) card.classList.remove('selected');
+    } else if (delta > 0 && totalSelected() >= plan.meals) {
+      return;
+    } else {
+      state.cart[key].qty = next;
+      var qn = document.getElementById('qn-' + key);
+      if (qn) qn.textContent = next;
+    }
+    saveBoxToStorage();
+    updateCounter();
+  };
+
+  window.changeVariant = function (mealId, newIdx) {
+    newIdx = parseInt(newIdx);
+    var meal = SK_MEALS.find(function (m) { return m.id === mealId; });
+    if (!meal) return;
+    var oldKey = null, entry = null;
+    for (var k in state.cart) {
+      if (state.cart[k].meal.id === mealId) { oldKey = k; entry = state.cart[k]; break; }
+    }
+    var newVid = meal.variants[newIdx].id;
+    if (oldKey) {
+      var qty = entry.qty;
+      delete state.cart[oldKey];
+      state.cart[newVid] = { meal: meal, variantIdx: newIdx, qty: qty };
+      saveBoxToStorage();
+      renderMeals();
+    }
+  };
+
+  window.validateZip = function (input) {
+    var val = input.value.trim();
+    var err = document.getElementById('zip-err');
+    if (val.length === 5 && !/^89/.test(val)) {
+      input.classList.add('error');
+      err.classList.add('show');
+    } else {
+      input.classList.remove('error');
+      err.classList.remove('show');
+    }
+  };
+
+  // Computes the actual calendar delivery date (YYYY-MM-DD) for a selected
+  // day name, respecting the Friday-noon selection cutoff: the next
+  // upcoming Monday/Tuesday is used unless its own preceding Friday-noon
+  // cutoff has already passed, in which case it rolls to the following week.
+  // Needed because tagging orders by day-of-week alone ("Monday") conflates
+  // every week's Monday deliveries together for kitchen prep reporting.
+  function skDeliveryDate(dayName) {
+    var targetDow = dayName === 'Tuesday' ? 2 : 1; // Mon=1, Tue=2
+    var now = new Date();
+    var candidate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    while (candidate.getDay() !== targetDow || candidate <= now) {
+      candidate.setDate(candidate.getDate() + 1);
+    }
+    var backToFriday = (candidate.getDay() - 5 + 7) % 7;
+    var cutoff = new Date(candidate);
+    cutoff.setDate(candidate.getDate() - backToFriday);
+    cutoff.setHours(12, 0, 0, 0);
+    if (now >= cutoff) candidate.setDate(candidate.getDate() + 7);
+    var y = candidate.getFullYear();
+    var m = String(candidate.getMonth() + 1).padStart(2, '0');
+    var d = String(candidate.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  window.tryGoStep5 = function () {
+    var zip = document.getElementById('d-zip').value.trim();
+    var addr1 = document.getElementById('d-addr1').value.trim();
+    var city = document.getElementById('d-city').value.trim();
+    var daySelect = document.getElementById('d-day');
+    var day = daySelect.value;
+    if (!zip || !addr1 || !city || !day) {
+      if (!day) {
+        daySelect.classList.add('error');
+        document.getElementById('day-err').classList.add('show');
+      }
+      if (zip && addr1 && city) return; // only the day is missing — error shown above, no alert needed
+      alert('Please fill in your delivery address before continuing.');
+      return;
+    }
+    if (zip.length === 5 && !/^89/.test(zip)) {
+      document.getElementById('d-zip').classList.add('error');
+      document.getElementById('zip-err').classList.add('show');
+      return;
+    }
+    state.delivery = {
+      addr1: addr1,
+      addr2: document.getElementById('d-addr2').value.trim(),
+      city: city,
+      state: 'Nevada',
+      zip: zip,
+      day: day,
+      date: skDeliveryDate(day),
+      notes: document.getElementById('d-notes').value.trim()
+    };
+    goStep(5);
+  };
+
+  function buildReview() {
+    if (state.planIdx < 0) return;
+    var plan = PLANS[state.planIdx];
+    document.getElementById('rv-plan-name').innerHTML = plan.name + ' Box &mdash; <em>' + plan.meals + ' meals/week</em>';
+    document.getElementById('rv-plan-count').textContent = plan.meals + ' meals/week';
+    var priceEl = document.getElementById('rv-price');
+    if (priceEl && plan.weekly) priceEl.textContent = '$' + plan.weekly.toFixed(2) + '/week · billed weekly';
+
+    var mealsHtml = Object.values(state.cart).map(function (item) {
+      var m = item.meal;
+      var variant = m.variants[item.variantIdx] || m.variants[0];
+      var nameLabel = m.title + (variant.title !== 'Default Title' ? ' (' + variant.title + ')' : '');
+      var upcharge = variant.price ? ' <span style="color:#b85c2a;">+$' + variant.price.toFixed(2) + '</span>' : '';
+      return '<div class="sb-review-meal-row">'
+        + (m.image ? '<img class="sb-review-meal-thumb" src="' + m.image + '" alt="">' : '<div class="sb-review-meal-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🥩</div>')
+        + '<span class="sb-review-meal-name">' + nameLabel + upcharge + '</span>'
+        + '<span class="sb-review-meal-qty">×' + item.qty + '</span>'
+        + '</div>';
+    }).join('');
+    document.getElementById('rv-meals').innerHTML = mealsHtml || '<p style="font-size:.82rem;color:#aaa;">No meals selected.</p>';
+
+    var d = state.delivery;
+    var addr = [d.addr1, d.addr2, d.city, d.state, d.zip].filter(Boolean).join(', ');
+    document.getElementById('rv-delivery').innerHTML =
+      '<strong>Address:</strong> ' + (addr || '—') + '<br>'
+      + '<strong>Day:</strong> ' + (d.day || 'Monday') + '<br>'
+      + (d.notes ? '<strong>Notes:</strong> ' + d.notes : '');
+
+    renderUpsells();
+    updateUpsellSummary();
+  }
+
+  function renderUpsells() {
+    var list = document.getElementById('sb-upsell-list');
+    if (!list) return;
+    list.innerHTML = SK_UPSELLS.map(function (u) {
+      var sel = state.upsells[u.id] || { qty: 0, mode: (u.requiresSub ? 'subscription' : 'onetime') };
+      // Some add-ons are configured in Shopify to sell only via a subscription
+      // — Shopify hard-rejects a one-time add-to-cart for those, so "This week
+      // only" must never be offered as an option for them.
+      if (u.requiresSub) sel.mode = 'subscription';
+      var hasSub = !!u.subscriptionPlanId;
+      var badge = u.requiresSub
+        ? '<span class="sb-upsell-badge">SUBSCRIPTION ONLY</span>'
+        : (hasSub ? '' : '<span class="sb-upsell-badge">THIS WEEK ONLY</span>');
+      var imgHtml = u.image
+        ? '<img class="sb-upsell-thumb" src="' + u.image + '" alt="">'
+        : '<div class="sb-upsell-thumb-fallback">🍽️</div>';
+      var modeHtml = (hasSub && !u.requiresSub)
+        ? '<select class="sb-upsell-mode" onchange="setUpsellMode(' + u.id + ',this.value)">'
+          + '<option value="onetime"' + (sel.mode === 'onetime' ? ' selected' : '') + '>This week only</option>'
+          + '<option value="subscription"' + (sel.mode === 'subscription' ? ' selected' : '') + '>Add to subscription</option>'
+          + '</select>'
+        : '';
+      return '<div class="sb-upsell-row">'
+        + imgHtml
+        + '<div class="sb-upsell-info">'
+        + '<div class="sb-upsell-name">' + u.title + badge + '</div>'
+        + '<div class="sb-upsell-desc">' + (u.desc || '') + '</div>'
+        + '</div>'
+        + '<div class="sb-upsell-ctrl">'
+        + modeHtml
+        + '<span class="sb-upsell-price">$' + u.price.toFixed(2) + '</span>'
+        + '<select class="sb-upsell-qty" onchange="setUpsellQty(' + u.id + ',this.value)">'
+        + [0, 1, 2, 3].map(function (n) { return '<option value="' + n + '"' + (sel.qty === n ? ' selected' : '') + '>' + (n === 0 ? 'None' : '× ' + n) + '</option>'; }).join('')
+        + '</select>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  // Premium meal variants (e.g. "Double Protein") carry a real Shopify price
+  // beyond the flat box price — sum those so they can be charged as their own
+  // cart line items and counted toward the free-delivery threshold.
+  function variantUpchargeTotal() {
+    var total = 0;
+    Object.values(state.cart).forEach(function (entry) {
+      var variant = entry.meal.variants[entry.variantIdx] || entry.meal.variants[0];
+      if (variant.price) total += variant.price * entry.qty;
+    });
+    return total;
+  }
+
+  window.setUpsellQty = function (id, qty) {
+    qty = parseInt(qty);
+    if (!state.upsells[id]) {
+      var u = SK_UPSELLS.find(function (x) { return x.id === id; });
+      state.upsells[id] = { qty: 0, mode: (u && u.requiresSub) ? 'subscription' : 'onetime' };
+    }
+    state.upsells[id].qty = qty;
+    updateUpsellSummary();
+  };
+  window.setUpsellMode = function (id, mode) {
+    if (!state.upsells[id]) state.upsells[id] = { qty: 0, mode: 'onetime' };
+    state.upsells[id].mode = mode;
+    updateUpsellSummary();
+  };
+
+  window.updateUpsellSummary = function () {
+    var plan = state.planIdx >= 0 ? PLANS[state.planIdx] : null;
+    var upsellTotal = 0;
+    var lines = [];
+    SK_UPSELLS.forEach(function (u) {
+      var sel = state.upsells[u.id];
+      if (!sel || !sel.qty) return;
+      var lineTotal = u.price * sel.qty;
+      upsellTotal += lineTotal;
+      var modeLabel = sel.mode === 'subscription' ? 'Add to subscription' : 'This week only';
+      lines.push('<div class="sb-review-meal-row"><span class="sb-review-meal-name">' + u.title + ' (' + modeLabel + ')</span><span class="sb-review-meal-qty">×' + sel.qty + ' — $' + lineTotal.toFixed(2) + '</span></div>');
+    });
+
+    // Free-delivery threshold: box weekly price + any meal-variant upcharges
+    // + upsell one-time/subscription charges, EXCLUDING the delivery fee
+    // line itself from its own math.
+    var subtotal = (plan ? plan.weekly : 0) + variantUpchargeTotal() + upsellTotal;
+    var feeApplies = subtotal < 149;
+    var remaining = Math.max(0, 149 - subtotal);
+
+    var totalRow = document.getElementById('addon-total-row');
+    var totalVal = document.getElementById('addon-total-val');
+    if (totalRow) totalRow.style.display = (upsellTotal > 0) ? 'flex' : 'none';
+    if (totalVal) totalVal.textContent = '$' + upsellTotal.toFixed(2);
+
+    var sec = document.getElementById('rv-addons-section');
+    var list = document.getElementById('rv-addons-list');
+    if (sec) sec.style.display = lines.length ? 'block' : 'none';
+    if (list) list.innerHTML = lines.join('');
+
+    var feeNotice = document.getElementById('delivery-fee-notice');
+    if (feeNotice) {
+      feeNotice.style.display = feeApplies ? 'block' : 'none';
+      var amtEl = document.getElementById('delivery-fee-amt');
+      var remEl = document.getElementById('delivery-fee-remaining');
+      if (amtEl) amtEl.textContent = '$' + SK_DELIVERY_FEE_PRICE.toFixed(2);
+      if (remEl) remEl.textContent = '$' + remaining.toFixed(2);
+    }
+
+    var fill = document.getElementById('sb-freeship-fill');
+    var msg = document.getElementById('sb-freeship-msg');
+    if (fill) {
+      var pct = Math.min(100, Math.round((subtotal / 149) * 100));
+      fill.style.width = pct + '%';
+      fill.classList.toggle('complete', !feeApplies);
+    }
+    if (msg) {
+      msg.textContent = feeApplies
+        ? ('🚚 Add $' + remaining.toFixed(2) + ' more to unlock free delivery!')
+        : '🎉 You\'ve unlocked free delivery!';
+    }
+  };
+
+  window.startPlan = function () {
+    if (!Object.keys(state.cart).length) return;
+    var btn = document.getElementById('sb-start-btn');
+    btn.textContent = 'Building your box…';
+    btn.disabled = true;
+
+    try {
+      if (state.planIdx >= 0) {
+        var p = PLANS[state.planIdx];
+        localStorage.setItem('sk_plan', JSON.stringify({ meals: p.meals }));
+      }
+      if (state.diets.length) localStorage.setItem('sk_dietary', JSON.stringify(state.diets));
+      if (state.delivery.zip) localStorage.setItem('sk_delivery', JSON.stringify(state.delivery));
+    } catch (e) {}
+
+    var plan = state.planIdx >= 0 ? PLANS[state.planIdx] : null;
+    if (!plan || !plan.boxVariantId) {
+      try {
+        var savedMeals = JSON.parse(localStorage.getItem('sk_plan') || 'null');
+        if (savedMeals) plan = PLANS.find(function (p) { return p.meals === savedMeals.meals; }) || null;
+      } catch (e) {}
+    }
+    if (!plan) { btn.textContent = 'Something went wrong — try again'; btn.disabled = false; return; }
+
+    var mealProps = {};
+    var mealCounter = 1;
+    Object.values(state.cart).forEach(function (entry) {
+      var variant = entry.meal.variants[entry.variantIdx] || entry.meal.variants[0];
+      var title = entry.meal.title + (variant.title !== 'Default Title' ? ' (' + variant.title + ')' : '');
+      var label = 'Meal ' + mealCounter++;
+      mealProps[label] = title + (entry.qty > 1 ? ' x' + entry.qty : '');
+    });
+
+    var diets = state.diets.length ? state.diets : [];
+    try { if (!diets.length) diets = JSON.parse(localStorage.getItem('sk_dietary') || '[]'); } catch (e) {}
+    if (diets.length) mealProps['Dietary'] = diets.join(', ');
+
+    var deliveryInfo = state.delivery.zip ? state.delivery : null;
+    try { if (!deliveryInfo) deliveryInfo = JSON.parse(localStorage.getItem('sk_delivery') || 'null'); } catch (e) {}
+    if (deliveryInfo && deliveryInfo.day) {
+      mealProps['Delivery Day'] = deliveryInfo.day;
+      // Fall back to a fresh computation for delivery info saved before the
+      // date field existed (old localStorage), so this is never blank.
+      mealProps['Delivery Date'] = deliveryInfo.date || skDeliveryDate(deliveryInfo.day);
+    }
+
+    fetch('/cart/clear.js', { method: 'POST' }).then(function () {
+      return fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: [{
+            id: plan.boxVariantId,
+            quantity: 1,
+            selling_plan: SK_SELLING_PLAN_ID,
+            properties: mealProps
+          }]
+        })
+      });
+    }).then(function (r) {
+      if (r.ok) return r.json();
+      return fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: plan.boxVariantId, quantity: 1, properties: mealProps }] })
+      }).then(function (r2) {
+        if (!r2.ok) return r2.json().then(function (e) { throw new Error(e.description || 'cart add failed'); });
+        return r2.json();
+      });
+    }).then(function (cartData) {
+      return cartData;
+    }).then(function () {
+      var addonItems = [];
+      try {
+        // Premium meal variants (e.g. "Double Protein") are their own priced
+        // Shopify variant — charge them as separate line items on the same
+        // recurring plan as the box, since the box price alone doesn't cover them.
+        var variantUpcharge = 0;
+        Object.values(state.cart).forEach(function (entry) {
+          var variant = entry.meal.variants[entry.variantIdx] || entry.meal.variants[0];
+          if (variant.price) {
+            variantUpcharge += variant.price * entry.qty;
+            addonItems.push({
+              id: variant.id,
+              quantity: entry.qty,
+              selling_plan: SK_SELLING_PLAN_ID,
+              properties: { Meal: entry.meal.title + ' (' + variant.title + ')' }
+            });
+          } else {
+            // $0 box-meal variant — added as its own zero-priced line (in addition
+            // to the human-readable summary already in the box's own properties)
+            // so the order exposes real, SKU'd line items for kitchen prep reporting.
+            addonItems.push({
+              id: variant.id,
+              quantity: entry.qty,
+              selling_plan: SK_SELLING_PLAN_ID,
+              properties: { Box: plan.name + ' Box' }
+            });
+          }
+        });
+        var upsellTotal = 0;
+        SK_UPSELLS.forEach(function (u) {
+          var sel = state.upsells[u.id];
+          if (!sel || !sel.qty) return;
+          upsellTotal += u.price * sel.qty;
+          // Some add-ons are Shopify-configured to sell only via a subscription
+          // (requiresSub) — Shopify rejects a one-time add-to-cart for those no
+          // matter what, so force subscription mode here as a final safeguard
+          // even if stale state somehow says otherwise.
+          var mode = u.requiresSub ? 'subscription' : sel.mode;
+          var item = {
+            id: u.variantId,
+            quantity: sel.qty,
+            properties: { Frequency: mode === 'subscription' ? 'Add to subscription' : 'This week only' }
+          };
+          // Every subscription-mode add-on rides the same shared box selling
+          // plan (not each product's own plan id) so the whole order bills
+          // on one consistent weekly cycle.
+          if (mode === 'subscription') item.selling_plan = SK_SELLING_PLAN_ID;
+          addonItems.push(item);
+        });
+        // Free-delivery threshold ($149) excludes the fee's own line from the math.
+        var subtotal = plan.weekly + variantUpcharge + upsellTotal;
+        if (subtotal < 149) addonItems.push({ id: SK_DELIVERY_FEE_VARIANT, quantity: 1 });
+      } catch (e) {}
+      // Add each add-on as its own request. Shopify's /cart/add.js is
+      // all-or-nothing for a batched items array — if any single line in a
+      // shared call is rejected, every other item in that call silently
+      // never reaches the cart. Adding one at a time means a single bad
+      // line can't wipe out the rest of the order.
+      return addonItems.reduce(function (chain, item) {
+        return chain.then(function () {
+          return fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: [item] })
+          }).then(function (r) {
+            if (!r.ok) return r.json().then(function (e) { console.error('SmoKeto add-on failed:', item, e); });
+          });
+        }).catch(function (e) { console.error('SmoKeto add-on network error:', item, e); });
+      }, Promise.resolve());
+    }).then(function () {
+      var attrs = [{ name: 'subscription_plan', value: plan.meals + ' meals/week' }];
+      try {
+        if (diets.length) attrs.push({ name: 'dietary_preferences', value: diets.join(', ') });
+        var del = state.delivery.zip ? state.delivery : (JSON.parse(localStorage.getItem('sk_delivery') || 'null'));
+        if (del && del.zip) attrs.push({ name: 'delivery_zip', value: del.zip });
+        if (del && del.day) {
+          attrs.push({ name: 'delivery_day', value: del.day });
+          // Fall back to a fresh computation for delivery info saved before
+          // the date field existed (old localStorage), so this is never blank.
+          attrs.push({ name: 'delivery_date', value: del.date || skDeliveryDate(del.day) });
+        }
+      } catch (e) {}
+      return fetch('/cart/update.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ attributes: attrs }) });
+    }).then(function () {
+      // Guest email prefill from Step 1 capture — never ask for email twice.
+      // The first-order discount is automatic (built into the selling plan's
+      // own pricing), so no discount code needs to be passed here.
+      var params = new URLSearchParams();
+      try {
+        var em = sessionStorage.getItem('sk_session_email');
+        if (em) params.set('checkout[email]', em);
+      } catch (e) {}
+      var qs = params.toString();
+      window.location.href = '/checkout' + (qs ? '?' + qs : '');
+    }).catch(function (err) {
+      console.error('SmoKeto checkout error:', err);
+      btn.textContent = 'Something went wrong — try again';
+      btn.disabled = false;
+    });
+  };
+
+  // If a customer hits the browser back button after starting checkout, the
+  // page can be restored from bfcache with the "Building your box…" button
+  // still frozen mid-submit — reset it so the box never looks permanently stuck.
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) {
+      var btn = document.getElementById('sb-start-btn');
+      if (btn) { btn.textContent = '🔥 Start My Box →'; btn.disabled = false; }
+    }
+  });
+
+  (function init() {
+    try {
+      var savedPlan = JSON.parse(localStorage.getItem('sk_plan') || 'null');
+      if (savedPlan && savedPlan.meals) {
+        var idx = PLANS.findIndex(function (p) { return p.meals === savedPlan.meals; });
+        if (idx >= 0) selPlan(idx);
+      }
+
+      var savedDiets = JSON.parse(localStorage.getItem('sk_dietary') || 'null');
+      if (savedDiets && savedDiets.length) {
+        state.diets = savedDiets;
+        document.querySelectorAll('.sb-chip').forEach(function (c) {
+          var match = savedDiets.some(function (d) {
+            return c.dataset.diet && c.dataset.diet.toLowerCase() === d.toLowerCase().replace(/^[^\w]+/, '').trim();
+          }) || savedDiets.indexOf(c.dataset.diet) >= 0;
+          c.classList.toggle('sel', match);
+        });
+        if (savedDiets.length) {
+          document.querySelectorAll('.sb-chip[data-diet="No Allergies"]').forEach(function (c) { c.classList.remove('sel'); });
+        }
+      }
+
+      var savedDelivery = JSON.parse(localStorage.getItem('sk_delivery') || 'null');
+      if (savedDelivery && savedDelivery.zip) {
+        state.delivery = savedDelivery;
+        ['addr1','addr2','zip','city','day','notes'].forEach(function (f) {
+          var el = document.getElementById('d-' + f);
+          if (el && savedDelivery[f]) el.value = savedDelivery[f];
+        });
+      }
+
+      var savedBox = JSON.parse(localStorage.getItem('sk_box') || '{}');
+      Object.keys(savedBox).forEach(function (vid) {
+        var entry = savedBox[vid];
+        var meal = null, variantIdx = 0;
+        if (typeof SK_MEALS !== 'undefined') {
+          SK_MEALS.some(function (m) {
+            var idx = m.variants.findIndex(function (v) { return String(v.id) === String(vid); });
+            if (idx >= 0) { meal = m; variantIdx = idx; return true; }
+            return false;
+          });
+        }
+        if (meal) state.cart[vid] = { meal: meal, variantIdx: variantIdx, qty: entry.qty };
+      });
+
+      var boxQty = Object.values(state.cart).reduce(function (s, v) { return s + v.qty; }, 0);
+      var planMeals = savedPlan && savedPlan.meals ? savedPlan.meals : 0;
+
+      if (planMeals > 0 && boxQty >= planMeals) {
+        document.querySelectorAll('.sb-step').forEach(function (s) { s.classList.remove('active'); });
+        document.getElementById('sb-s5').classList.add('active');
+        state.step = 5;
+        updateProgress(5);
+        buildReview();
+        var heading = document.querySelector('#sb-s5 .sb-step-heading');
+        if (heading) heading.innerHTML = 'Your <em>box is ready!</em>';
+        var sub = document.querySelector('#sb-s5 .sb-step-sub');
+        if (sub) sub.innerHTML = 'All ' + planMeals + ' meals selected. Review and checkout below, or <a href="#" onclick="goStep(3);return false;" style="color:#b85c2a;font-weight:700;text-decoration:none;">edit your meals</a>.';
+        return;
+      }
+
+      // Plan + diet were already collected by the homepage gate/quiz — skip
+      // straight to meal selection instead of re-asking the same questions.
+      var hasPlanAndDiet = savedPlan && savedPlan.meals && savedDiets && savedDiets.length;
+      if (hasPlanAndDiet) {
+        document.querySelectorAll('.sb-step').forEach(function (s) { s.classList.remove('active'); });
+        document.getElementById('sb-s3').classList.add('active');
+        state.step = 3;
+        updateProgress(3);
+        renderMeals();
+        var sub = document.getElementById('s3-sub');
+        if (sub) sub.innerHTML = 'Welcome back! Just pick your meals for this week. <a href="#" onclick="goStep(1);return false;" style="color:#b85c2a;font-weight:700;text-decoration:none;">Change plan or preferences →</a>';
+        return;
+      }
+    } catch (e) {}
+    updateProgress(1);
+  })();
+
+  /* ── MEAL DETAIL POP-OUT ─────────────────────────────────────────
+     Opens each meal in an on-page overlay (full description + ingredients,
+     macros, variants, diet tags) that toggles between meals — no page nav. */
+  var sbmCurId = null;
+
+  function sbmEnsure() {
+    if (document.getElementById('sbm-back')) return;
+    var back = document.createElement('div');
+    back.id = 'sbm-back';
+    back.className = 'sbm-back';
+    back.addEventListener('click', function (e) { if (e.target === back) skCloseMeal(); });
+    back.innerHTML =
+        '<div class="sbm-box">'
+      +   '<button class="sbm-close" onclick="skCloseMeal()" aria-label="Close">✕</button>'
+      +   '<button class="sbm-nav sbm-prev" onclick="skMealNav(-1)" aria-label="Previous meal">‹</button>'
+      +   '<button class="sbm-nav sbm-next" onclick="skMealNav(1)" aria-label="Next meal">›</button>'
+      +   '<div class="sbm-img" id="sbm-img"></div>'
+      +   '<div class="sbm-body">'
+      +     '<div class="sbm-name" id="sbm-name"></div>'
+      +     '<div class="sbm-desc" id="sbm-desc"></div>'
+      +     '<div class="sbm-macros" id="sbm-macros"></div>'
+      +     '<div class="sbm-var" id="sbm-var"></div>'
+      +     '<div class="sbm-tags" id="sbm-tags"></div>'
+      +     '<div class="sbm-foot" id="sbm-foot"></div>'
+      +   '</div>'
+      + '</div>';
+    document.body.appendChild(back);
+  }
+
+  function sbmSetText(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
+
+  function sbmRender() {
+    var m = SK_MEALS.find(function (x) { return x.id === sbmCurId; });
+    if (!m) return;
+
+    var imgInner = m.image
+      ? '<img src="' + m.image + '" alt="' + m.title.replace(/"/g, '&quot;') + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="sbm-img-fallback" style="display:none">🥩</div>'
+      : '<div class="sbm-img-fallback">🥩</div>';
+    imgInner += '<div class="sbm-badge-bar"><span class="sbm-badge">' + tagLabel(m.tags) + '</span></div>';
+    document.getElementById('sbm-img').innerHTML = imgInner;
+
+    sbmSetText('sbm-name', m.title);
+    sbmSetText('sbm-desc', m.full || m.desc || '');
+
+    document.getElementById('sbm-macros').innerHTML =
+        '<div class="sbm-mg"><span class="sbm-mg-v">' + (m.cal || '—') + '</span><span class="sbm-mg-l">Calories</span></div>'
+      + '<div class="sbm-mg"><span class="sbm-mg-v">' + (m.prot || '—') + '</span><span class="sbm-mg-l">Protein</span></div>'
+      + '<div class="sbm-mg"><span class="sbm-mg-v">' + (m.fat || '—') + '</span><span class="sbm-mg-l">Fat</span></div>'
+      + '<div class="sbm-mg"><span class="sbm-mg-v">' + (m.carbs || '—') + '</span><span class="sbm-mg-l">Net Carbs</span></div>';
+
+    var entry = null;
+    for (var k in state.cart) { if (state.cart[k].meal.id === m.id) { entry = state.cart[k]; break; } }
+    var curVarIdx = entry ? entry.variantIdx : (m._pendingVar || 0);
+
+    var vwrap = document.getElementById('sbm-var');
+    if (m.variants.length > 1) {
+      vwrap.style.display = 'block';
+      vwrap.innerHTML = '<span class="sbm-var-label">Choose your option</span>'
+        + '<select onchange="skModalVar(' + m.id + ', this.value)">'
+        + m.variants.map(function (v, i) {
+            var label = v.title + (v.price > 0 ? ' (+$' + v.price.toFixed(2) + ')' : '');
+            return '<option value="' + i + '"' + (i === curVarIdx ? ' selected' : '') + '>' + label + '</option>';
+          }).join('')
+        + '</select>';
+    } else {
+      vwrap.style.display = 'none';
+      vwrap.innerHTML = '';
+    }
+
+    var BLOCK = ['box', 'one-time', 'upsell', 'add-on', 'breakfast', 'featured', 'meal'];
+    var tagsArr = (m.tags || []).filter(function (t) {
+      var lt = String(t).toLowerCase();
+      return t && !BLOCK.some(function (b) { return lt.indexOf(b) !== -1; });
+    }).slice(0, 5);
+    document.getElementById('sbm-tags').innerHTML = tagsArr.map(function (t) {
+      return '<span class="sbm-tag">' + t + '</span>';
+    }).join('');
+
+    var plan = state.planIdx >= 0 ? PLANS[state.planIdx] : null;
+    var boxFull = plan ? (totalSelected() >= plan.meals) : false;
+    var foot = document.getElementById('sbm-foot');
+    if (entry) {
+      foot.innerHTML =
+          '<div class="sbm-qty">'
+        +   '<button onclick="skModalAdj(-1)" aria-label="Decrease quantity">−</button>'
+        +   '<span id="sbm-qtynum">' + entry.qty + '</span>'
+        +   '<button onclick="skModalAdj(1)" aria-label="Increase quantity"' + (boxFull ? ' disabled' : '') + '>+</button>'
+        + '</div>'
+        + '<button class="sbm-add in-box" onclick="skCloseMeal()">✓ In your box</button>';
+    } else {
+      foot.innerHTML =
+        '<button class="sbm-add" onclick="skModalAdd()"' + (boxFull ? ' disabled' : '') + '>'
+        + (boxFull ? 'Box full' : '🥩 Add to box') + '</button>';
+    }
+  }
+
+  window.skOpenMeal = function (mealId) {
+    sbmEnsure();
+    sbmCurId = mealId;
+    sbmRender();
+    document.getElementById('sbm-back').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    var box = document.querySelector('#sbm-back .sbm-box');
+    if (box) box.scrollTop = 0;
+  };
+  window.skCloseMeal = function () {
+    var b = document.getElementById('sbm-back');
+    if (b) b.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  window.skMealNav = function (dir) {
+    var idx = -1;
+    for (var i = 0; i < SK_MEALS.length; i++) { if (SK_MEALS[i].id === sbmCurId) { idx = i; break; } }
+    if (idx < 0) return;
+    idx = (idx + dir + SK_MEALS.length) % SK_MEALS.length;
+    sbmCurId = SK_MEALS[idx].id;
+    sbmRender();
+    var box = document.querySelector('#sbm-back .sbm-box');
+    if (box) box.scrollTop = 0;
+  };
+  window.skModalAdd = function () {
+    addMeal(sbmCurId);
+    var m = SK_MEALS.find(function (x) { return x.id === sbmCurId; });
+    if (m && m._pendingVar) { changeVariant(sbmCurId, m._pendingVar); m._pendingVar = 0; }
+    renderMeals();
+    sbmRender();
+  };
+  window.skModalAdj = function (delta) {
+    adjMeal({ stopPropagation: function () {} }, sbmCurId, delta);
+    renderMeals();
+    sbmRender();
+  };
+  window.skModalVar = function (mealId, idx) {
+    var inCart = false;
+    for (var k in state.cart) { if (state.cart[k].meal.id === mealId) { inCart = true; break; } }
+    if (inCart) {
+      changeVariant(mealId, idx);
+    } else {
+      var m = SK_MEALS.find(function (x) { return x.id === mealId; });
+      if (m) m._pendingVar = parseInt(idx);
+    }
+    sbmRender();
+  };
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') skCloseMeal();
+    else if (document.getElementById('sbm-back') && document.getElementById('sbm-back').classList.contains('open')) {
+      if (e.key === 'ArrowLeft') skMealNav(-1);
+      else if (e.key === 'ArrowRight') skMealNav(1);
+    }
+  });
+
+})();
+</script>

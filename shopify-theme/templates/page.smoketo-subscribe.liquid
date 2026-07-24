@@ -1,0 +1,875 @@
+{% layout 'smoketo' %}
+{% comment %}
+  templates/page.smoketo-subscribe.liquid
+  Weekly meal selection dashboard — logged-in customers only.
+  Self-contained CSS/JS. Crave theme header remains visible.
+  DO NOT modify any other theme file.
+{% endcomment %}
+
+{%- comment -%}── GUEST-FRIENDLY: no forced login. Box builds locally and syncs to the
+   real cart on Confirm; Shopify creates the account post-payment per the
+   store's passwordless customer-accounts setup. ──{%- endcomment -%}
+
+{%- assign plan_size = customer.metafields.smoketo.plan_size | default: 8 | plus: 0 -%}
+{%- comment -%}Breakfast / add-on / upsell items live on Step 4 only — excluded here even though some share the box-meal tag.{%- endcomment -%}
+{%- assign all_meals = collections['box-meals'].products -%}
+
+{%- comment -%}
+  Box-tier products, looked up by fixed handle (each is a single-variant
+  product) — the variant ID used to add the box to cart comes from the live
+  product, never hardcoded.
+{%- endcomment -%}
+{%- assign sw_box5  = all_products['smoketo-weekly-box-5-meals'] -%}
+{%- assign sw_box8  = all_products['smoketo-weekly-box-8-meals'] -%}
+{%- assign sw_box13 = all_products['smoketo-weekly-box-13-meals'] -%}
+{%- assign sw_box21 = all_products['smoketo-weekly-box-21-meals'] -%}
+{%- assign delivery_fee_product = all_products['delivery-fee'] -%}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+.sw-wrap {
+  font-family: 'DM Sans', sans-serif;
+  background: #f7f5f2;
+  color: #1c1c1c;
+  min-height: 80vh;
+  padding-bottom: 120px;
+}
+.sw-wrap *, .sw-wrap *::before, .sw-wrap *::after {
+  box-sizing: border-box;
+}
+.sw-header {
+  background: #1c1c1c;
+  padding: 22px 5%;
+}
+.sw-header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sw-header-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.sw-avatar {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: #b85c2a; color: #fff; text-decoration: none;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-weight: 900; font-size: 1.05rem;
+  border: 2px solid rgba(255,255,255,.15);
+  transition: transform .2s, box-shadow .2s;
+}
+.sw-avatar:hover { transform: scale(1.06); box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+.sw-greeting { color: #fff; }
+.sw-greeting-name { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-weight: 900; line-height: 1.2; }
+.sw-greeting-name em { color: #b85c2a; font-style: italic; }
+.sw-greeting-sub { font-size: .8rem; color: rgba(255,255,255,.45); margin-top: 3px; }
+.sw-countdown { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 10px 16px; }
+.sw-countdown.urgent { border-color: rgba(220,38,38,.4); background: rgba(220,38,38,.08); }
+.sw-cd-label { font-size: .65rem; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 3px; }
+.sw-cd-digits { display: flex; align-items: center; gap: 6px; }
+.sw-cd-unit { text-align: center; }
+.sw-cd-num { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 900; color: #fff; display: block; line-height: 1; min-width: 28px; }
+.sw-countdown.urgent .sw-cd-num { color: #f87171; }
+.sw-cd-lbl { font-size: .52rem; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .06em; display: block; margin-top: 2px; }
+.sw-cd-colon { color: rgba(255,255,255,.3); font-size: 1rem; font-weight: 700; align-self: flex-start; padding-top: 1px; }
+.sw-counter-bar { position: sticky; top: 0; z-index: 150; background: #fff; border-bottom: 1px solid #e8e8e8; padding: 12px 5%; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.sw-counter-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.sw-counter-text { font-size: .88rem; color: #555; white-space: nowrap; }
+.sw-counter-text strong { color: #1c1c1c; }
+.sw-counter-track { flex: 1; min-width: 100px; height: 7px; background: #f0f0f0; border-radius: 50px; overflow: hidden; }
+.sw-counter-fill { height: 100%; width: 0%; background: #b85c2a; border-radius: 50px; transition: width .35s ease, background .3s; }
+.sw-counter-fill.complete { background: #2d6a3f; }
+.sw-counter-cta { padding: 9px 22px; border-radius: 50px; border: none; background: #b85c2a; color: #fff; font-family: 'DM Sans', sans-serif; font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .22s; white-space: nowrap; display: none; }
+.sw-counter-cta.show { display: inline-block; }
+.sw-counter-cta:hover { background: #a0501f; transform: translateY(-1px); }
+.sw-layout { max-width: 1280px; margin: 0 auto; padding: 28px 5% 0; display: grid; grid-template-columns: 1fr 320px; gap: 28px; align-items: start; }
+@media (max-width: 960px) { .sw-layout { grid-template-columns: 1fr; } .sw-sidebar { display: none; } }
+.sw-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+.sw-ftab { padding: 8px 18px; border-radius: 50px; border: 1.5px solid #e8e8e8; background: #fff; color: #666; font-family: 'DM Sans', sans-serif; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .18s; white-space: nowrap; }
+.sw-ftab:hover { border-color: #b85c2a; color: #b85c2a; }
+.sw-ftab.on { background: #1c1c1c; border-color: #1c1c1c; color: #fff; }
+.sw-meal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 800px) { .sw-meal-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+@media (max-width: 480px) { .sw-meal-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+.sw-card { background: #fff; border: 1.5px solid #e8e8e8; border-radius: 16px; overflow: hidden; transition: transform .22s, box-shadow .22s, border-color .22s; display: flex; flex-direction: column; }
+.sw-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.09); }
+.sw-card.in-box { border-color: #b85c2a; box-shadow: 0 0 0 3px rgba(184,92,42,.1); }
+.sw-card.hidden { display: none; }
+.sw-card-img-wrap { position: relative; width: 100%; aspect-ratio: 4/3; overflow: hidden; background: #f0ece8; flex-shrink: 0; }
+.sw-card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s; }
+.sw-card:hover .sw-card-img { transform: scale(1.04); }
+.sw-card-img-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; background: linear-gradient(135deg, #fff8f4, #f5ebe3); }
+.sw-card-badge { position: absolute; top: 8px; left: 8px; padding: 3px 9px; border-radius: 20px; font-size: .56rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.sw-b-keto    { background: #eaf4ed; color: #2d6a3f; }
+.sw-b-breakfast { background: #e8f0fb; color: #2c5fad; }
+.sw-b-seafood { background: #faf0e8; color: #c0692a; }
+.sw-b-bowl    { background: #f3f0fb; color: #6741d9; }
+.sw-b-new     { background: #b85c2a; color: #fff; }
+.sw-b-popular { background: #1c1c1c; color: #fff; }
+.sw-card-body { padding: 12px 13px 14px; display: flex; flex-direction: column; flex: 1; }
+.sw-card-name { font-family: 'Playfair Display', serif; font-size: .9rem; font-weight: 700; color: #1c1c1c; line-height: 1.3; margin-bottom: 5px; }
+.sw-card-desc { font-size: .71rem; color: #888; line-height: 1.5; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+.sw-macros { display: flex; gap: 0; background: #f7f5f2; border-radius: 10px; padding: 8px 6px; margin-bottom: 11px; border: 1px solid #e8e8e8; }
+.sw-macro { flex: 1; text-align: center; position: relative; }
+.sw-macro + .sw-macro::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1px; height: 60%; background: #e8e8e8; }
+.sw-macro-v { display: block; font-weight: 800; font-size: .78rem; color: #1c1c1c; }
+.sw-macro-l { display: block; font-size: .5rem; color: #aaa; text-transform: uppercase; letter-spacing: .05em; margin-top: 1px; }
+.sw-variant-wrap { margin-bottom: 10px; }
+.sw-variant-select { width: 100%; padding: 8px 10px; border: 1.5px solid #e8e8e8; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: .78rem; color: #1c1c1c; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center; padding-right: 28px; cursor: pointer; outline: none; -webkit-appearance: none; appearance: none; }
+.sw-variant-select:focus { border-color: #1c1c1c; }
+.sw-card-footer { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.sw-add-btn { padding: 7px 16px; border-radius: 50px; border: none; background: #1c1c1c; color: #fff; font-family: 'DM Sans', sans-serif; font-size: .74rem; font-weight: 700; cursor: pointer; transition: all .2s; white-space: nowrap; width: 100%; }
+.sw-add-btn:hover { background: #b85c2a; }
+.sw-add-btn:disabled { background: #e8e8e8; color: #bbb; cursor: not-allowed; }
+.sw-qty-ctrl { display: none; align-items: center; justify-content: center; gap: 7px; width: 100%; }
+.sw-card.in-box .sw-qty-ctrl { display: flex; }
+.sw-card.in-box .sw-add-btn  { display: none; }
+.sw-qty-btn { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #e8e8e8; background: #fff; font-size: .9rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .18s; font-family: 'DM Sans', sans-serif; }
+.sw-qty-btn:hover { background: #b85c2a; color: #fff; border-color: #b85c2a; }
+.sw-qty-num { font-weight: 800; font-size: .85rem; min-width: 18px; text-align: center; }
+.sw-sidebar { background: #fff; border: 1.5px solid #e8e8e8; border-radius: 18px; overflow: hidden; position: sticky; top: 72px; }
+.sw-sidebar-hdr { background: #1c1c1c; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+.sw-sidebar-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: #fff; }
+.sw-sidebar-count { background: #b85c2a; color: #fff; font-size: .68rem; font-weight: 800; padding: 3px 9px; border-radius: 20px; }
+.sw-sidebar-body { min-height: 140px; max-height: calc(100vh - 320px); overflow-y: auto; padding: 0; }
+.sw-sidebar-body::-webkit-scrollbar { width: 4px; }
+.sw-sidebar-body::-webkit-scrollbar-thumb { background: #e8e8e8; border-radius: 4px; }
+.sw-sb-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 20px; text-align: center; }
+.sw-sb-empty-icon { font-size: 2.8rem; margin-bottom: 10px; }
+.sw-sb-empty-text { font-size: .82rem; color: #aaa; line-height: 1.6; }
+.sw-sb-item { display: flex; align-items: center; gap: 11px; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; transition: background .15s; }
+.sw-sb-item:last-child { border-bottom: none; }
+.sw-sb-item:hover { background: #fdfcfb; }
+.sw-sb-thumb { width: 44px; height: 44px; border-radius: 9px; object-fit: cover; flex-shrink: 0; background: #f0ece8; }
+.sw-sb-thumb-fallback { width: 44px; height: 44px; border-radius: 9px; background: linear-gradient(135deg, #fff8f4, #f5ebe3); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+.sw-sb-info { flex: 1; min-width: 0; }
+.sw-sb-name { font-size: .8rem; font-weight: 700; color: #1c1c1c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sw-sb-variant { font-size: .68rem; color: #aaa; }
+.sw-sb-qty-price { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+.sw-sb-qty { font-size: .72rem; color: #666; font-weight: 600; }
+.sw-sb-rm { width: 22px; height: 22px; border-radius: 50%; border: none; background: #f0f0f0; color: #888; font-size: .75rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .18s; }
+.sw-sb-rm:hover { background: #fde8e8; color: #c0392b; }
+.sw-sb-footer { border-top: 1px solid #e8e8e8; padding: 14px 16px; }
+.sw-sb-subtotal { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: .84rem; }
+.sw-sb-subtotal-label { color: #666; }
+.sw-sb-subtotal-val { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900; }
+.sw-sb-confirm { display: block; width: 100%; padding: 13px; border-radius: 50px; border: none; background: #b85c2a; color: #fff; font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 800; cursor: pointer; transition: all .22s; text-align: center; margin-bottom: 8px; }
+.sw-sb-confirm:hover { background: #a0501f; transform: translateY(-1px); }
+.sw-sb-confirm:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+.sw-sb-save { display: block; text-align: center; font-size: .72rem; color: #b85c2a; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: underline; font-weight: 500; width: 100%; padding: 4px 0; }
+.sw-sb-save:hover { color: #a0501f; }
+.sw-sheet-toggle { display: none; position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #1c1c1c; color: #fff; border: none; border-radius: 50px; padding: 13px 28px; font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 700; cursor: pointer; z-index: 400; box-shadow: 0 6px 24px rgba(0,0,0,.25); transition: background .2s; white-space: nowrap; }
+.sw-sheet-toggle:hover { background: #b85c2a; }
+@media (max-width: 960px) { .sw-sheet-toggle { display: block; } }
+.sw-sheet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 500; }
+.sw-sheet-overlay.open { display: block; }
+.sw-sheet { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 20px 20px 0 0; z-index: 501; transform: translateY(100%); transition: transform .35s cubic-bezier(.32,.72,0,1); max-height: 85vh; display: flex; flex-direction: column; }
+.sw-sheet.open { transform: translateY(0); }
+.sw-sheet-drag { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 12px auto 0; flex-shrink: 0; cursor: grab; }
+.sw-sheet-inner { overflow-y: auto; flex: 1; padding: 0 0 20px; }
+.sw-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(10px); background: #1c1c1c; color: #fff; padding: 10px 22px; border-radius: 50px; font-size: .8rem; font-weight: 600; opacity: 0; pointer-events: none; transition: all .3s; z-index: 600; white-space: nowrap; }
+.sw-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.sw-grid-empty { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #aaa; font-size: .9rem; }
+</style>
+
+<script>
+var SW_PLAN_SIZE = {{ plan_size }};
+// Backend proxy (see smoketo-subscription-proxy on Vercel) that talks to
+// Appstle on the customer's behalf via a Shopify App Proxy. The subpath here
+// MUST match whatever subpath is configured for the App Proxy in Shopify
+// admin (Settings > Apps > Develop apps > [app] > App proxy) — Shopify signs
+// the request and injects `logged_in_customer_id` before forwarding it.
+var SW_PROXY_BASE = '/apps/smoketo-sub';
+var SW_CUSTOMER_LOGGED_IN = {% if customer %}true{% else %}false{% endif %};
+var SW_MEALS = [
+  {%- assign sw_printed = 0 -%}
+  {%- for meal in all_meals -%}
+  {%- unless meal.tags contains 'breakfast' or meal.tags contains 'add-on' or meal.tags contains 'one-time' or meal.tags contains 'upsell' -%}
+  {% if sw_printed > 0 %},{% endif %}
+  {
+    id: {{ meal.id }},
+    title: {{ meal.title | json }},
+    handle: {{ meal.handle | json }},
+    desc: {{ meal.description | strip_html | truncate: 100 | json }},
+    tags: {{ meal.tags | json }},
+    image: {% if meal.featured_image %}{{ meal.featured_image | image_url: width: 500 | json }}{% else %}null{% endif %},
+    available: {{ meal.available }},
+    cal:  {{ meal.metafields.nutrition.calories | default: '' | json }},
+    prot: {{ meal.metafields.nutrition.protein | default: '' | json }},
+    fat:  {{ meal.metafields.nutrition.fat      | default: '' | json }},
+    carbs:{{ meal.metafields.nutrition.netcarbs | default: meal.metafields.nutrition.totalcarb | default: '' | json }},
+    variants: [
+      {%- for v in meal.variants -%}
+      { id: {{ v.id }}, title: {{ v.title | json }}, available: {{ v.available }}, price: {{ v.price | divided_by: 100.0 | round: 2 }} }
+      {%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+  {%- assign sw_printed = sw_printed | plus: 1 -%}
+  {%- endunless -%}
+  {%- endfor -%}
+];
+{% comment %} Appstle box selling plan ID — set once the Build-a-Box plan is created in the Appstle app {% endcomment %}
+var SW_SELLING_PLAN_ID = 692247331121; // Appstle "Weekly Subscription" plan — applied to every meal in the box
+{% comment %} Box-tier variant IDs (the priced product), keyed by plan size — same tiers as the plan-builder quiz {% endcomment %}
+var SW_BOX_VARIANTS = { 5: {{ sw_box5.selected_or_first_available_variant.id }}, 8: {{ sw_box8.selected_or_first_available_variant.id }}, 13: {{ sw_box13.selected_or_first_available_variant.id }}, 21: {{ sw_box21.selected_or_first_available_variant.id }} };
+{% comment %} Box-tier weekly prices, keyed by plan size — used for the $149 free-delivery threshold {% endcomment %}
+var SW_BOX_PRICES = { 5: {{ sw_box5.price | divided_by: 100.0 | round: 2 }}, 8: {{ sw_box8.price | divided_by: 100.0 | round: 2 }}, 13: {{ sw_box13.price | divided_by: 100.0 | round: 2 }}, 21: {{ sw_box21.price | divided_by: 100.0 | round: 2 }} };
+var SW_DELIVERY_FEE_VARIANT = 55016006680881; // the one allowed hardcode — delivery-fee product's variant ID
+var SW_DELIVERY_FEE_PRICE = {{ delivery_fee_product.price | divided_by: 100.0 | round: 2 }};
+</script>
+
+<div class="sw-wrap">
+
+  <div class="sw-header">
+    <div class="sw-header-inner">
+      <div class="sw-greeting">
+        <div class="sw-greeting-name">
+          Hi, <em>{{ customer.first_name | default: 'there' }}</em> 👋
+        </div>
+        <div class="sw-greeting-sub">Choose your meals for delivery this week</div>
+      </div>
+      <div class="sw-header-right">
+        <div class="sw-countdown" id="sw-countdown">
+          <div>
+            <div class="sw-cd-label">Order closes</div>
+            <div class="sw-cd-digits">
+              <div class="sw-cd-unit"><span class="sw-cd-num" id="cd-d">—</span><span class="sw-cd-lbl">days</span></div>
+              <span class="sw-cd-colon">:</span>
+              <div class="sw-cd-unit"><span class="sw-cd-num" id="cd-h">—</span><span class="sw-cd-lbl">hrs</span></div>
+              <span class="sw-cd-colon">:</span>
+              <div class="sw-cd-unit"><span class="sw-cd-num" id="cd-m">—</span><span class="sw-cd-lbl">min</span></div>
+              <span class="sw-cd-colon">:</span>
+              <div class="sw-cd-unit"><span class="sw-cd-num" id="cd-s">—</span><span class="sw-cd-lbl">sec</span></div>
+            </div>
+          </div>
+        </div>
+        <a href="/account" class="sw-avatar" title="My Account" aria-label="My Account">
+          <span class="sw-avatar-initial">{{ customer.first_name | slice: 0 | upcase | default: 'A' }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="sw-counter-bar">
+    <div class="sw-counter-inner">
+      <div class="sw-counter-text">
+        <strong id="sw-sel-count">0</strong>
+        <span> of </span>
+        <strong id="sw-plan-size">{{ plan_size }}</strong>
+        <span> meals selected</span>
+      </div>
+      <div class="sw-counter-track">
+        <div class="sw-counter-fill" id="sw-fill"></div>
+      </div>
+      <button class="sw-counter-cta" id="sw-top-confirm" onclick="confirmOrder()">
+        Confirm Order →
+      </button>
+    </div>
+  </div>
+
+  <div class="sw-layout">
+
+    <div class="sw-main">
+      <div class="sw-filters" id="sw-filters">
+        <button class="sw-ftab on" data-cat="all"       onclick="setFilter('all',this)">All Meals</button>
+        <button class="sw-ftab"    data-cat="keto"      onclick="setFilter('keto',this)">🥩 Keto</button>
+        <button class="sw-ftab"    data-cat="bowls"     onclick="setFilter('bowls',this)">🥗 Bowls</button>
+        <button class="sw-ftab"    data-cat="seafood"   onclick="setFilter('seafood',this)">🐟 Seafood</button>
+      </div>
+
+      <div class="sw-meal-grid" id="sw-meal-grid">
+      </div>
+    </div>
+
+    <aside class="sw-sidebar">
+      <div class="sw-sidebar-hdr">
+        <span class="sw-sidebar-title">My Box</span>
+        <span class="sw-sidebar-count" id="sb-count-badge">0</span>
+      </div>
+      <div class="sw-sidebar-body" id="sw-sb-body">
+        <div class="sw-sb-empty" id="sw-sb-empty">
+          <div class="sw-sb-empty-icon">🍽️</div>
+          <div class="sw-sb-empty-text">Start adding meals<br>to build your week</div>
+        </div>
+      </div>
+      <div class="sw-sb-footer">
+        <div class="sw-sb-subtotal">
+          <span class="sw-sb-subtotal-label">Meals in box</span>
+          <span class="sw-sb-subtotal-val" id="sw-subtotal">0 / {{ plan_size }}</span>
+        </div>
+        <button class="sw-sb-confirm" id="sb-confirm-btn" onclick="confirmOrder()" disabled>
+          Confirm My Order →
+        </button>
+        <button class="sw-sb-save" onclick="saveForLater()">Save for later</button>
+      </div>
+    </aside>
+
+  </div>
+
+</div>
+
+<button class="sw-sheet-toggle" id="sw-sheet-toggle" onclick="openSheet()">
+  🛒 View Box — <span id="tgl-count">0 meals</span>
+</button>
+
+<div class="sw-sheet-overlay" id="sw-overlay" onclick="closeSheet()"></div>
+<div class="sw-sheet" id="sw-sheet">
+  <div class="sw-sheet-drag"></div>
+  <div class="sw-sheet-inner">
+    <div style="padding:16px 18px 8px;display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;">My Box</span>
+      <button onclick="closeSheet()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:#888;">×</button>
+    </div>
+    <div id="sw-sheet-items"></div>
+    <div style="padding:14px 18px 0;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:.86rem;">
+        <span style="color:#666;">Meals in box</span>
+        <strong id="sw-sheet-subtotal">0 / {{ plan_size }}</strong>
+      </div>
+      <button class="sw-sb-confirm" id="sw-sheet-confirm" onclick="confirmOrder()" disabled>
+        Confirm My Order →
+      </button>
+      <button class="sw-sb-save" onclick="saveForLater();closeSheet()">Save for later</button>
+    </div>
+  </div>
+</div>
+
+<div class="sw-toast" id="sw-toast"></div>
+
+<script>
+(function () {
+  var BOX = {};      // key: variantId  val: { meal, variantIdx, qty }
+  var activeFilter = 'all';
+  var planSize = SW_PLAN_SIZE || 8;
+  // Existing-subscriber state — populated by loadExistingSubscription() below.
+  // currentVariants mirrors what's actually on the live Appstle contract right
+  // now, so confirmExistingSubscriberMeals() can tell Appstle exactly what to
+  // remove (oldVariants) vs. add (newVariants) on "Confirm".
+  var existingSub = { active: false, contractId: null, currentVariants: {} };
+
+  function nextFridayNoon() {
+    var now = new Date();
+    var day = now.getDay();
+    var daysUntil = (5 - day + 7) % 7; // 0 if today is Friday
+    var target = new Date(now);
+    target.setDate(now.getDate() + daysUntil);
+    target.setHours(12, 0, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 7);
+    return target;
+  }
+  var deadline = nextFridayNoon();
+  function tickCountdown() {
+    var diff = deadline - Date.now();
+    if (diff <= 0) { deadline = nextFridayNoon(); diff = deadline - Date.now(); }
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    document.getElementById('cd-d').textContent = d;
+    document.getElementById('cd-h').textContent = pad(h);
+    document.getElementById('cd-m').textContent = pad(m);
+    document.getElementById('cd-s').textContent = pad(s);
+    var urgent = diff < 86400000;
+    document.getElementById('sw-countdown').classList.toggle('urgent', urgent);
+  }
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
+
+  function totalQty() {
+    return Object.values(BOX).reduce(function (s, v) { return s + v.qty; }, 0);
+  }
+  function tagInfo(tags) {
+    var t = (tags || []).join(',').toLowerCase();
+    if (t.includes('breakfast'))                         return { cls: 'sw-b-breakfast', lbl: 'Breakfast', cat: 'breakfast' };
+    if (t.includes('seafood') || t.includes('shellfish')) return { cls: 'sw-b-seafood',   lbl: 'Seafood',   cat: 'seafood'   };
+    if (t.includes('bowl'))                              return { cls: 'sw-b-bowl',       lbl: 'Bowl',      cat: 'bowls'     };
+    if (t.includes('keto'))                              return { cls: 'sw-b-keto',       lbl: 'Keto',      cat: 'keto'      };
+    return { cls: 'sw-b-keto', lbl: 'Keto', cat: 'keto' };
+  }
+  var toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('sw-toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+
+  function renderGrid() {
+    var grid = document.getElementById('sw-meal-grid');
+    var at_limit = totalQty() >= planSize;
+    var visible = 0;
+    var html = SW_MEALS.map(function (m) {
+      var ti = tagInfo(m.tags);
+      if (activeFilter !== 'all' && ti.cat !== activeFilter) return '';
+      visible++;
+      var key = m.variants[0].id;
+      var inBox = !!BOX[key];
+      var curVariantIdx = BOX[key] ? BOX[key].variantIdx : 0;
+      var curQty = BOX[key] ? BOX[key].qty : 0;
+      var multiVariant = m.variants.length > 1;
+      var macroHtml = (m.cal || m.prot || m.fat || m.carbs)
+        ? '<div class="sw-macro"><span class="sw-macro-v">' + (m.cal || '—') + '</span><span class="sw-macro-l">kcal</span></div>'
+          + '<div class="sw-macro"><span class="sw-macro-v">' + (m.prot || '—') + '</span><span class="sw-macro-l">protein</span></div>'
+          + '<div class="sw-macro"><span class="sw-macro-v">' + (m.fat || '—') + '</span><span class="sw-macro-l">fat</span></div>'
+          + '<div class="sw-macro"><span class="sw-macro-v">' + (m.carbs || '—') + '</span><span class="sw-macro-l">carbs</span></div>'
+        : '';
+      var varHtml = '';
+      if (multiVariant) {
+        varHtml = '<div class="sw-variant-wrap"><select class="sw-variant-select" onchange="changeVariant(' + m.id + ',this.value)">'
+          + m.variants.map(function (v, i) {
+            return '<option value="' + i + '"' + (i === curVariantIdx ? ' selected' : '') + '>' + v.title + (v.price > 0 ? ' (+$' + v.price.toFixed(2) + ')' : '') + '</option>';
+          }).join('')
+          + '</select></div>';
+      }
+      return '<div class="sw-card' + (inBox ? ' in-box' : '') + (activeFilter !== 'all' && ti.cat !== activeFilter ? ' hidden' : '') + '" id="swc-' + m.id + '">'
+        + '<div class="sw-card-img-wrap">'
+        + (m.image
+          ? '<img class="sw-card-img" src="' + m.image + '" alt="' + m.title.replace(/"/g, '&quot;') + '" loading="lazy">'
+          : '<div class="sw-card-img-fallback">🥩</div>')
+        + '<span class="sw-card-badge ' + ti.cls + '">' + ti.lbl + '</span>'
+        + '</div>'
+        + '<div class="sw-card-body">'
+        + '<div class="sw-card-name">' + m.title + '</div>'
+        + '<div class="sw-card-desc">' + (m.desc || '') + '</div>'
+        + (macroHtml ? '<div class="sw-macros">' + macroHtml + '</div>' : '')
+        + varHtml
+        + '<div class="sw-card-footer">'
+        + '<button class="sw-add-btn" id="swab-' + m.id + '" onclick="addMeal(' + m.id + ')"'
+          + (at_limit && !inBox ? ' disabled' : '') + '>Add</button>'
+        + '<div class="sw-qty-ctrl">'
+        + '<button class="sw-qty-btn" onclick="adjMeal(event,' + m.id + ',-1)">−</button>'
+        + '<span class="sw-qty-num" id="swqn-' + m.id + '">' + (curQty || 1) + '</span>'
+        + '<button class="sw-qty-btn" onclick="adjMeal(event,' + m.id + ',1)">+</button>'
+        + '</div>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+    if (visible === 0) {
+      html = '<div class="sw-grid-empty">No meals in this category.</div>';
+    }
+    grid.innerHTML = html;
+  }
+
+  window.setFilter = function (cat, el) {
+    activeFilter = cat;
+    document.querySelectorAll('.sw-ftab').forEach(function (b) { b.classList.remove('on'); });
+    el.classList.add('on');
+    renderGrid();
+  };
+
+  window.addMeal = function (mealId) {
+    if (totalQty() >= planSize) return;
+    var meal = SW_MEALS.find(function (m) { return m.id === mealId; });
+    if (!meal) return;
+    var vid = meal.variants[0].id;
+    BOX[vid] = { meal: meal, variantIdx: 0, qty: 1 };
+    sync();
+    showToast('🥩 Added: ' + meal.title);
+  };
+
+  window.adjMeal = function (e, mealId, delta) {
+    e.stopPropagation();
+    var meal = SW_MEALS.find(function (m) { return m.id === mealId; });
+    if (!meal) return;
+    var key = null;
+    for (var k in BOX) { if (BOX[k].meal.id === mealId) { key = k; break; } }
+    if (!key) return;
+    var next = BOX[key].qty + delta;
+    if (next <= 0) {
+      delete BOX[key];
+    } else if (delta > 0 && totalQty() >= planSize) {
+      showToast('Remove a meal to add another.');
+      return;
+    } else {
+      BOX[key].qty = next;
+    }
+    sync();
+  };
+
+  window.changeVariant = function (mealId, newIdx) {
+    newIdx = parseInt(newIdx);
+    var meal = SW_MEALS.find(function (m) { return m.id === mealId; });
+    if (!meal) return;
+    var oldKey = null;
+    var entry = null;
+    for (var k in BOX) {
+      if (BOX[k].meal.id === mealId) { oldKey = k; entry = BOX[k]; break; }
+    }
+    var newVid = meal.variants[newIdx].id;
+    if (oldKey) {
+      var qty = entry.qty;
+      delete BOX[oldKey];
+      BOX[newVid] = { meal: meal, variantIdx: newIdx, qty: qty };
+      sync();
+    }
+  };
+
+  window.removeFromBox = function (variantId) {
+    delete BOX[variantId];
+    sync();
+  };
+
+  function sync() {
+    renderGrid();
+    updateCounter();
+    renderSidebar();
+  }
+
+  function updateCounter() {
+    var sel = totalQty();
+    document.getElementById('sw-sel-count').textContent = sel;
+    var pct = Math.min(100, Math.round((sel / planSize) * 100));
+    var fill = document.getElementById('sw-fill');
+    fill.style.width = pct + '%';
+    fill.classList.toggle('complete', sel >= planSize);
+    var cta = document.getElementById('sw-top-confirm');
+    cta.classList.toggle('show', sel > 0);
+    document.getElementById('sw-sheet-toggle').querySelector('#tgl-count').textContent =
+      sel + ' meal' + (sel !== 1 ? 's' : '');
+  }
+
+  function renderSidebar() {
+    var items = Object.entries(BOX);
+    var totalQtyVal = totalQty();
+    var hasMeals = items.length > 0;
+
+    var sbBody = document.getElementById('sw-sb-body');
+    var empty  = document.getElementById('sw-sb-empty');
+    if (!hasMeals) {
+      sbBody.innerHTML = '';
+      sbBody.appendChild(empty);
+    } else {
+      sbBody.innerHTML = items.map(function (entry) {
+        var vid = entry[0];
+        var v = entry[1];
+        var variant = v.meal.variants[v.variantIdx] || v.meal.variants[0];
+        var isDefault = variant.title === 'Default Title';
+        var upcharge = variant.price ? ' <span style="color:#b85c2a;">+$' + variant.price.toFixed(2) + '</span>' : '';
+        return '<div class="sw-sb-item">'
+          + (v.meal.image
+            ? '<img class="sw-sb-thumb" src="' + v.meal.image + '" alt="">'
+            : '<div class="sw-sb-thumb-fallback">🥩</div>')
+          + '<div class="sw-sb-info">'
+          + '<div class="sw-sb-name">' + v.meal.title + '</div>'
+          + (!isDefault ? '<div class="sw-sb-variant">' + variant.title + upcharge + '</div>' : '')
+          + '<div class="sw-sb-qty-price">'
+          + '<span class="sw-sb-qty">×' + v.qty + '</span>'
+          + '</div>'
+          + '</div>'
+          + '<button class="sw-sb-rm" onclick="removeFromBox(' + vid + ')" title="Remove">×</button>'
+          + '</div>';
+      }).join('');
+    }
+    document.getElementById('sb-count-badge').textContent = totalQtyVal;
+    var countLabel = totalQtyVal + ' / ' + planSize;
+    document.getElementById('sw-subtotal').textContent = countLabel;
+    document.getElementById('sw-sheet-subtotal').textContent = countLabel;
+    var enabled = hasMeals;
+    document.getElementById('sb-confirm-btn').disabled = !enabled;
+    document.getElementById('sw-sheet-confirm').disabled = !enabled;
+    document.getElementById('sw-sheet-items').innerHTML =
+      document.getElementById('sw-sb-body').innerHTML;
+  }
+
+  window.openSheet  = function () {
+    document.getElementById('sw-overlay').classList.add('open');
+    document.getElementById('sw-sheet').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeSheet = function () {
+    document.getElementById('sw-overlay').classList.remove('open');
+    document.getElementById('sw-sheet').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  window.confirmOrder = function () {
+    var items = Object.entries(BOX);
+    if (!items.length) return;
+
+    // Existing subscriber: update their live subscription's meals directly —
+    // no cart, no checkout. New subscribers (no active contract yet) fall
+    // through to the checkout flow below, which is what actually creates
+    // their subscription.
+    if (existingSub.active) {
+      confirmExistingSubscriberMeals(items);
+      return;
+    }
+
+    var boxVariantId = SW_BOX_VARIANTS[planSize];
+    if (!boxVariantId) {
+      showToast('This box size isn\'t available yet — please contact support.');
+      return;
+    }
+
+    var btn1 = document.getElementById('sb-confirm-btn');
+    var btn2 = document.getElementById('sw-top-confirm');
+    var btn3 = document.getElementById('sw-sheet-confirm');
+    [btn1, btn2, btn3].forEach(function (b) {
+      if (b) { b.textContent = 'Adding to cart…'; b.disabled = true; }
+    });
+
+    var mealProps = {};
+    var mealCounter = 1;
+    var upchargeItems = [];
+    var variantUpcharge = 0;
+    items.forEach(function (e) {
+      var entry = e[1];
+      var variant = entry.meal.variants[entry.variantIdx] || entry.meal.variants[0];
+      var label = 'Meal ' + mealCounter++;
+      var title = entry.meal.title + (variant.title !== 'Default Title' ? ' (' + variant.title + ')' : '');
+      mealProps[label] = title + (entry.qty > 1 ? ' x' + entry.qty : '');
+      if (variant.price) {
+        variantUpcharge += variant.price * entry.qty;
+        var upchargeItem = { id: variant.id, quantity: entry.qty, properties: { Meal: title } };
+        if (window.SW_SELLING_PLAN_ID) upchargeItem.selling_plan = window.SW_SELLING_PLAN_ID;
+        upchargeItems.push(upchargeItem);
+      } else {
+        // $0 box-meal variant — added as its own zero-priced line (in addition
+        // to the human-readable summary already in mealProps above) so the
+        // order exposes real, SKU'd line items for kitchen prep reporting.
+        var freeItem = { id: variant.id, quantity: entry.qty, properties: { Box: planSize + ' Meal Box' } };
+        if (window.SW_SELLING_PLAN_ID) freeItem.selling_plan = window.SW_SELLING_PLAN_ID;
+        upchargeItems.push(freeItem);
+      }
+    });
+
+    var boxItem = { id: boxVariantId, quantity: 1, properties: mealProps };
+    if (window.SW_SELLING_PLAN_ID) boxItem.selling_plan = window.SW_SELLING_PLAN_ID;
+    // Free-delivery threshold ($149) — box price plus any priced variant upcharges.
+    var subtotal = (SW_BOX_PRICES[planSize] || 0) + variantUpcharge;
+    var extraItems = upchargeItems.slice();
+    if (subtotal < 149) extraItems.push({ id: SW_DELIVERY_FEE_VARIANT, quantity: 1 });
+
+    fetch('/cart/clear.js', { method: 'POST' })
+      .then(function () {
+        return fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: [boxItem] })
+        });
+      })
+      .then(function (r) {
+        if (r.ok) return r.json();
+        return fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: [{ id: boxVariantId, quantity: 1, properties: mealProps }] })
+        }).then(function (r2) {
+          if (!r2.ok) return r2.json().then(function (e) { throw new Error(e.description || 'cart add failed'); });
+          return r2.json();
+        });
+      })
+      .then(function () {
+        // Add each priced upcharge/delivery-fee line as its own request.
+        // Shopify's /cart/add.js is all-or-nothing for a batched items array —
+        // a single rejected line must never silently drop every other add-on.
+        return extraItems.reduce(function (chain, item) {
+          return chain.then(function () {
+            return fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ items: [item] })
+            }).then(function (r) {
+              if (!r.ok) return r.json().then(function (e) { console.error('SmoKeto add-on failed:', item, e); });
+            });
+          }).catch(function (e) { console.error('SmoKeto add-on network error:', item, e); });
+        }, Promise.resolve());
+      })
+      .then(function () {
+        showToast('✓ Box added! Heading to checkout…');
+        // Guest email prefill from Step 1 capture — never ask for email twice.
+        var emailParam = '';
+        try {
+          var em = sessionStorage.getItem('sk_session_email');
+          if (em) emailParam = '?checkout[email]=' + encodeURIComponent(em);
+        } catch (e) {}
+        setTimeout(function () { window.location.href = '/checkout' + emailParam; }, 900);
+      })
+      .catch(function () {
+        showToast('Error — please try again.');
+        [btn1, btn2, btn3].forEach(function (b) {
+          if (b) { b.textContent = 'Confirm My Order →'; b.disabled = false; }
+        });
+      });
+  };
+
+  window.saveForLater = function () {
+    try {
+      var data = {};
+      for (var k in BOX) {
+        data[k] = { mealId: BOX[k].meal.id, variantIdx: BOX[k].variantIdx, qty: BOX[k].qty };
+      }
+      localStorage.setItem('sw_saved_box', JSON.stringify(data));
+      showToast('💾 Saved! Your selections will be here when you return.');
+    } catch (e) { showToast('Could not save — storage unavailable.'); }
+  };
+
+  // ── EXISTING-SUBSCRIBER LIVE EDITING ──────────────────────────────
+  // Talks to smoketo-subscription-proxy (Vercel) over the Shopify App Proxy
+  // at SW_PROXY_BASE, which in turn calls Appstle's real subscription API.
+  // Never touches cart/checkout for these customers — "Confirm" edits their
+  // already-active contract directly.
+
+  function gidToId(gid) {
+    if (gid == null) return null;
+    var s = String(gid);
+    var i = s.lastIndexOf('/');
+    return i === -1 ? s : s.slice(i + 1);
+  }
+
+  function findMealByVariantId(vid) {
+    vid = String(vid);
+    for (var i = 0; i < SW_MEALS.length; i++) {
+      var m = SW_MEALS[i];
+      for (var j = 0; j < m.variants.length; j++) {
+        if (String(m.variants[j].id) === vid) return { meal: m, variantIdx: j };
+      }
+    }
+    return null;
+  }
+
+  // Appstle's exact response shape for "current line items on the latest
+  // order" hasn't been verified against a live contract yet (the sandbox
+  // this was built in could not reach appstle.com to test). This defensively
+  // tries the shapes Appstle uses elsewhere in its API (GraphQL-style
+  // lines.edges[].node, and classic REST line_items[]) — adjust here if the
+  // real response turns out to differ once tested against a live contract.
+  function extractVariantsFromFulfillment(fulfillment) {
+    var out = {};
+    if (!fulfillment) return out;
+    var edges = fulfillment.lines && fulfillment.lines.edges;
+    if (Array.isArray(edges)) {
+      edges.forEach(function (e) {
+        var node = e && e.node;
+        if (!node) return;
+        var vid = gidToId(node.variantId || node.variant_id);
+        if (vid) out[vid] = node.quantity || 1;
+      });
+      return out;
+    }
+    var lineItems = fulfillment.line_items || fulfillment.lineItems;
+    if (Array.isArray(lineItems)) {
+      lineItems.forEach(function (li) {
+        var vid = gidToId(li.variant_id || li.variantId);
+        if (vid) out[vid] = li.quantity || 1;
+      });
+      return out;
+    }
+    return out;
+  }
+
+  function setConfirmLabels(text) {
+    var b1 = document.getElementById('sb-confirm-btn');
+    var b2 = document.getElementById('sw-top-confirm');
+    var b3 = document.getElementById('sw-sheet-confirm');
+    if (b1) b1.textContent = text;
+    if (b3) b3.textContent = text;
+    if (b2) b2.textContent = text.replace('My ', '');
+  }
+
+  function loadExistingSubscription() {
+    if (!SW_CUSTOMER_LOGGED_IN) return;
+    fetch(SW_PROXY_BASE + '/get-weekly-box', { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.hasSubscription) return;
+        existingSub.active = true;
+        existingSub.contractId = data.contractId;
+        existingSub.currentVariants = extractVariantsFromFulfillment(data.fulfillment);
+
+        // Live subscription is ground truth — replace any locally-restored
+        // guest box with what's actually on the contract right now.
+        for (var k in BOX) delete BOX[k];
+        Object.keys(existingSub.currentVariants).forEach(function (vid) {
+          var found = findMealByVariantId(vid);
+          if (found) {
+            BOX[vid] = { meal: found.meal, variantIdx: found.variantIdx, qty: existingSub.currentVariants[vid] };
+          }
+        });
+        setConfirmLabels('Update My Meals →');
+        sync();
+      })
+      .catch(function () {});
+  }
+
+  function confirmExistingSubscriberMeals(items) {
+    setConfirmLabels('Updating your box…');
+    [document.getElementById('sb-confirm-btn'), document.getElementById('sw-top-confirm'), document.getElementById('sw-sheet-confirm')]
+      .forEach(function (b) { if (b) b.disabled = true; });
+
+    var newVariants = {};
+    items.forEach(function (e) { newVariants[e[0]] = e[1].qty; });
+    var oldVariants = Object.keys(existingSub.currentVariants).map(function (v) { return parseInt(v, 10); });
+
+    fetch(SW_PROXY_BASE + '/update-weekly-meals', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ newVariants: newVariants, oldVariants: oldVariants })
+    })
+      .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok) throw new Error((result.data && result.data.error) || 'Update failed');
+        existingSub.currentVariants = {};
+        Object.keys(newVariants).forEach(function (vid) { existingSub.currentVariants[vid] = newVariants[vid]; });
+        showToast('✓ Your meals for this week are updated!');
+        setConfirmLabels('✓ Box Updated');
+        [document.getElementById('sb-confirm-btn'), document.getElementById('sw-top-confirm'), document.getElementById('sw-sheet-confirm')]
+          .forEach(function (b) { if (b) b.disabled = false; });
+        setTimeout(function () { setConfirmLabels('Update My Meals →'); }, 2500);
+      })
+      .catch(function () {
+        showToast('Could not update your box — please try again.');
+        setConfirmLabels('Update My Meals →');
+        [document.getElementById('sb-confirm-btn'), document.getElementById('sw-top-confirm'), document.getElementById('sw-sheet-confirm')]
+          .forEach(function (b) { if (b) b.disabled = false; });
+      });
+  }
+
+  function restoreSaved() {
+    try {
+      var raw = localStorage.getItem('sw_saved_box');
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      for (var k in data) {
+        var d = data[k];
+        var meal = SW_MEALS.find(function (m) { return m.id === d.mealId; });
+        if (!meal) continue;
+        var vi = d.variantIdx || 0;
+        BOX[k] = { meal: meal, variantIdx: vi, qty: d.qty };
+      }
+      if (Object.keys(BOX).length) showToast('↩ Restored your saved selections.');
+    } catch (e) {}
+  }
+
+  restoreSaved();
+  renderGrid();
+  updateCounter();
+  renderSidebar();
+  loadExistingSubscription();
+
+  // If a customer hits the browser back button after starting checkout, the
+  // page can be restored from bfcache with the confirm buttons still frozen
+  // mid-submit ("Adding to cart…") — reset them so the box never looks stuck.
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) {
+      var b1 = document.getElementById('sb-confirm-btn');
+      var b2 = document.getElementById('sw-top-confirm');
+      var b3 = document.getElementById('sw-sheet-confirm');
+      if (b1) b1.textContent = 'Confirm My Order →';
+      if (b2) b2.textContent = 'Confirm Order →';
+      if (b3) b3.textContent = 'Confirm My Order →';
+      sync();
+    }
+  });
+
+})();
+</script>

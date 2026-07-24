@@ -1,0 +1,1827 @@
+{%- comment -%}
+  SmoKeto Landing Page Template
+  Instructions:
+  1. Go to Online Store > Themes > Crave > Edit Code
+  2. Under Templates, click "Add a new template"
+  3. Choose "page", name it "smoketo-main", click Create
+  4. Delete all existing code and paste this entire file
+  5. Save. Done — your page at /pages/smoketo-main will render perfectly.
+{%- endcomment -%}
+
+<style>
+
+:root{
+  --bg:#ffffff;--bg-off:#f7f5f2;--bg-dark:#1c1c1c;
+  --border:#e8e8e8;--border-mid:#d0d0d0;
+  --ember:#b85c2a;--ember-light:#d4703a;--ember-pale:#f5ebe3;
+  --black:#1c1c1c;--gray-dark:#3d3d3d;--gray-mid:#6b6b6b;--gray-light:#a0a0a0;
+  --green:#2d6a3f;--green-pale:#e8f4ec;--white:#ffffff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--black);overflow-x:hidden;}
+
+/* ── SHARE BANNER ── */
+/* share-banner removed */
+
+/* ── LOCATION GATE ── */
+#gate{position:fixed;inset:0;background:rgba(247,245,242,.97);backdrop-filter:blur(16px);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;animation:fadeIn .5s ease;}
+.gate-logo{height:80px;width:auto;object-fit:contain;border-radius:8px;animation:floatY 4s ease-in-out infinite;}
+.gate-slogan{font-family:'Cormorant Garamond',serif;font-size:.82rem;letter-spacing:.17em;text-transform:uppercase;color:var(--gray-mid);}
+.gate-slogan::before,.gate-slogan::after{content:'—';margin:0 7px;opacity:.35;}
+#gate h2{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,4vw,2rem);text-align:center;}
+#gate p{color:var(--gray-mid);text-align:center;max-width:350px;font-size:.85rem;line-height:1.65;}
+#zip-in,#gate-email{width:100%;max-width:260px;padding:12px 20px;border-radius:50px;border:1.5px solid var(--border-mid);background:#fff;text-align:center;font-size:1rem;letter-spacing:3px;outline:none;transition:border .3s;}
+#zip-in:focus,#gate-email:focus{border-color:var(--ember);}
+#zip-in::placeholder,#gate-email::placeholder{letter-spacing:1px;color:var(--gray-light);}
+#gate-email{letter-spacing:normal;font-size:.92rem;}
+.gate-btn{padding:12px 36px;border-radius:50px;background:var(--black);color:#fff;font-weight:700;font-size:.93rem;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.gate-btn:hover{transform:scale(1.03);box-shadow:0 6px 24px rgba(0,0,0,.2);}
+#gate-err{color:#c0392b;font-size:.76rem;display:none;text-align:center;max-width:320px;}
+.gate-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:380px;}
+.gate-chip{padding:4px 10px;border-radius:50px;border:1px solid var(--border);background:var(--bg-off);color:var(--gray-mid);font-size:.65rem;}
+
+/* ── MODAL SYSTEM ── */
+.modal-bd{position:fixed;inset:0;background:rgba(10,10,10,.74);backdrop-filter:blur(14px);z-index:9000;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-bd.open{display:flex;}
+.modal-box{background:#fff;border-radius:24px;width:100%;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.22);animation:slideUp .4s cubic-bezier(.16,1,.3,1);}
+.mclose{position:absolute;top:15px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.07);border:none;color:var(--gray-dark);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:2;}
+.mclose:hover{background:rgba(0,0,0,.14);}
+
+/* ── MEAL OVERLAY ── */
+#meal-modal{z-index:9200;}
+.meal-box{max-width:660px;}
+.meal-img-wrap{width:100%;height:300px;overflow:hidden;position:relative;border-radius:24px 24px 0 0;background:var(--bg-off);}
+.meal-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.meal-img-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(135deg,#fff8f4,#f5ebe3);}
+.meal-badge-bar{position:absolute;bottom:0;left:0;right:0;padding:13px 20px;background:linear-gradient(to top,rgba(0,0,0,.72),transparent);display:flex;gap:7px;}
+.m-badge{padding:3px 10px;border-radius:20px;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.meal-body{padding:22px 24px 26px;}
+.meal-body-name{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:900;margin-bottom:6px;}
+.meal-body-desc{color:var(--gray-mid);font-size:.84rem;line-height:1.65;margin-bottom:18px;}
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:13px;background:var(--bg-off);border-radius:13px;border:1px solid var(--border);margin-bottom:18px;}
+.mg-item{text-align:center;}
+.mg-val{display:block;font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--ember);}
+.mg-lbl{display:block;font-size:.57rem;color:var(--gray-mid);letter-spacing:.07em;text-transform:uppercase;margin-top:2px;}
+.overlay-hr{height:1px;background:var(--border);margin:0 0 16px;}
+.var-wrap{margin-bottom:15px;}
+.var-label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:8px;}
+.var-btns{display:flex;flex-wrap:wrap;gap:7px;}
+.var-btn{padding:7px 13px;border-radius:50px;border:1.5px solid var(--border-mid);background:transparent;color:var(--gray-dark);font-size:.76rem;cursor:pointer;transition:all .2s;}
+.var-btn:hover,.var-btn.sel{border-color:var(--ember);background:var(--ember-pale);color:var(--ember);font-weight:700;}
+.diet-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px;}
+.dtag{padding:3px 9px;border-radius:50px;border:1px solid var(--border);font-size:.67rem;color:var(--gray-dark);}
+.meal-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.price-block .big-price{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:900;color:var(--ember);}
+.price-block .price-note{font-size:.65rem;color:var(--gray-light);margin-top:2px;}
+.qty-ctrl{display:flex;align-items:center;gap:8px;}
+.qty-btn{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border-mid);background:transparent;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.qty-btn:hover{border-color:var(--black);background:var(--bg-off);}
+.qty-n{font-weight:700;font-size:.97rem;min-width:20px;text-align:center;}
+.add-cart-btn{padding:12px 24px;border-radius:50px;background:var(--black);color:#fff;font-weight:700;font-size:.88rem;border:none;cursor:pointer;transition:all .25s;}
+.add-cart-btn:hover{background:var(--ember);transform:scale(1.03);box-shadow:0 4px 20px rgba(184,92,42,.3);}
+
+/* ── CART MODAL ── */
+#cart-modal{z-index:9300;}
+.cart-box{max-width:500px;max-height:88vh;display:flex;flex-direction:column;}
+.cart-hdr{padding:20px 24px 13px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cart-hdr h3{font-family:'Playfair Display',serif;font-size:1.3rem;}
+.cart-body{flex:1;overflow-y:auto;padding:12px 24px;}
+.cart-empty{text-align:center;padding:34px 0;color:var(--gray-mid);}
+.cart-empty .ce-icon{font-size:2.8rem;margin-bottom:10px;}
+.cart-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.cart-row:last-child{border-bottom:none;}
+.cart-thumb{width:52px;height:52px;border-radius:9px;background:var(--bg-off);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.cart-thumb img{width:100%;height:100%;object-fit:cover;}
+.cart-info{flex:1;min-width:0;}
+.cart-name{font-weight:700;font-size:.83rem;margin-bottom:2px;}
+.cart-var{font-size:.69rem;color:var(--gray-mid);margin-bottom:5px;}
+.cart-qty{display:flex;align-items:center;gap:6px;}
+.cq{width:22px;height:22px;border-radius:50%;border:1px solid var(--border-mid);background:transparent;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.cq:hover{background:var(--bg-off);}
+.cart-right{text-align:right;flex-shrink:0;}
+.cart-price{font-family:'Playfair Display',serif;font-size:.93rem;color:var(--ember);font-weight:700;}
+.cart-rm{background:none;border:none;color:var(--gray-light);cursor:pointer;font-size:.72rem;margin-top:3px;display:block;}
+.cart-rm:hover{color:#c0392b;}
+.cart-ftr{padding:13px 24px 20px;border-top:1px solid var(--border);flex-shrink:0;}
+.cart-sub{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.cart-sub-lbl{font-size:.84rem;color:var(--gray-mid);}
+.cart-sub-val{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;}
+.checkout-btn{width:100%;padding:13px;border-radius:50px;background:var(--black);color:#fff;font-weight:700;font-size:.94rem;border:none;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;}
+.checkout-btn:hover{background:var(--ember);box-shadow:0 4px 20px rgba(184,92,42,.3);}
+.continue-btn{width:100%;padding:10px;border-radius:50px;border:1.5px solid var(--border-mid);background:transparent;color:var(--gray-dark);font-size:.82rem;cursor:pointer;}
+.cart-note{font-size:.65rem;color:var(--gray-light);text-align:center;margin-top:8px;}
+.cart-freeship-track{height:6px;background:var(--bg-off);border-radius:50px;overflow:hidden;margin-top:8px;}
+.cart-freeship-fill{height:100%;width:0%;background:var(--ember);border-radius:50px;transition:width .3s ease,background .3s;}
+.cart-freeship-fill.complete{background:var(--green);}
+
+/* ── AUTH MODAL ── */
+#auth-modal{z-index:9400;}
+.auth-box{max-width:420px;overflow:hidden;}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);}
+.atab{flex:1;padding:16px;font-size:.84rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--gray-mid);transition:all .2s;border-bottom:2px solid transparent;}
+.atab.on{color:var(--ember);border-bottom-color:var(--ember);}
+.auth-pane{padding:24px 26px 28px;}
+.auth-pane h3{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:6px;}
+.auth-pane p{font-size:.79rem;color:var(--gray-mid);margin-bottom:18px;line-height:1.55;}
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:5px;}
+.fi{width:100%;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border-mid);background:#fff;color:var(--black);font-size:.86rem;outline:none;transition:border .3s;font-family:'DM Sans',sans-serif;}
+.fi:focus{border-color:var(--ember);}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.auth-submit{width:100%;padding:12px;border-radius:50px;background:var(--black);color:#fff;font-weight:700;font-size:.88rem;border:none;cursor:pointer;transition:background .25s;margin-top:4px;}
+.auth-submit:hover{background:var(--ember);}
+.auth-or{display:flex;align-items:center;gap:10px;margin:13px 0;color:var(--gray-light);font-size:.72rem;}
+.auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--border);}
+.shopify-btn{width:100%;padding:10px;border-radius:50px;border:1.5px solid var(--border-mid);background:transparent;color:var(--gray-dark);font-size:.82rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.shopify-btn:hover{border-color:var(--black);background:var(--bg-off);}
+.auth-switch{font-size:.74rem;color:var(--gray-mid);text-align:center;margin-top:11px;}
+.auth-switch span{color:var(--ember);cursor:pointer;font-weight:600;}
+.forgot-lnk{font-size:.71rem;color:var(--ember);cursor:pointer;display:block;text-align:right;margin-top:-6px;margin-bottom:13px;}
+
+/* ── SUBSCRIPTION MODAL ── */
+#sub-modal{z-index:9100;}
+.sub-box{max-width:760px;padding:32px 32px 36px;max-height:90vh;overflow-y:auto;}
+.sub-box h2{font-family:'Playfair Display',serif;font-size:1.7rem;margin-bottom:7px;}
+.sub-desc{color:var(--gray-mid);font-size:.86rem;margin-bottom:24px;}
+.sub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:24px;}
+.sub-card{border:2px solid var(--border);border-radius:15px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .25s;position:relative;}
+.sub-card:hover{border-color:var(--ember);background:var(--ember-pale);}
+.sub-card.sel{border-color:var(--ember);background:var(--ember-pale);}
+.sub-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--ember);color:#fff;padding:3px 12px;border-radius:50px;font-size:.59rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+.sub-meals{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--ember);line-height:1;}
+.sub-freq{font-size:.7rem;color:var(--gray-mid);margin-bottom:8px;}
+.sub-price{font-size:1.1rem;font-weight:700;color:var(--black);}
+.sub-per{font-size:.65rem;color:var(--gray-mid);}
+.sub-save{font-size:.65rem;color:var(--green);font-weight:700;margin-top:4px;}
+.sub-feats{background:var(--bg-off);border-radius:13px;padding:16px;margin-bottom:20px;}
+.sub-feats h4{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:10px;}
+.sub-feat-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.sfl{display:flex;align-items:flex-start;gap:6px;font-size:.78rem;color:var(--gray-dark);}
+.sfl-chk{color:var(--green);font-weight:700;flex-shrink:0;}
+.sub-go{width:100%;padding:14px;border-radius:50px;background:var(--black);color:#fff;font-weight:700;font-size:.96rem;border:none;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.sub-go:hover{background:var(--ember);box-shadow:0 6px 28px rgba(184,92,42,.35);}
+.sub-go-note{font-size:.65rem;color:var(--gray-light);text-align:center;margin-top:8px;}
+
+/* ── SURVEY MODAL ── */
+#survey-modal{z-index:9050;}
+.survey-box{max-width:520px;padding:34px 32px 32px;}
+.survey-prog{display:flex;gap:5px;margin-bottom:22px;}
+.sp-dot{flex:1;height:3px;border-radius:4px;background:var(--border);transition:background .4s;}
+.sp-dot.done{background:var(--ember);}
+.survey-step{display:none;}
+.survey-step.on{display:block;animation:fadeIn .3s ease;}
+.sv-title{font-family:'Playfair Display',serif;font-size:1.35rem;margin-bottom:6px;}
+.sv-sub{color:var(--gray-mid);font-size:.83rem;margin-bottom:22px;line-height:1.55;}
+.chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+.chip{padding:8px 13px;border-radius:50px;border:1.5px solid var(--border);background:transparent;color:var(--gray-dark);font-size:.79rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.chip:hover,.chip.sel{border-color:var(--ember);background:var(--ember-pale);color:var(--ember);}
+.sv-btns{display:flex;gap:9px;justify-content:flex-end;}
+.btn-next{padding:9px 22px;border-radius:50px;background:var(--black);color:#fff;font-size:.83rem;font-weight:600;border:none;cursor:pointer;transition:all .2s;}
+.btn-next:hover{transform:scale(1.03);}
+.btn-back{padding:9px 18px;border-radius:50px;background:var(--bg-off);color:var(--gray-mid);font-size:.83rem;font-weight:600;border:none;cursor:pointer;}
+.survey-result{text-align:center;padding:8px 0;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:13px 5%;transition:all .4s;background:transparent;}
+nav.scrolled{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);padding:10px 5%;border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo:hover .nav-brand{color:var(--ember);}
+.hero-logo{
+  display:block !important;
+  width:210px;
+  height:auto;
+  object-fit:contain;
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.12);
+  background:var(--bg-off);
+}
+
+.nav-brand{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;color:var(--black);}
+.nav-brand em{font-style:italic;color:var(--ember);}
+.nav-tagline{font-size:.54rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--gray-mid);display:block;margin-top:2px;}
+.nav-links{display:flex;gap:26px;list-style:none;}
+.nav-links a{color:var(--gray-dark);text-decoration:none;font-size:.82rem;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--black);}
+.nav-right{display:flex;align-items:center;gap:9px;}
+.nav-btn{padding:8px 14px;border-radius:50px;border:1.5px solid var(--border-mid);background:transparent;color:var(--gray-dark);font-size:.76rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;}
+.nav-btn:hover{border-color:var(--black);color:var(--black);}
+.cart-wrap{position:relative;display:inline-flex;}
+.cart-dot{position:absolute;top:-5px;right:-5px;width:17px;height:17px;border-radius:50%;background:var(--ember);color:#fff;font-size:.57rem;font-weight:700;display:none;align-items:center;justify-content:center;}
+.cart-dot.on{display:flex;}
+.btn-primary{padding:9px 19px;border-radius:50px;background:var(--black);color:#fff;font-size:.82rem;font-weight:700;border:none;cursor:pointer;transition:all .25s;}
+.btn-primary:hover{background:var(--ember);transform:scale(1.03);}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:5px;}
+.hamburger span{display:block;width:21px;height:2px;background:var(--black);border-radius:2px;}
+
+/* ── MOBILE MENU ── */
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:8499;}
+.mob-overlay.on{display:block;}
+.mob-menu{position:fixed;top:0;right:0;bottom:0;width:250px;background:#fff;border-left:1px solid var(--border);z-index:8500;transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);padding:72px 26px 34px;}
+.mob-menu.on{transform:translateX(0);}
+.mob-menu ul{list-style:none;}
+.mob-menu ul li{margin-bottom:20px;}
+.mob-menu ul a{color:var(--black);text-decoration:none;font-size:1.05rem;font-weight:500;}
+.mob-menu ul a:hover{color:var(--ember);}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:grid;place-items:center;position:relative;overflow:hidden;padding:130px 5% 90px;background:var(--bg);}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#fff8f4,#fff 45%,#f5f0eb 100%);z-index:0;}
+.smoke-orb{position:absolute;border-radius:50%;filter:blur(80px);animation:smokeDrift linear infinite;}
+.s1{width:55%;height:55%;left:45%;top:10%;background:radial-gradient(ellipse,rgba(184,92,42,.08),transparent 70%);animation-duration:14s;opacity:.7;}
+.s2{width:40%;height:60%;left:55%;top:-5%;background:radial-gradient(ellipse,rgba(220,140,60,.05),transparent 65%);animation-duration:18s;animation-delay:-6s;opacity:.5;}
+.particles{position:absolute;inset:0;pointer-events:none;z-index:1;}
+.pt{position:absolute;width:3px;height:3px;background:var(--ember);border-radius:50%;animation:floatP var(--d,8s) ease-in-out infinite var(--dl,0s);opacity:0;}
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;max-width:1240px;width:100%;}
+.hero-left{animation:sLeft .9s cubic-bezier(.16,1,.3,1) both;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:50px;border:1px solid rgba(184,92,42,.2);background:rgba(184,92,42,.06);font-size:.7rem;font-weight:600;color:var(--ember);letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px;}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease infinite;box-shadow:0 0 0 3px rgba(45,106,63,.2);}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2.1rem,5vw,3.8rem);line-height:1.08;font-weight:900;color:var(--black);margin-bottom:16px;}
+h1 em{font-style:italic;color:var(--ember);font-weight:400;}
+.hero-sub{color:var(--gray-mid);font-size:clamp(.9rem,1.4vw,1.04rem);line-height:1.7;max-width:420px;margin-bottom:28px;}
+.hero-actions{display:flex;gap:11px;flex-wrap:wrap;align-items:center;}
+.btn-ghost{padding:12px 24px;border-radius:50px;border:1.5px solid var(--border-mid);background:transparent;color:var(--black);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .25s;}
+.btn-ghost:hover{border-color:var(--black);background:var(--bg-off);}
+.btn-lg{padding:13px 30px;font-size:.95rem;}
+.cta-main{background:var(--black);color:#fff;border:none;animation:ctaPulse 3s ease-in-out infinite;}
+.cta-main:hover{background:var(--ember);transform:scale(1.03);box-shadow:0 4px 22px rgba(184,92,42,.35);}
+.hero-trust{margin-top:32px;display:flex;align-items:center;gap:14px;padding-top:24px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.tn{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:var(--ember);}
+.tl{font-size:.66rem;color:var(--gray-mid);letter-spacing:.05em;}
+.tdiv{height:24px;width:1px;background:var(--border);}
+.hero-right{position:relative;animation:sRight .9s cubic-bezier(.16,1,.3,1) .15s both;}
+.scene{position:relative;width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;}
+.wisps{position:absolute;bottom:28%;left:50%;transform:translateX(-50%);width:78%;height:58%;pointer-events:none;z-index:4;}
+.wisp{position:absolute;bottom:0;border-radius:50%;background:radial-gradient(ellipse,rgba(184,92,42,.07),transparent 70%);filter:blur(14px);animation:wispUp linear infinite;transform-origin:bottom center;}
+.w1{width:56px;height:86px;left:18%;animation-duration:5s;}
+.w2{width:38px;height:66px;left:38%;animation-duration:6.5s;animation-delay:-1.5s;}
+.w3{width:64px;height:96px;left:54%;animation-duration:7s;animation-delay:-3s;}
+.w4{width:32px;height:56px;left:70%;animation-duration:5.5s;animation-delay:-2s;}
+.glow-ring{position:absolute;inset:-8%;border-radius:50%;background:radial-gradient(ellipse at 55% 45%,rgba(184,92,42,.09),transparent 65%);animation:glowPulse 4s ease-in-out infinite;pointer-events:none;}
+.hero-card{position:relative;z-index:3;width:86%;aspect-ratio:1;border-radius:26px;overflow:hidden;box-shadow:0 30px 76px rgba(184,92,42,.17),0 8px 22px rgba(0,0,0,.09);animation:cardFloat 6s ease-in-out infinite;border:1px solid rgba(184,92,42,.12);}
+.hero-card img{width:100%;height:100%;object-fit:cover;animation:subtleZoom 12s ease-in-out infinite alternate;}
+.heat-shimmer{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(255,200,120,.04) 70%,transparent 100%);animation:shimmer 3s ease-in-out infinite;pointer-events:none;}
+.fbadge{position:absolute;z-index:5;display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:50px;font-size:.71rem;font-weight:700;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.1);backdrop-filter:blur(12px);animation:badgeFloat 3.5s ease-in-out infinite;}
+.fb-keto{top:7%;right:2%;background:rgba(255,255,255,.92);border:1px solid rgba(184,92,42,.2);color:var(--ember);}
+.fb-smoke{bottom:18%;left:2%;background:var(--black);color:#fff;animation-delay:-1.8s;}
+.fb-fresh{top:38%;right:2%;background:rgba(45,106,63,.9);color:#fff;animation-delay:-1s;}
+.fb-dot{width:6px;height:6px;border-radius:50%;background:var(--ember);animation:pulse 1.5s ease infinite;flex-shrink:0;}
+.macro-pill{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);z-index:6;display:flex;align-items:center;background:rgba(255,255,255,.96);border:1px solid var(--border);border-radius:50px;padding:9px 14px;box-shadow:0 8px 26px rgba(0,0,0,.1);white-space:nowrap;animation:pillUp 1s cubic-bezier(.16,1,.3,1) .8s both;max-width:calc(100% + 20px);overflow:hidden;}
+.mp-item{text-align:center;padding:0 9px;}
+.mp-v{display:block;font-weight:700;font-size:.9rem;color:var(--ember);font-family:'Playfair Display',serif;}
+.mp-l{display:block;font-size:.58rem;color:var(--gray-mid);letter-spacing:.06em;text-transform:uppercase;margin-top:1px;}
+.mp-div{width:1px;height:24px;background:var(--border);}
+
+/* ── FEATURES ── */
+.feats{display:flex;flex-wrap:wrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg-off);}
+.feat{flex:1 1 170px;padding:24px 20px;display:flex;align-items:center;gap:12px;border-right:1px solid var(--border);transition:background .3s;}
+.feat:last-child{border-right:none;}
+.feat:hover{background:var(--ember-pale);}
+.feat-icon{font-size:1.35rem;flex-shrink:0;}
+.feat-h{font-size:.81rem;font-weight:700;margin-bottom:2px;}
+.feat-p{font-size:.69rem;color:var(--gray-mid);line-height:1.5;}
+
+/* ── HOW IT WORKS ── */
+.how{padding:86px 5%;background:var(--bg);}
+.sec-lbl{font-size:.66rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ember);margin-bottom:10px;display:block;}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.65rem,4vw,2.75rem);font-weight:700;color:var(--black);margin-bottom:10px;line-height:1.15;}
+.sec-sub{color:var(--gray-mid);max-width:480px;line-height:1.7;font-size:.89rem;margin-bottom:46px;}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;border:1px solid var(--border);border-radius:18px;overflow:hidden;background:var(--border);}
+.step{padding:38px 26px;background:var(--bg);position:relative;overflow:hidden;transition:background .3s;}
+.step::after{content:'';position:absolute;inset:0;background:var(--ember-pale);opacity:0;transition:opacity .3s;}
+.step:hover::after{opacity:1;}
+.step-n{font-family:'Cormorant Garamond',serif;font-size:3.4rem;font-weight:300;color:rgba(184,92,42,.15);line-height:1;margin-bottom:14px;display:block;position:relative;z-index:1;}
+.step-ico{font-size:1.7rem;margin-bottom:10px;display:block;position:relative;z-index:1;}
+.step-h{font-size:.94rem;font-weight:700;margin-bottom:6px;position:relative;z-index:1;}
+.step-p{font-size:.79rem;color:var(--gray-mid);line-height:1.65;position:relative;z-index:1;}
+
+/* ── MENU ── */
+.menu-sec{padding:0;background:#f8f7f5;}
+.menu-sticky-bar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid var(--border);padding:0 5%;}
+.menu-sticky-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1280px;margin:0 auto;}
+.filter-scroll{display:flex;gap:8px;overflow-x:auto;padding:14px 0;scrollbar-width:none;-ms-overflow-style:none;flex:1;}
+.filter-scroll::-webkit-scrollbar{display:none;}
+.ftab{padding:8px 18px;border-radius:50px;border:1.5px solid var(--border-mid);background:#fff;color:var(--gray-mid);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.ftab.on,.ftab:hover{border-color:var(--black);background:var(--black);color:#fff;}
+.diet-filters{display:flex;gap:6px;flex-shrink:0;padding:14px 0;}
+.dfil{padding:7px 13px;border-radius:50px;border:1.5px solid var(--border);background:#fff;color:var(--gray-mid);font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+.dfil.on{border-color:var(--green);background:var(--green-pale);color:var(--green);}
+.menu-body{padding:32px 5% 80px;max-width:1280px;margin:0 auto;}
+.menu-count{font-size:.8rem;color:var(--gray-mid);margin-bottom:20px;}
+.meal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+@media(max-width:1100px){.meal-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:760px){.meal-grid{grid-template-columns:repeat(2,1fr);gap:12px;}}
+@media(max-width:480px){.meal-grid{grid-template-columns:1fr 1fr;gap:10px;}}
+
+/* CooKunity-style meal card */
+.meal-card{border-radius:16px;background:#fff;border:1.5px solid var(--border);overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;cursor:pointer;display:flex;flex-direction:column;position:relative;}
+.meal-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.11);border-color:rgba(0,0,0,.15);}
+.mc-img-wrap{width:100%;aspect-ratio:4/3;background:var(--bg-off);position:relative;overflow:hidden;flex-shrink:0;}
+.mc-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+.meal-card:hover .mc-img-wrap img{transform:scale(1.04);}
+.mc-img-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,#fff8f4,#f5ebe3);}
+.mc-badge{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:20px;font-size:.58rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+.mc-b-new{background:var(--ember);color:#fff;}
+.mc-b-popular{background:#1c1c1c;color:#fff;}
+.mc-b-keto{background:var(--green-pale);color:var(--green);}
+.mc-b-breakfast{background:#e8f0fb;color:#2c5fad;}
+.mc-b-seafood{background:#faf0e8;color:#c0692a;}
+.mc-quick-add{position:absolute;bottom:10px;right:10px;width:36px;height:36px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 12px rgba(0,0,0,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;opacity:0;transform:scale(.8);transition:all .2s;}
+.meal-card:hover .mc-quick-add{opacity:1;transform:scale(1);}
+.mc-quick-add:hover{background:var(--black);color:#fff;}
+.mc-body{padding:14px 14px 16px;display:flex;flex-direction:column;flex:1;}
+.mc-chef{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
+.mc-chef-av{width:22px;height:22px;border-radius:50%;background:var(--ember-pale);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;flex-shrink:0;}
+.mc-chef-name{font-size:.67rem;color:var(--gray-mid);font-weight:500;}
+.mc-name{font-weight:800;font-size:.9rem;color:var(--black);line-height:1.3;margin-bottom:6px;}
+.mc-stars{display:flex;align-items:center;gap:4px;margin-bottom:8px;}
+.mc-star-row{color:#f5a623;font-size:.72rem;letter-spacing:1px;}
+.mc-rating{font-size:.68rem;color:var(--gray-mid);}
+.mc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.mc-tag{padding:3px 8px;border-radius:20px;font-size:.6rem;font-weight:600;background:var(--bg-off);color:var(--gray-mid);border:1px solid var(--border);}
+.mc-tag-keto{background:var(--green-pale);color:var(--green);border-color:rgba(45,106,63,.15);}
+.mc-tag-gf{background:#fff7ed;color:#c2570a;border-color:rgba(194,87,10,.12);}
+.mc-tag-hp{background:#f0f4ff;color:#3b5bdb;border-color:rgba(59,91,219,.12);}
+.mc-macros{display:flex;gap:0;background:var(--bg-off);border-radius:10px;padding:8px 10px;margin-bottom:12px;border:1px solid var(--border);}
+.mc-macro{flex:1;text-align:center;position:relative;}
+.mc-macro+.mc-macro::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:1px;height:60%;background:var(--border);}
+.mc-mv{display:block;font-weight:800;font-size:.88rem;color:var(--black);}
+.mc-ml{display:block;font-size:.56rem;color:var(--gray-light);text-transform:uppercase;letter-spacing:.06em;margin-top:1px;}
+.mc-footer{display:flex;align-items:center;justify-content:center;margin-top:auto;}
+.mc-add-btn{width:100%;padding:10px 16px;border-radius:50px;background:var(--black);color:#fff;font-size:.78rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;}
+.mc-add-btn:hover{background:var(--ember);}
+
+/* Menu header */
+.menu-hero{background:var(--black);padding:40px 5% 32px;text-align:center;}
+.menu-hero-label{font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;}
+.menu-hero-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.8rem);color:#fff;font-weight:900;margin-bottom:8px;}
+.menu-hero-title em{color:var(--ember);font-style:italic;}
+.menu-hero-sub{color:rgba(255,255,255,.5);font-size:.85rem;max-width:440px;margin:0 auto;}
+.menu-cutoff{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:6px 14px;border-radius:50px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);font-size:.72rem;}
+.cutoff-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 1.5s ease infinite;}
+
+
+/* ── SUBSCRIPTION SECTION ── */
+.sub-sec{padding:86px 5%;background:var(--bg);}
+.sub-hero{background:linear-gradient(135deg,#1c1c1c,#2d2018);border-radius:26px;padding:50px 42px;display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;max-width:1100px;margin:0 auto;position:relative;overflow:hidden;}
+.sub-hero::before{content:'';position:absolute;top:-40%;right:-5%;width:360px;height:360px;background:radial-gradient(ellipse,rgba(184,92,42,.16),transparent 65%);pointer-events:none;}
+.sub-left{flex:1;min-width:230px;}
+.sub-left .sec-lbl{color:rgba(184,92,42,.75);}
+.sub-left h2{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3.5vw,2.4rem);color:#fff;margin-bottom:9px;line-height:1.15;}
+.sub-left h2 em{font-style:italic;color:var(--ember);}
+.sub-left p{color:rgba(255,255,255,.48);font-size:.86rem;line-height:1.65;}
+.sub-mini{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;min-width:230px;}
+.smc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:14px 12px;text-align:center;cursor:pointer;transition:all .2s;}
+.smc:hover,.smc.sel{background:rgba(184,92,42,.18);border-color:rgba(184,92,42,.5);}
+.smc-meals{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--ember);}
+.smc-freq{font-size:.63rem;color:rgba(255,255,255,.38);margin-bottom:4px;}
+.smc-price{font-size:.87rem;font-weight:700;color:#fff;}
+.smc-per{font-size:.6rem;color:rgba(255,255,255,.32);}
+.smc-save{font-size:.6rem;color:#7ec896;font-weight:700;margin-top:3px;}
+.sub-action{display:flex;flex-direction:column;gap:9px;align-items:flex-start;min-width:170px;}
+.sub-cta{padding:14px 26px;border-radius:50px;background:var(--ember);color:#fff;font-weight:700;font-size:.95rem;border:none;cursor:pointer;transition:all .25s;white-space:nowrap;}
+.sub-cta:hover{transform:scale(1.04);box-shadow:0 6px 28px rgba(184,92,42,.45);}
+.sub-fine{font-size:.65rem;color:rgba(255,255,255,.32);}
+
+/* ── REVIEWS ── */
+.reviews{padding:86px 5%;background:var(--bg-off);overflow:hidden;}
+.rev-track-wrap{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,black 10%,black 90%,transparent);mask:linear-gradient(90deg,transparent,black 10%,black 90%,transparent);margin-top:38px;}
+.rev-track{display:flex;gap:14px;animation:scrollX 36s linear infinite;width:max-content;}
+.rev-track:hover{animation-play-state:paused;}
+.rev-card{flex-shrink:0;width:270px;background:#fff;border:1px solid var(--border);border-radius:13px;padding:18px;}
+.rev-stars{color:var(--ember);font-size:.83rem;margin-bottom:9px;letter-spacing:2px;}
+.rev-text{font-size:.79rem;color:var(--gray-dark);line-height:1.6;margin-bottom:11px;}
+.rev-author{display:flex;align-items:center;gap:8px;}
+.rev-av{width:30px;height:30px;border-radius:50%;background:var(--bg-off);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.86rem;}
+.rev-name{font-size:.75rem;font-weight:700;}
+.rev-loc{font-size:.63rem;color:var(--gray-mid);}
+
+/* ── LOCATION ── */
+.loc-sec{padding:70px 5%;background:var(--bg);text-align:center;}
+.loc-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:50px;border:1px solid var(--border);background:var(--bg-off);margin-bottom:22px;font-size:.82rem;font-weight:600;}
+.zone-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:18px;max-width:600px;margin-left:auto;margin-right:auto;}
+.zchip{padding:4px 11px;border-radius:50px;border:1px solid var(--border-mid);background:#fff;font-size:.68rem;color:var(--gray-dark);}
+
+/* ── CTA FOOTER BANNER ── */
+.cta-sec{padding:86px 5%;background:var(--black);text-align:center;position:relative;overflow:hidden;}
+.cta-offer{display:inline-block;padding:7px 18px;border-radius:50px;background:rgba(184,92,42,.15);border:1px solid rgba(184,92,42,.4);color:#e8a878;font-size:.79rem;font-weight:700;letter-spacing:.05em;margin-bottom:22px;}
+.cta-sec .sec-title{color:#fff;}
+.cta-sec .sec-title em{color:var(--ember);}
+.cta-sec .sec-sub{color:rgba(255,255,255,.5);margin:0 auto 28px;max-width:480px;}
+.btn-white{background:#fff;color:var(--black);padding:13px 28px;border-radius:50px;font-size:.93rem;font-weight:700;border:none;cursor:pointer;transition:all .25s;}
+.btn-white:hover{background:var(--ember);color:#fff;}
+.btn-outline-w{border:1.5px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.7);padding:12px 24px;border-radius:50px;font-size:.86rem;font-weight:600;cursor:pointer;transition:all .25s;}
+.btn-outline-w:hover{border-color:rgba(255,255,255,.6);color:#fff;background:rgba(255,255,255,.07);}
+
+/* ── FOOTER ── */
+footer{background:var(--bg-off);border-top:1px solid var(--border);padding:48px 5% 24px;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px;margin-bottom:36px;}
+.foot-logo{height:44px;width:auto;object-fit:contain;border-radius:6px;display:block;}
+.foot-tagline{font-family:'Cormorant Garamond',serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gray-light);margin-top:4px;display:block;}
+.foot-p{font-size:.76rem;color:var(--gray-mid);line-height:1.7;max-width:230px;margin-top:11px;}
+.foot-col h5{font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-mid);margin-bottom:11px;}
+.foot-col ul{list-style:none;}
+.foot-col ul li{margin-bottom:7px;}
+.foot-col ul a{color:var(--gray-dark);text-decoration:none;font-size:.77rem;transition:color .2s;}
+.foot-col ul a:hover{color:var(--black);}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding-top:18px;border-top:1px solid var(--border);}
+.foot-bottom p{font-size:.69rem;color:var(--gray-light);}
+.socials{display:flex;gap:7px;}
+.soc{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:.74rem;color:var(--gray-mid);text-decoration:none;transition:all .2s;}
+.soc:hover{border-color:var(--black);color:var(--black);}
+
+/* ── CART BAR ── */
+.cart-bar{display:none!important;}
+.cb-count{font-weight:700;font-size:.82rem;}
+.cb-total{color:var(--gray-mid);font-size:.74rem;margin-top:2px;}
+.cb-btn{padding:9px 22px;border-radius:50px;background:var(--black);color:#fff;font-weight:700;font-size:.83rem;border:none;cursor:pointer;transition:all .2s;}
+.cb-btn:hover{background:var(--ember);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:70px;right:16px;background:#fff;border:1px solid var(--border);border-radius:13px;padding:11px 15px;z-index:9999;transform:translateX(120%);transition:transform .4s cubic-bezier(.16,1,.3,1);min-width:190px;box-shadow:0 8px 30px rgba(0,0,0,.11);}
+.toast.on{transform:translateX(0);}
+.toast-title{font-size:.79rem;font-weight:700;margin-bottom:2px;}
+.toast-msg{font-size:.69rem;color:var(--gray-mid);}
+
+/* ── BOX TALLY ── */
+#sk-tally{display:none!important;}
+#sk-tally:hover{transform:translateY(-2px);}
+#sk-tally .skt-text{display:flex;flex-direction:column;line-height:1.3;}
+#sk-tally .skt-label{font-size:.86rem;font-weight:800;}
+#sk-tally .skt-sub{font-size:.68rem;color:rgba(255,255,255,.5);}
+#sk-tally .skt-bar{width:54px;height:5px;background:rgba(255,255,255,.2);border-radius:50px;overflow:hidden;flex-shrink:0;}
+#sk-tally .skt-fill{height:100%;background:var(--ember);border-radius:50px;transition:width .3s;}
+#sk-tally.full .skt-label{color:#4ade80;}
+#sk-tally.full .skt-fill{background:#4ade80;}
+@media(max-width:540px){#sk-tally{bottom:76px;right:14px;padding:9px 16px;}#sk-tally .skt-label{font-size:.78rem;}}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1);}
+.reveal.vis{opacity:1;transform:none;}
+.rd1{transition-delay:.1s;}.rd2{transition-delay:.2s;}.rd3{transition-delay:.3s;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@keyframes sLeft{from{opacity:0;transform:translateX(-38px)}to{opacity:1;transform:none}}
+@keyframes sRight{from{opacity:0;transform:translateX(38px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes scrollX{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes floatP{0%{opacity:0;transform:translateY(0)}20%{opacity:.5}80%{opacity:.2}100%{opacity:0;transform:translateY(-110px)}}
+@keyframes smokeDrift{0%{transform:scale(1) translate(0,0);opacity:.6}33%{transform:scale(1.08) translate(2%,3%);opacity:.8}100%{transform:scale(1) translate(0,0);opacity:.6}}
+@keyframes wispUp{0%{transform:translateY(0) scaleX(1);opacity:0}15%{opacity:1}80%{opacity:.3}100%{transform:translateY(-190px) scaleX(.3) rotate(8deg);opacity:0}}
+@keyframes glowPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes cardFloat{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-8px) rotate(.4deg)}70%{transform:translateY(-4px) rotate(-.3deg)}}
+@keyframes subtleZoom{0%{transform:scale(1)}100%{transform:scale(1.04)}}
+@keyframes shimmer{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(-8px);opacity:1}}
+@keyframes badgeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes ctaPulse{0%,100%{box-shadow:0 4px 18px rgba(184,92,42,.25)}50%{box-shadow:0 6px 30px rgba(184,92,42,.45)}}
+@keyframes pillUp{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .hero-inner{grid-template-columns:1fr;gap:32px;text-align:center;}
+  .hero-sub{margin:0 auto 24px;}
+  .hero-actions{justify-content:center;}
+  .hero-trust{justify-content:center;}
+  .hero-right{max-width:340px;margin:0 auto;}
+  /* Keep badges inside scene on tablet */
+  .fb-keto{top:5%;right:4%;}
+  .fb-smoke{bottom:16%;left:4%;}
+  .fb-fresh{display:none;}
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .sub-mini{grid-template-columns:1fr 1fr;}
+  .steps{grid-template-columns:1fr;}
+  .feat{border-right:none;border-bottom:1px solid var(--border);}
+  .feat:last-child{border-bottom:none;}
+  .sub-hero{flex-direction:column;}
+  /* Modal full-screen on tablet */
+  .modal-bd{padding:0;align-items:flex-end;}
+  .modal-box{border-radius:24px 24px 0 0;max-height:92dvh;overflow-y:auto;}
+}
+@media(max-width:540px){
+  .footer-grid{grid-template-columns:1fr;}
+  .meal-body{padding:16px 16px 20px;}
+  .macro-grid{grid-template-columns:repeat(2,1fr);}
+  .sub-feat-list{grid-template-columns:1fr;}
+  .fg-row{grid-template-columns:1fr;}
+  .sub-box{padding:24px 22px 26px;}
+  /* Hero scene — shrink scene and tuck badges fully inside */
+  .hero-right{max-width:290px;}
+  .scene{overflow:visible;}
+  .fbadge{font-size:.62rem;padding:5px 10px;gap:4px;}
+  .fb-keto{top:4%;right:3%;}
+  .fb-smoke{bottom:14%;left:3%;}
+  .macro-pill{font-size:.68rem;padding:7px 12px;bottom:-10px;}
+  .mp-item{padding:0 8px;}
+  /* Modals — bottom sheet on mobile */
+  .modal-bd{padding:0;align-items:flex-end;}
+  .modal-box{border-radius:20px 20px 0 0;max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .cart-box,.auth-box,.sub-box,.survey-box,.meal-box{width:100%;max-width:100%;}
+  /* Cart bar above bottom sheet */
+  .cart-bar{z-index:600;}
+  /* Nav padding mobile */
+  nav{padding:11px 4%;}
+  /* Menu sticky bar scroll fix */
+  .menu-sticky-bar{top:56px;}
+}
+
+
+/* ── SHOPIFY THEME RESETS ── */
+/* Hide the default page title Shopify injects */
+.page-title,
+.shopify-section .page-width > h1:first-child,
+main#MainContent .page-width > h1 { display: none !important; }
+/* Remove default page padding */
+main#MainContent .shopify-section { margin: 0 !important; }
+.page-width { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+main#MainContent { margin-top: 0 !important; padding-top: 0 !important; }
+/* Prevent Shopify theme styles bleeding in */
+#sk-root { all: initial; font-family: 'DM Sans', sans-serif; display: block; }
+#sk-root * { box-sizing: border-box; }
+
+/* ── KILL HOPPY POPUPS BAR & ANY THIRD-PARTY TOP BARS ── */
+[data-hoppy-bar],
+[id*="hoppy"],
+[class*="hoppy"],
+[id*="email-bar"],
+[class*="email-bar"],
+[id*="email_bar"],
+[class*="email_bar"],
+[id*="collection-bar"],
+[class*="collection-bar"],
+iframe[src*="hoppy"],
+div[style*="background: rgb(0"] + div,
+body > div[style*="background:#000"],
+body > div[style*="background: #000"],
+body > div[style*="background:black"],
+body > div[style*="background: black"] { display: none !important; height: 0 !important; overflow: hidden !important; }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&display=swap" rel="stylesheet"/>
+
+{%- comment -%} TODO: replace REPLACE_WITH_KLAVIYO_COMPANY_ID with the real Klaviyo public company/account ID before launch {%- endcomment -%}
+<script type="text/javascript" async src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=REPLACE_WITH_KLAVIYO_COMPANY_ID"></script>
+
+<div id="sk-root">
+<!-- ══ LOCATION GATE ══ -->
+<div id="gate">
+  <img class="gate-logo" src="https://cdn.shopify.com/s/files/1/0945/2562/0529/files/SmoKeto_Logo.png?v=1753315237" alt="SmoKeto — Smoked Meats. Keto Eats." style="height:140px;"/>
+  <div id="gate-fallback" style="display:none"></div>
+  <h2>Southern Nevada Delivery Area</h2>
+  <p>SmoKeto delivers exclusively across the Las Vegas metro. Enter your ZIP to confirm we serve your area.</p>
+  <input type="text" id="zip-in" placeholder="Enter ZIP Code" maxlength="5" inputmode="numeric"/>
+  <input type="email" id="gate-email" placeholder="Enter Email Address" inputmode="email"/>
+  <div id="gate-err"></div>
+  <button class="gate-btn" onclick="checkZip()">Check My Area →</button>
+  <div class="gate-chips">
+    <span class="gate-chip">Las Vegas</span><span class="gate-chip">Henderson</span><span class="gate-chip">North Las Vegas</span><span class="gate-chip">Summerlin</span><span class="gate-chip">Spring Valley</span><span class="gate-chip">Enterprise</span><span class="gate-chip">Paradise</span>
+  </div>
+</div>
+
+<!-- ══ MEAL DETAIL OVERLAY ══ -->
+<div class="modal-bd" id="meal-modal" onclick="closeMeal(event)">
+  <div class="modal-box meal-box">
+    <button class="mclose" onclick="closeMeal(null,true)">✕</button>
+    <div class="meal-img-wrap" id="ov-img"></div>
+    <div class="meal-body">
+      <div class="meal-body-name" id="ov-name"></div>
+      <div class="meal-body-desc" id="ov-desc"></div>
+      <div class="macro-grid" id="ov-macros"></div>
+      <div class="overlay-hr"></div>
+      <div class="var-wrap" id="ov-var-wrap" style="display:none">
+        <span class="var-label">Choose your option</span>
+        <div class="var-btns" id="ov-var-btns"></div>
+      </div>
+      <div class="diet-row" id="ov-tags"></div>
+      <div class="meal-footer">
+        <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;width:100%;justify-content:space-between">
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="chgQty(-1)">−</button>
+            <span class="qty-n" id="ov-qty">1</span>
+            <button class="qty-btn" onclick="chgQty(1)">+</button>
+          </div>
+          <button class="add-cart-btn" id="ov-add-btn" onclick="closeM('meal-modal');openSub()">🥩 Subscribe to Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CART MODAL ══ -->
+<div class="modal-bd" id="cart-modal" onclick="closeCart(event)">
+  <div class="modal-box cart-box">
+    <button class="mclose" onclick="closeCart(null,true)">✕</button>
+    <div class="cart-hdr"><h3>🛒 Your Order</h3></div>
+    <div class="cart-body" id="cart-body">
+      <div class="cart-empty"><div class="ce-icon">🛒</div><p>Your cart is empty.<br>Add some meals to get started!</p></div>
+    </div>
+    <div class="cart-ftr">
+      <div class="cart-sub">
+        <span class="cart-sub-lbl">Subtotal</span>
+        <span class="cart-sub-val" id="cart-sub-val">$0.00</span>
+      </div>
+      <button class="checkout-btn" onclick="goCheckout()">🔒 Secure Checkout</button>
+      <button class="continue-btn" onclick="closeCart(null,true)">← Continue Shopping</button>
+      <div class="cart-freeship-track"><div class="cart-freeship-fill" id="cart-freeship-fill"></div></div>
+      <div class="cart-note" id="cart-freeship-msg">🚚 Free delivery on orders over $149 · Powered by Shopify</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AUTH MODAL ══ -->
+<div class="modal-bd" id="auth-modal" onclick="closeAuth(event)">
+  <div class="modal-box auth-box">
+    <button class="mclose" onclick="closeAuth(null,true)">✕</button>
+    <div class="auth-tabs">
+      <button class="atab on" id="atab-in" onclick="switchTab('in')">Sign In</button>
+      <button class="atab" id="atab-up" onclick="switchTab('up')">Create Account</button>
+    </div>
+    <!-- Sign In -->
+    <div id="pane-in" class="auth-pane">
+      <h3>Welcome back 🔥</h3>
+      <p>Sign in to manage your meal plan, view orders, and update delivery preferences.</p>
+      <div class="fg"><label>Email Address</label><input class="fi" type="email" placeholder="you@example.com"/></div>
+      <div class="fg"><label>Password</label><input class="fi" type="password" placeholder="••••••••"/></div>
+      <a class="forgot-lnk" onclick="window.open('https://smoketostore.com/account/login#recover','_blank')">Forgot your password?</a>
+      <button class="auth-submit" onclick="doLogin()">Sign In to My Account →</button>
+      <div class="auth-or">or</div>
+      <button class="shopify-btn" onclick="doLogin()">🛍️ Continue with Shopify Account</button>
+      <div class="auth-switch">No account? <span onclick="switchTab('up')">Create one free</span></div>
+    </div>
+    <!-- Sign Up -->
+    <div id="pane-up" class="auth-pane" style="display:none">
+      <h3>Join SmoKeto 🥩</h3>
+      <p>Create your account to start your meal plan, save favorites, and track deliveries.</p>
+      <div class="fg-row">
+        <div class="fg"><label>First Name</label><input class="fi" type="text" placeholder="Alex"/></div>
+        <div class="fg"><label>Last Name</label><input class="fi" type="text" placeholder="Johnson"/></div>
+      </div>
+      <div class="fg"><label>Email Address</label><input class="fi" type="email" placeholder="you@example.com"/></div>
+      <div class="fg"><label>Delivery ZIP Code</label><input class="fi" type="text" placeholder="89101" maxlength="5"/></div>
+      <div class="fg"><label>Password</label><input class="fi" type="password" placeholder="Create a password"/></div>
+      <button class="auth-submit" onclick="doSignup()">Create My Account →</button>
+      <div class="auth-or">or</div>
+      <button class="shopify-btn" onclick="doSignup()">🛍️ Sign up with Shopify</button>
+      <div class="auth-switch">Have an account? <span onclick="switchTab('in')">Sign in</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUBSCRIPTION MODAL ══ -->
+<div class="modal-bd" id="sub-modal" onclick="closeSub(event)">
+  <div class="modal-box sub-box">
+    <button class="mclose" onclick="closeSub(null,true)">✕</button>
+    <h2>Choose Your Weekly Meal Plan</h2>
+    <p class="sub-desc">Flexible subscription — pause, skip, or cancel anytime. No contracts. More meals = lower price per meal.</p>
+    <div class="sub-grid" id="sub-cards"></div>
+    <div class="sub-feats">
+      <h4>Every Plan Includes</h4>
+      <div class="sub-feat-list">
+        <div class="sfl"><span class="sfl-chk">✓</span><span>Fresh weekly delivery to your door</span></div>
+        <div class="sfl"><span class="sfl-chk">✓</span><span>Fully customizable meal selections</span></div>
+        <div class="sfl"><span class="sfl-chk">✓</span><span>Complete macro tracking per meal</span></div>
+        <div class="sfl"><span class="sfl-chk">✓</span><span>SMS alerts before weekly cutoff</span></div>
+        <div class="sfl"><span class="sfl-chk">✓</span><span>Skip or swap any week</span></div>
+        <div class="sfl"><span class="sfl-chk">✓</span><span>Free delivery on orders over $149</span></div>
+        <div class="sfl"><span class="sfl-chk">✓</span><span>Access to seasonal special items</span></div>
+        <div class="sfl"><span class="sfl-chk">✓</span><span>Cancel anytime — zero penalties</span></div>
+      </div>
+    </div>
+    <div class="sub-go-note">Tap a plan above to continue — pause, skip, or cancel anytime.</div>
+  </div>
+</div>
+
+<!-- ══ SURVEY MODAL ══ -->
+<div class="modal-bd" id="survey-modal" onclick="closeSurvey(event)">
+  <div class="modal-box survey-box">
+    <button class="mclose" onclick="closeSurvey(null,true)">✕</button>
+    <div class="survey-prog" id="sv-prog"></div>
+    <div class="survey-step on" id="sv1">
+      <p class="sv-title">What's your goal?</p>
+      <p class="sv-sub">We'll personalize your SmoKeto menu around what matters most.</p>
+      <div class="chip-grid">
+        <button class="chip" onclick="tgl(this)">🔥 Lose Weight</button>
+        <button class="chip" onclick="tgl(this)">💪 Build Muscle</button>
+        <button class="chip" onclick="tgl(this)">⚡ More Energy</button>
+        <button class="chip" onclick="tgl(this)">🧠 Mental Clarity</button>
+        <button class="chip" onclick="tgl(this)">❤️ Heart Health</button>
+        <button class="chip" onclick="tgl(this)">🍽️ Just Eat Well</button>
+      </div>
+      <div class="sv-btns"><button class="btn-next" onclick="svStep(2)">Next →</button></div>
+    </div>
+    <div class="survey-step" id="sv2">
+      <p class="sv-title">Dietary preferences?</p>
+      <p class="sv-sub">Select all that apply — our kitchen accommodates any combo.</p>
+      <div class="chip-grid">
+        <button class="chip sel" onclick="tgl(this)">🥩 Keto</button>
+        <button class="chip" onclick="tgl(this)">🐟 Carnivore</button>
+        <button class="chip" onclick="tgl(this)">🥦 Low-Carb</button>
+        <button class="chip" onclick="tgl(this)">🌾 Gluten-Free</button>
+        <button class="chip" onclick="tgl(this)">🥛 Dairy-Free</button>
+        <button class="chip" onclick="tgl(this)">🫀 High Protein</button>
+      </div>
+      <div class="sv-btns"><button class="btn-back" onclick="svStep(1)">← Back</button><button class="btn-next" onclick="svStep(3)">Next →</button></div>
+    </div>
+    <div class="survey-step" id="sv3">
+      <p class="sv-title">A Note About Allergens</p>
+      <p class="sv-sub">Your health and trust mean everything to us.</p>
+      <div style="font-size:.79rem;color:var(--gray-dark);line-height:1.7;margin-bottom:20px">
+        <p style="margin-bottom:12px">Every SmoKeto meal is thoughtfully prepared using gluten-free, soy-free, corn-free, seed oil-free ingredients, with no added sugar or artificial sweeteners.</p>
+        <p style="margin-bottom:12px">While we take great care in how our meals are prepared and handled, we operate in a licensed shared commercial kitchen where other ingredients and allergens may be present. Because of this shared environment, we cannot guarantee that our meals are completely free from trace amounts of allergens due to shared equipment or airborne cross-contact.</p>
+        <p style="margin-bottom:12px">If you have celiac disease or a severe food allergy that requires complete avoidance of even trace amounts of an allergen, we encourage you to consult your healthcare provider before consuming our meals.</p>
+        <p style="margin-bottom:12px">Thank you for trusting us to be part of your health journey. We are committed to preparing every meal with the same care and attention we would serve to our own family.</p>
+        <p style="font-size:.72rem;color:var(--gray-light)">By continuing, you acknowledge that you have read and understand this notice.</p>
+      </div>
+      <div class="sv-btns"><button class="btn-back" onclick="svStep(2)">← Back</button><button class="btn-next" onclick="finishSv()">I Understand — See My Plan ✨</button></div>
+    </div>
+    <div class="survey-step" id="sv4">
+      <div class="survey-result">
+        <div style="font-size:2.5rem;margin-bottom:10px">🎉</div>
+        <p class="sv-title">Your SmoKeto Plan is Ready!</p>
+        <p style="color:var(--gray-mid);font-size:.84rem;line-height:1.65;margin-bottom:16px">Based on your answers we've curated your personalized keto selections.<br><br><span id="sv4-plan-summary"><strong style="color:var(--ember)">8 meals/week · Keto · High Protein · Southern Nevada Delivery</strong></span></p>
+        <div style="display:flex;gap:11px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-white" onclick="closeSurvey(null,true);openSub()">Start My Plan →</button>
+          <button class="btn-outline-w" onclick="closeSurvey(null,true)">Browse Menu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MOBILE MENU ══ -->
+<div class="mob-overlay" id="mob-overlay" onclick="closeMob()"></div>
+<div class="mob-menu" id="mob-menu">
+  <ul>
+    <li><a href="#how" onclick="closeMob()">How It Works</a></li>
+    <li><a href="#menu" onclick="closeMob()">Menu</a></li>
+    <li><a href="#plans" onclick="closeMob()">Plans</a></li>
+    <li><a href="#reviews" onclick="closeMob()">Reviews</a></li>
+    <li><a href="#" onclick="closeMob();openAuth()">Sign In</a></li>
+  </ul>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img class="nav-logo-img" src="https://cdn.shopify.com/s/files/1/0945/2562/0529/files/SmoKeto_Logo.png?v=1753315237" alt="SmoKeto — Smoked Meats. Keto Eats." style="height:42px;width:auto;display:block;"/>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#plans">Plans</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="openAuth()">👤 Sign In</button>
+    <div class="cart-wrap">
+      <button class="nav-btn" onclick="openCartModal()">🛒 Cart</button>
+      <span class="cart-dot" id="cart-dot">0</span>
+    </div>
+    <button class="btn-primary" onclick="openSub()">Start Plan</button>
+    <button class="hamburger" onclick="openMob()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+
+
+<!-- ══ RENEWAL REMINDER BANNER ══ -->
+<div id="sk-renewal-banner" style="display:none;background:#1c1c1c;color:#fff;padding:14px 20px;text-align:center;position:relative;z-index:200;margin-top:64px;">
+  <span id="sk-renewal-msg" style="font-family:'DM Sans',sans-serif;font-size:.88rem;margin-right:14px;"></span>
+  <a href="/pages/weekly" style="display:inline-block;background:#b85c2a;color:#fff;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;padding:7px 18px;border-radius:50px;text-decoration:none;white-space:nowrap;">Pick This Week's Meals →</a>
+  <button onclick="document.getElementById('sk-renewal-banner').style.display='none';try{localStorage.setItem('sk_banner_dismissed',Date.now());}catch(e){};" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer;line-height:1;">✕</button>
+</div>
+<script>
+(function(){
+  try {
+    var plan = JSON.parse(localStorage.getItem('sk_plan') || 'null');
+    if (!plan || !plan.meals) return; // not a subscriber
+    var dismissed = parseInt(localStorage.getItem('sk_banner_dismissed') || '0');
+    var now = Date.now();
+    if (dismissed && (now - dismissed) < 86400000) return; // dismissed within last 24h
+    var day = new Date().getDay(); // 0=Sun,1=Mon...6=Sat
+    // Show Thursday (4), Friday (5), Saturday (6) — renewal is every Sunday
+    if (day < 4 && day !== 0) return;
+    var msg = day === 0
+      ? '🔥 Your box renews TODAY — make sure your meals are selected!'
+      : (day >= 4 ? '🥩 Your weekly box renews Sunday — ' + (7 - day) + ' day' + (7 - day > 1 ? 's' : '') + ' left to choose your meals.' : '');
+    if (!msg) return;
+    document.getElementById('sk-renewal-msg').textContent = msg;
+    document.getElementById('sk-renewal-banner').style.display = 'block';
+  } catch(e) {}
+})();
+</script>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="smoke-orb s1"></div>
+    <div class="smoke-orb s2"></div>
+  </div>
+  <div class="particles" id="particles"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <img class="hero-logo" src="https://cdn.shopify.com/s/files/1/0945/2562/0529/files/IMG_0078.jpg?v=1753315189" alt="SmoKeto" width="210" loading="eager"/>
+      <div class="hero-badge"><span class="badge-dot"></span>Now Delivering · Southern Nevada</div>
+      <h1>Chef-Smoked<br><em>Keto Meals</em><br>At Your Door</h1>
+      <p class="hero-sub">Premium ketogenic meal prep crafted in our Las Vegas kitchen — wood-smoked proteins, fresh low-carb sides, zero guilt. Heat &amp; eat in 2 minutes.</p>
+      <div class="hero-actions">
+        <button class="btn-lg cta-main" style="border-radius:50px;padding:14px 30px;font-size:.95rem;font-weight:700;cursor:pointer" onclick="openSub()">Start My Plan</button>
+        <button class="btn-ghost btn-lg" onclick="openSub()">Take the Quiz →</button>
+      </div>
+      <div class="hero-trust">
+        <div><div class="tn">500+</div><div class="tl">Weekly Clients</div></div>
+        <div class="tdiv"></div>
+        <div><div class="tn">4.9★</div><div class="tl">Avg Rating</div></div>
+        <div class="tdiv"></div>
+        <div><div class="tn">$0</div><div class="tl">Delivery over $149</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="scene">
+        <div class="wisps">
+          <div class="wisp w1"></div><div class="wisp w2"></div><div class="wisp w3"></div><div class="wisp w4"></div>
+        </div>
+        <div class="glow-ring"></div>
+        <div class="hero-card">
+          <img src="https://cdn.shopify.com/s/files/1/0945/2562/0529/files/1AE37E3E-DE32-4B92-A529-9F743AF1B543.jpg?v=1753304396" alt="SmoKeto smoked brisket"/>
+          <div class="heat-shimmer"></div>
+        </div>
+        <div class="fbadge fb-keto"><span class="fb-dot"></span>100% Keto Certified</div>
+        <div class="fbadge fb-smoke">🔥 Wood-Smoked Daily</div>
+        <div class="fbadge fb-fresh">✓ Made Fresh Weekly</div>
+        <div class="macro-pill">
+          <div class="mp-item"><span class="mp-v">42g</span><span class="mp-l">Protein</span></div>
+          <div class="mp-div"></div>
+          <div class="mp-item"><span class="mp-v">6g</span><span class="mp-l">Carbs</span></div>
+          <div class="mp-div"></div>
+          <div class="mp-item"><span class="mp-v">18g</span><span class="mp-l">Fat</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<div class="feats reveal">
+  <div class="feat"><span class="feat-icon">🔥</span><div><div class="feat-h">Wood-Smoked Proteins</div><div class="feat-p">Real hardwood — not shortcuts</div></div></div>
+  <div class="feat"><span class="feat-icon">⚡</span><div><div class="feat-h">Ready in 2 Minutes</div><div class="feat-p">Fully cooked. Just heat &amp; plate.</div></div></div>
+  <div class="feat"><span class="feat-icon">📦</span><div><div class="feat-h">Weekly Fresh Delivery</div><div class="feat-p">Order closes every Friday at noon</div></div></div>
+  <div class="feat"><span class="feat-icon">🎛️</span><div><div class="feat-h">Fully Flexible</div><div class="feat-p">Pause, skip, or swap anytime</div></div></div>
+  <div class="feat"><span class="feat-icon">📍</span><div><div class="feat-h">Southern Nevada Local</div><div class="feat-p">LV · Henderson · North LV &amp; more</div></div></div>
+</div>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section class="how" id="how">
+  <span class="sec-lbl reveal">The Process</span>
+  <h2 class="sec-title reveal rd1">Chef-quality meals,<br>zero effort from you</h2>
+  <p class="sec-sub reveal rd2">From our Las Vegas kitchen to your Southern Nevada door — every week, like clockwork.</p>
+  <div class="steps reveal rd3">
+    <div class="step"><span class="step-n">01</span><span class="step-ico">📋</span><p class="step-h">Take the Quiz</p><p class="step-p">Tell us your goals, dietary needs, and how many meals you want per week.</p></div>
+    <div class="step"><span class="step-n">02</span><span class="step-ico">🍽️</span><p class="step-h">Choose Your Meals</p><p class="step-p">Browse the weekly menu and pick your favorites — or let us auto-select.</p></div>
+    <div class="step"><span class="step-n">03</span><span class="step-ico">🔥</span><p class="step-h">We Cook &amp; Smoke</p><p class="step-p">Our chefs prepare every meal fresh. Wood-smoked, hand-portioned, macro-tracked.</p></div>
+    <div class="step"><span class="step-n">04</span><span class="step-ico">🚗</span><p class="step-h">We Deliver</p><p class="step-p">Meals arrive chilled at your door. Get a text when on the way. Free over $149.</p></div>
+    <div class="step"><span class="step-n">05</span><span class="step-ico">🏆</span><p class="step-h">Heat &amp; Enjoy</p><p class="step-p">Microwave in 2 minutes or warm in oven. Stays fresh 5–7 days in the fridge.</p></div>
+  </div>
+</section>
+
+<!-- ══ MENU ══ -->
+<section id="menu">
+  <div class="menu-hero">
+    <div class="menu-hero-label">This Week's Menu</div>
+    <h2 class="menu-hero-title">Chef-Crafted <em>Keto Meals</em></h2>
+    <p class="menu-hero-sub">Every meal wood-smoked, macro-tracked, and ready in 2 minutes. New items weekly.</p>
+    <div class="menu-cutoff"><span class="cutoff-dot"></span>Order closes Friday 12:00 PM · Delivered Monday &amp; Tuesday</div>
+  </div>
+
+  <div class="menu-sticky-bar">
+    <div class="menu-sticky-inner">
+      <div class="filter-scroll" id="filter-scroll">
+        <button class="ftab on" onclick="filterMenu(this,'all')">All Meals</button>
+        <button class="ftab" onclick="filterMenu(this,'keto')">🥩 Keto</button>
+        <button class="ftab" onclick="filterMenu(this,'bowls')">🥗 Bowls</button>
+        <button class="ftab" onclick="filterMenu(this,'seafood')">🐟 Seafood</button>
+      </div>
+      <div class="diet-filters" id="diet-filters">
+        <button class="dfil" onclick="toggleDiet(this,'gluten-free')">🌾 Gluten-Free</button>
+        <button class="dfil" onclick="toggleDiet(this,'high-protein')">💪 High Protein</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-body">
+    <div class="menu-count" id="menu-count"></div>
+    <div class="meal-grid" id="meal-grid"></div>
+  </div>
+</section>
+
+
+
+<!-- ══ SUBSCRIPTION PLANS SECTION ══ -->
+<section class="sub-sec" id="plans">
+  <div class="sub-hero">
+    <div class="sub-left">
+      <span class="sec-lbl">Weekly Meal Plans</span>
+      <h2>Start Your <em>Subscription</em></h2>
+      <p>Lock in your weekly delivery and save up to 22% per meal. Pause or cancel anytime — no contracts, no penalties.</p>
+    </div>
+    <div class="sub-mini" id="sub-mini"></div>
+    <div class="sub-action">
+      <button class="sub-cta" onclick="openSub()">🔥 Choose My Plan</button>
+      <div class="sub-fine">Free delivery over $149 · Cancel anytime</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ REVIEWS ══ -->
+<section class="reviews" id="reviews">
+  <span class="sec-lbl reveal">Testimonials</span>
+  <h2 class="sec-title reveal rd1">Real Southern Nevada Clients</h2>
+  <div class="rev-track-wrap"><div class="rev-track" id="rev-track"></div></div>
+</section>
+
+<!-- ══ LOCATION ══ -->
+<section class="loc-sec">
+  <div class="loc-badge reveal"><span>📍</span>Southern Nevada Delivery Zone</div>
+  <h2 class="sec-title reveal rd1">We Deliver Across<br>the Las Vegas Metro</h2>
+  <p class="sec-sub reveal rd2" style="margin:10px auto 0;text-align:center">Las Vegas · Henderson · North Las Vegas · Summerlin · Spring Valley · Enterprise · Paradise · Whitney · Green Valley</p>
+  <div class="zone-chips reveal rd3">
+    <span class="zchip">Downtown LV</span><span class="zchip">Summerlin</span><span class="zchip">Henderson</span><span class="zchip">North Las Vegas</span><span class="zchip">Spring Valley</span><span class="zchip">Enterprise</span><span class="zchip">Centennial Hills</span><span class="zchip">Paradise</span><span class="zchip">Green Valley</span>
+  </div>
+</section>
+
+<!-- ══ CTA BANNER ══ -->
+<section class="cta-sec">
+  <div class="cta-offer reveal">🎁 First Order: FREE DELIVERY + 10% Off</div>
+  <h2 class="sec-title reveal rd1">Start Eating Like<br><em>You Mean It</em></h2>
+  <p class="sec-sub reveal rd2">Premium keto meals, wood-smoked and delivered fresh across Southern Nevada every week.</p>
+  <div class="reveal rd3" style="display:flex;gap:13px;justify-content:center;flex-wrap:wrap">
+    <button class="btn-white btn-lg" style="padding:13px 28px;border-radius:50px" onclick="openSub()">Get Started Today</button>
+    <button class="btn-outline-w btn-lg" style="padding:12px 24px;border-radius:50px" onclick="openSub()">Find My Plan →</button>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <img class="foot-logo" src="https://cdn.shopify.com/s/files/1/0945/2562/0529/files/IMG_0078.jpg?v=1753315189" alt="SmoKeto" onerror="this.style.display='none'" style="height:52px;width:auto;object-fit:contain;border-radius:6px;"/>
+      <span class="foot-tagline">Smoked Meats · Keto Eats</span>
+      <p class="foot-p">Las Vegas's premium keto meal delivery. Chef-crafted, wood-smoked, macro-tracked — delivered fresh every week across Southern Nevada.</p>
+    </div>
+    <div class="foot-col"><h5>Company</h5><ul><li><a href="#">Our Story</a></li><li><a href="#">Our Kitchen</a></li><li><a href="#">Our Chefs</a></li></ul></div>
+    <div class="foot-col"><h5>Service</h5><ul>
+      <li><a href="#" onclick="openSub();return false">Start a Plan</a></li>
+      <li><a href="#menu">This Week's Menu</a></li>
+      <li><a href="https://smoketostore.com/collections/all" target="_blank">Shop All</a></li>
+    </ul></div>
+    <div class="foot-col"><h5>Account</h5><ul>
+      <li><a href="#" onclick="openAuth();return false">Sign In</a></li>
+      <li><a href="#" onclick="switchTab('up');openAuth();return false">Create Account</a></li>
+      <li><a href="https://smoketostore.com/pages/contact" target="_blank">Contact Us</a></li>
+      <li><a href="#">FAQ</a></li>
+    </ul></div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 SmoKeto Meal Prep · Las Vegas, NV · Southern Nevada's Keto Kitchen</p>
+    <div class="socials">
+      <a href="#" class="soc">f</a><a href="#" class="soc">ig</a><a href="#" class="soc">tk</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ CART BAR ══ -->
+<div class="cart-bar" id="cart-bar">
+  <div>
+    <div class="cb-count" id="cb-count">0 meals selected</div>
+    <div class="cb-total" id="cb-total">Add meals to start your order</div>
+  </div>
+  <button class="cb-btn" onclick="openCartModal()">View Cart →</button>
+</div>
+
+<!-- ══ BOX TALLY ══ -->
+<div id="sk-tally" onclick="window.location.href='/pages/weekly'"></div>
+
+<!-- ══ TOAST ── -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="t-title"></div>
+  <div class="toast-msg" id="t-msg"></div>
+</div>
+</div>
+
+{%- comment -%}
+  Signed-in skip logic: bypass Steps 1-2 (zip/email gate + plan picker) for
+  known customers and route straight to their meal-selection dashboard.
+  Delivery fee product looked up live — never hardcode its price.
+{%- endcomment -%}
+{%- assign sk_is_customer = false -%}
+{%- if customer -%}{%- assign sk_is_customer = true -%}{%- endif -%}
+{%- assign delivery_fee_product = all_products['delivery-fee'] -%}
+{%- comment -%}
+  Homepage menu — live-looped from the box-meals collection (breakfast/add-on
+  items excluded; those live on the Step 4 upsell page only). ID, handle,
+  description, image, tags, variants, and macros all come straight from
+  Shopify — never hardcoded. Price, chef name, star rating, and badge have no
+  Shopify equivalent (box-meal variants are priced $0 for the subscription
+  flow, not real a-la-carte retail prices), so those are merged in from the
+  MENU_META table below, keyed by product handle.
+{%- endcomment -%}
+{%- assign sk_menu_meals = collections['box-meals'].products -%}
+
+<script>
+
+// ══════════════════════════════════════════
+// REAL SHOPIFY PRODUCT DATA
+// ══════════════════════════════════════════
+// Always match the current page's actual origin (not a hardcoded domain) —
+// the store's primary domain is www.smoketostore.com, and a hardcoded
+// non-www value here made every cart fetch cross-origin and silently
+// blocked by the browser ("Failed to fetch") whenever a customer landed
+// on the canonical www host.
+const DOMAIN = window.location.host;
+const SK_IS_CUSTOMER = {{ sk_is_customer }};
+const SK_DELIVERY_FEE_VARIANT = 55016006680881; // the one allowed hardcode — delivery-fee product's variant ID
+const SK_DELIVERY_FEE_PRICE = {{ delivery_fee_product.price | divided_by: 100.0 | round: 2 }};
+const SK_MENU_RAW = [
+  {%- assign sk_mp = 0 -%}
+  {%- for meal in sk_menu_meals -%}
+  {%- unless meal.tags contains 'breakfast' or meal.tags contains 'add-on' or meal.tags contains 'one-time' or meal.tags contains 'upsell' -%}
+  {% if sk_mp > 0 %},{% endif %}
+  {
+    id: {{ meal.id }},
+    handle: {{ meal.handle | json }},
+    name: {{ meal.title | json }},
+    full: {{ meal.description | strip_html | json }},
+    tags: {{ meal.tags | json }},
+    img: {% if meal.featured_image %}{{ meal.featured_image | image_url: width: 800 | json }}{% else %}null{% endif %},
+    prot: {{ meal.metafields.nutrition.protein | default: '' | json }},
+    fat: {{ meal.metafields.nutrition.fat | default: '' | json }},
+    carbs: {{ meal.metafields.nutrition.netcarbs | default: meal.metafields.nutrition.totalcarb | default: '' | json }},
+    variants: [
+      {%- for v in meal.variants -%}
+      { id: {{ v.id }}, t: {{ v.title | json }}, sp: {{ v.price | divided_by: 100.0 | round: 2 }} }
+      {%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+  {%- assign sk_mp = sk_mp | plus: 1 -%}
+  {%- endunless -%}
+  {%- endfor -%}
+];
+
+// Marketing data with no Shopify equivalent — keyed by product handle. Price
+// here is the a-la-carte menu price (distinct from the $0 box-selection
+// variant price used by the subscription flow). Add an entry whenever a new
+// meal joins the box-meals collection; unlisted meals fall back to
+// MENU_META_DEFAULT so the menu never breaks.
+const MENU_META = {
+  'shepherds-pie': {chef:'Chef Amara',stars:4.9,rc:189,bt:'popular',bl:'Popular',price:14.99,cal:'326',dtags:['Keto','Gluten-Free','Comfort Food']},
+  'chipotle-chicken-taco-bowl': {chef:'Chef Diego',stars:4.7,rc:241,bt:'keto',bl:'Keto',price:13.99,cal:'298',dtags:['Keto','Gluten-Free','Bowls']},
+  'shrimp-scampi-with-spaghetti-squash': {chef:'Chef Sofia',stars:4.9,rc:156,bt:'new',bl:'New',price:16.99,cal:'302',dtags:['Keto','Gluten-Free','Seafood']},
+  'in-n-out-style-wagyu-burger-bowl': {chef:'Chef Marcus',stars:4.9,rc:298,bt:'popular',bl:'Popular',price:14.99,cal:'390',dtags:['Keto','Gluten-Free','Premium Wagyu']},
+  'smoked-chicken-with-broccoli': {chef:'Chef Marcus',stars:4.8,rc:207,bt:'keto',bl:'Keto',cal:'306',dtags:['Keto','Gluten-Free','High Protein'],
+    variantPrices:{'4oz':12.99,'Double Protein':17.99}},
+  'pork-tenderloin-with-broccoli': {chef:'Chef Diego',stars:4.6,rc:174,bt:'keto',bl:'Keto',cal:'274',dtags:['Keto','Gluten-Free','High Protein'],
+    variantPrices:{'4oz':12.99,'Double Protein':17.99}},
+  'keto-street-tacos': {chef:'Chef Diego',stars:4.9,rc:332,bt:'popular',bl:'Popular',cal:'334',dtags:['Keto','Gluten-Free','Customizable'],
+    variantPrices:{
+      'Chicken / Cheese Please!':14.99,'Chicken / No Cheese':14.99,
+      'Pulled Pork / Cheese Please!':14.99,'Pulled Pork / No Cheese':14.99,
+      'Shrimp / Cheese Please!':16.99,'Shrimp / No Cheese':16.99,
+      'Brisket / Cheese Please!':17.99,'Brisket / No Cheese':17.99
+    }},
+  'chicken-teriyaki-bowl': {chef:'Chef Sofia',stars:4.8,rc:120,bt:'new',bl:'New',price:14.99,cal:'354',dtags:['Keto','Bowls']},
+  'peanut-chicken-coconut-curry': {chef:'Chef Amara',stars:4.8,rc:98,bt:'new',bl:'New',price:15.99,cal:'610',dtags:['Keto','High Protein']},
+  'smoked-tri-tip-with-chimichurri': {chef:'Chef Marcus',stars:4.9,rc:145,bt:'new',bl:'New',price:17.99,cal:'400',dtags:['Keto','Gluten-Free','Premium Cut']}
+};
+const MENU_META_DEFAULT = {chef:'House Kitchen',stars:4.8,rc:100,bt:'keto',bl:'Keto',price:14.99,cal:'—',dtags:['Keto']};
+
+function skCategoryFromTags(tags){
+  const t=(tags||[]).join(',').toLowerCase();
+  if(t.includes('seafood')||t.includes('shellfish'))return 'seafood';
+  if(t.includes('bowls')||t.includes('bowl'))return 'bowls';
+  return 'keto';
+}
+const PRODUCTS = SK_MENU_RAW.map(function(raw){
+  const meta=MENU_META[raw.handle]||MENU_META_DEFAULT;
+  const vars=raw.variants.map(function(v){
+    const p=(meta.variantPrices&&meta.variantPrices[v.t]!=null)?meta.variantPrices[v.t]:(meta.price!=null?meta.price:MENU_META_DEFAULT.price);
+    // p = marketing/display price shown on meal cards. sp = the real Shopify
+    // variant price — $0 for standard box meals, >0 only for priced upgrades
+    // (e.g. "Double Protein") — used for checkout math, never for display.
+    return {id:v.id,t:v.t,p:p,sp:v.sp};
+  });
+  const prot=raw.prot||MENU_META_DEFAULT.prot||'';
+  const dietTags=raw.tags.filter(function(t){return t==='keto'||t==='gluten-free';});
+  if(parseInt(prot)>=35)dietTags.push('high-protein');
+  const shortDesc=raw.full.length>140?raw.full.slice(0,137)+'...':raw.full;
+  return {
+    id:raw.id,cat:skCategoryFromTags(raw.tags),chef:meta.chef,stars:meta.stars,rc:meta.rc,
+    dietTags:dietTags,name:raw.name,short:shortDesc,full:raw.full,tags:raw.tags,img:raw.img,vars:vars,
+    cal:meta.cal,prot:prot,fat:raw.fat||'',carbs:raw.carbs||'',
+    dtags:meta.dtags,bt:meta.bt,bl:meta.bl
+  };
+});
+
+{%- comment -%}
+  Box-tier products, looked up by their fixed handle (each is a single-variant
+  product). Weekly price, per-meal price, and savings % are all computed from
+  the live product price — repricing in Shopify Admin needs zero code changes.
+{%- endcomment -%}
+{%- assign plan5  = all_products['smoketo-weekly-box-5-meals'] -%}
+{%- assign plan8  = all_products['smoketo-weekly-box-8-meals'] -%}
+{%- assign plan13 = all_products['smoketo-weekly-box-13-meals'] -%}
+{%- assign plan21 = all_products['smoketo-weekly-box-21-meals'] -%}
+{%- assign pmc5  = plan5.price  | divided_by: 5.0  | round -%}
+{%- assign pmc8  = plan8.price  | divided_by: 8.0  | round -%}
+{%- assign pmc13 = plan13.price | divided_by: 13.0 | round -%}
+{%- assign pmc21 = plan21.price | divided_by: 21.0 | round -%}
+{%- assign r13 = pmc13 | times: 1.0 | divided_by: pmc5 -%}
+{%- assign save13 = 1.0 | minus: r13 | times: 100 | round -%}
+{%- assign r21 = pmc21 | times: 1.0 | divided_by: pmc5 -%}
+{%- assign save21 = 1.0 | minus: r21 | times: 100 | round -%}
+const SUB_PLANS = [
+  {meals:5,  weekly:{{ plan5.price  | divided_by: 100.0 | round: 2 }}, price:{{ pmc5  | divided_by: 100.0 | round: 2 }}, save:0, label:'Starter', box:{{ plan5.selected_or_first_available_variant.id }}},
+  {meals:8,  weekly:{{ plan8.price  | divided_by: 100.0 | round: 2 }}, price:{{ pmc8  | divided_by: 100.0 | round: 2 }}, save:0, label:'Popular', badge:'Most Popular', box:{{ plan8.selected_or_first_available_variant.id }}},
+  {meals:13, weekly:{{ plan13.price | divided_by: 100.0 | round: 2 }}, price:{{ pmc13 | divided_by: 100.0 | round: 2 }}, save:{{ save13 }}, label:'Growth',  badge:'Best Value', box:{{ plan13.selected_or_first_available_variant.id }}},
+  {meals:21, weekly:{{ plan21.price | divided_by: 100.0 | round: 2 }}, price:{{ pmc21 | divided_by: 100.0 | round: 2 }}, save:{{ save21 }}, label:'Elite', box:{{ plan21.selected_or_first_available_variant.id }}}
+];
+let selPlan = 1;
+
+const REVIEWS = [
+  {av:'👩',name:'Kira M.',loc:'Summerlin, NV',s:5,txt:"Honestly the best meal prep in Las Vegas. The brisket is ridiculous — my husband stopped asking me to cook dinner 😂"},
+  {av:'💪',name:'Marcus D.',loc:'Henderson, NV',s:5,txt:"Lost 18 lbs in 2 months eating meals that taste like they're from a restaurant. SmoKeto is the move."},
+  {av:'🏃',name:'Tanya R.',loc:'Spring Valley, NV',s:5,txt:"The breakfast scramble is my every-morning staple. Quick, filling, macro-perfect for my keto goals."},
+  {av:'👨',name:'Carlos V.',loc:'North Las Vegas, NV',s:5,txt:"Skip the food prep, skip the counting. Fresh every week, always on time. 10/10."},
+  {av:'👩‍⚕️',name:'Dr. Priya S.',loc:'Downtown LV',s:5,txt:"As a physician I'm picky about nutrition labels. SmoKeto is legit — clean ingredients, real macros."},
+  {av:'🎰',name:'Jake T.',loc:'Paradise, NV',s:5,txt:"I work nights on the Strip. Having meals ready to heat at 4am has been a game changer."},
+  {av:'🤰',name:'Alicia P.',loc:'Centennial Hills, NV',s:5,txt:"GF approved and actually delicious. The cheesy egg bites are perfection every morning!"},
+  {av:'🏋️',name:'DeShawn B.',loc:'Enterprise, NV',s:5,txt:"My trainer recommended SmoKeto. The Wagyu Burger Bowl is elite — never going back."},
+];
+
+// ── ZIP CHECK ──
+const ZIPS=new Set([89002,89009,89011,89012,89014,89015,89016,89019,89025,89030,89031,89032,89033,89044,89052,89053,89074,89077,89086,89087,89101,89102,89103,89104,89106,89107,89108,89109,89110,89111,89112,89113,89114,89115,89117,89118,89119,89120,89121,89122,89123,89124,89128,89129,89130,89131,89134,89135,89138,89139,89141,89142,89143,89144,89145,89146,89147,89148,89149,89156,89166,89178,89179,89183]);
+
+function dismissGate(){
+  const g=document.getElementById('gate');
+  g.style.transition='opacity .5s';g.style.opacity='0';
+  setTimeout(()=>{g.style.display='none';},500);
+}
+
+// ── KLAVIYO (Step 1 capture) ──
+// TODO: replace these placeholders with real Klaviyo credentials before launch.
+const KLAVIYO_COMPANY_ID='REPLACE_WITH_KLAVIYO_COMPANY_ID';
+const KLAVIYO_PUBLIC_API_KEY='REPLACE_WITH_KLAVIYO_PUBLIC_API_KEY';
+const KLAVIYO_LIST_ID='REPLACE_WITH_KLAVIYO_LIST_ID';
+function pushToKlaviyo(email,zip){
+  try{
+    if(typeof klaviyo!=='undefined'){
+      klaviyo.identify({'$email':email,'delivery_zip':zip});
+    }
+  }catch(e){}
+  try{
+    fetch(`https://a.klaviyo.com/api/v2/list/${KLAVIYO_LIST_ID}/subscribe?api_key=${KLAVIYO_PUBLIC_API_KEY}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({profiles:[{email,delivery_zip:zip}]})
+    }).catch(()=>{});
+  }catch(e){}
+}
+
+function checkZip(){
+  const z=document.getElementById('zip-in').value.trim();
+  const email=document.getElementById('gate-email').value.trim();
+  const err=document.getElementById('gate-err');
+  if(!/^\d{5}$/.test(z)){err.style.display='block';err.textContent='⚠ Please enter a valid 5-digit ZIP code.';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err.style.display='block';err.textContent='⚠ Please enter a valid email address.';return;}
+  if(ZIPS.has(parseInt(z))){
+    try{
+      localStorage.setItem('sk_zip',z);
+      sessionStorage.setItem('sk_session_zip',z);
+      sessionStorage.setItem('sk_session_email',email);
+    }catch(e){}
+    pushToKlaviyo(email,z);
+    // Return to the homepage as-is — no interstitial. Plan selection (Step 2) is
+    // reached only when the customer taps a tier card, not automatically here.
+    dismissGate();
+  }else{
+    err.style.display='block';
+    err.textContent="⚠ We don't deliver there yet. We currently serve Southern Nevada (89xxx ZIPs).";
+  }
+}
+document.getElementById('zip-in').addEventListener('keydown',e=>{if(e.key==='Enter')checkZip();});
+document.getElementById('gate-email').addEventListener('keydown',e=>{if(e.key==='Enter')checkZip();});
+
+// Signed-in customers skip Steps 1-2 entirely — no zip/email gate, no plan modal.
+if(SK_IS_CUSTOMER){
+  const g=document.getElementById('gate');
+  if(g) g.style.display='none';
+}
+
+// Skip gate if ZIP already verified
+try{
+  const savedZip=localStorage.getItem('sk_zip');
+  if(savedZip && ZIPS.has(parseInt(savedZip))){
+    const g=document.getElementById('gate');
+    if(g) g.style.display='none';
+  }
+}catch(e){}
+
+// ── MODAL HELPERS ──
+function openM(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeM(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+function bdClose(e,id){if(e&&e.target===document.getElementById(id))closeM(id);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')['meal-modal','cart-modal','auth-modal','sub-modal','survey-modal'].forEach(id=>closeM(id));});
+
+// ── AUTH ──
+function openAuth(){openM('auth-modal');}
+function closeAuth(e,f){if(f)closeM('auth-modal');else bdClose(e,'auth-modal');}
+function switchTab(t){
+  document.getElementById('atab-in').classList.toggle('on',t==='in');
+  document.getElementById('atab-up').classList.toggle('on',t==='up');
+  document.getElementById('pane-in').style.display=t==='in'?'block':'none';
+  document.getElementById('pane-up').style.display=t==='up'?'block':'none';
+}
+function doLogin(){
+  showToast('🔄 Redirecting...','Taking you to your account');
+  // Same-tab nav (not a new tab) + return_url so a signed-in customer lands
+  // straight on their meal-selection dashboard instead of the generic
+  // Shopify account page.
+  var returnTo=encodeURIComponent('/pages/subscribe');
+  setTimeout(()=>{window.location.href=window.location.origin+'/account/login?return_url='+returnTo;},600);
+}
+function doSignup(){
+  showToast('🔄 Creating account...','Taking you to Shopify to complete signup');
+  setTimeout(()=>{window.location.href=window.location.origin+'/account/register';},600);
+}
+
+// ── SUBSCRIPTION ──
+function openSub(){
+  // Signed-in customers already have a plan — send them straight to their
+  // meal-selection dashboard instead of Steps 1-2 (zip/plan picker).
+  if(SK_IS_CUSTOMER){window.location.href='/pages/subscribe';return;}
+  renderSubCards();openM('sub-modal');
+}
+function closeSub(e,f){if(f)closeM('sub-modal');else bdClose(e,'sub-modal');}
+function renderSubCards(){
+  document.getElementById('sub-cards').innerHTML=SUB_PLANS.map((p,i)=>`
+    <div class="sub-card${i===selPlan?' sel':''}" onclick="chooseSubPlan(${i})">
+      ${p.badge?`<div class="sub-badge">${p.badge}</div>`:''}
+      <div class="sub-meals">${p.meals}</div>
+      <div class="sub-freq">meals / week</div>
+      <div class="sub-price">$${p.price.toFixed(2)}/meal</div>
+      <div class="sub-per">$${p.weekly.toFixed(2)}/week</div>
+      ${p.save?`<div class="sub-save">Save ${p.save}%</div>`:''}
+    </div>
+  `).join('');
+}
+// One click on a tier card = plan chosen AND the funnel advances — no separate confirm step.
+function chooseSubPlan(i){
+  selPlan=i;
+  document.querySelectorAll('.sub-card').forEach((c,j)=>c.classList.toggle('sel',j===i));
+  const p=SUB_PLANS[i];
+  try{localStorage.setItem('sk_plan',JSON.stringify({meals:p.meals}));}catch(e){}
+  closeM('sub-modal');
+  // Returning customer — skip quiz, go straight to meal selection
+  if(localStorage.getItem('sk_dietary')){
+    showToast('👋 Welcome back!','Heading to your meal selection...');
+    setTimeout(()=>{window.location.href='/pages/weekly';},700);
+  }else{
+    openSurvey();
+  }
+}
+
+// ── SUBSCRIPTION MINI GRID (homepage section) ──
+function renderSubMini(){
+  document.getElementById('sub-mini').innerHTML=SUB_PLANS.map((p,i)=>`
+    <div class="smc${i===1?' sel':''}" onclick="openSub()">
+      <div class="smc-meals">${p.meals}</div>
+      <div class="smc-freq">meals/week</div>
+      <div class="smc-price">$${p.price.toFixed(2)}/meal</div>
+      <div class="smc-per">$${p.weekly.toFixed(2)}/week</div>
+      ${p.save?`<div class="smc-save">Save ${p.save}%</div>`:''}
+    </div>
+  `).join('');
+}
+
+// ── BOX TALLY (shared with collection + product pages via localStorage) ──
+function skPlanSize(){try{const p=JSON.parse(localStorage.getItem('sk_plan')||'null');return (p&&p.meals)?p.meals:8;}catch(e){return 8;}}
+function skGetBox(){try{return JSON.parse(localStorage.getItem('sk_box')||'{}');}catch(e){return {};}}
+function skSaveBox(b){try{localStorage.setItem('sk_box',JSON.stringify(b));}catch(e){}}
+function skBoxQty(b){return Object.values(b).reduce((s,v)=>s+v.qty,0);}
+function skRenderTally(){
+  const box=skGetBox(),qty=skBoxQty(box),size=skPlanSize(),remaining=Math.max(0,size-qty);
+  const el=document.getElementById('sk-tally');
+  if(!el)return;
+  el.style.display='flex';
+  el.classList.toggle('full',qty>=size);
+  const label=remaining>0?`${remaining} meal${remaining!==1?'s':''} remaining`:'✓ Review & Checkout';
+  el.innerHTML=`<div class="skt-text"><span class="skt-label">${label}</span><span class="skt-sub">${qty} / ${size} selected</span></div><div class="skt-bar"><div class="skt-fill" style="width:${Math.min(100,Math.round(qty/size*100))}%"></div></div>`;
+}
+function skAddToBox(variantId,title,qty){
+  qty=qty||1;
+  const box=skGetBox(),size=skPlanSize(),cur=skBoxQty(box);
+  if(cur>=size){showToast('📦 Box is full',`${size} meals selected — finish your order or upgrade your plan.`);return false;}
+  const remaining=size-cur;
+  if(qty>remaining)qty=remaining;
+  const key=String(variantId);
+  if(box[key])box[key].qty+=qty;else box[key]={title,qty};
+  skSaveBox(box);
+  skRenderTally();
+  return true;
+}
+function skSyncBoxWithRealCart(){
+  fetch('/cart.js').then(r=>r.json()).then(cart=>{
+    if(cart.item_count===0){try{localStorage.removeItem('sk_box');}catch(e){}}
+    skRenderTally();
+  }).catch(()=>skRenderTally());
+}
+skSyncBoxWithRealCart();
+// Initialize cart from sk_box on load so dot/bar reflect cross-page selections
+document.addEventListener('DOMContentLoaded',function(){skInitCartFromBox();updateCartUI();});
+// Re-sync when restored from bfcache (e.g. hitting Back from Shopify checkout) —
+// otherwise the cart modal/tally can show stale state from before checkout ran.
+window.addEventListener('pageshow',function(e){
+  if(e.persisted){
+    skSyncBoxWithRealCart();
+    skInitCartFromBox();
+    updateCartUI();
+    skRenderTally();
+  }
+});
+
+// ── CART STATE ──
+let CART=[];
+
+// Build CART from sk_box localStorage so selections from any page show here
+function skInitCartFromBox(){
+  const box=skGetBox();
+  CART=[];
+  Object.entries(box).forEach(([vid,entry])=>{
+    const meal=PRODUCTS.find(m=>m.vars.some(v=>String(v.id)===String(vid)));
+    if(!meal)return;
+    const variant=meal.vars.find(v=>String(v.id)===String(vid))||meal.vars[0];
+    const key=meal.id+'-'+variant.id;
+    const ex=CART.find(c=>c.key===key);
+    if(ex)ex.qty+=entry.qty;
+    else CART.push({key,meal,variant,qty:entry.qty});
+  });
+}
+
+function addToCart(meal,variant,qty){
+  if(!skAddToBox(variant.id,meal.name,qty))return;
+  const key=meal.id+'-'+variant.id;
+  const ex=CART.find(c=>c.key===key);
+  if(ex)ex.qty+=qty;
+  else CART.push({key,meal,variant,qty});
+  updateCartUI();
+  showToast('🥩 Added to Box',meal.name+(variant.t!=='Default Title'?' ('+variant.t+')':''));
+}
+function removeItem(key){
+  const it=CART.find(c=>c.key===key);
+  if(it){
+    // remove from sk_box
+    const box=skGetBox();
+    delete box[String(it.variant.id)];
+    skSaveBox(box);
+    skRenderTally();
+  }
+  CART=CART.filter(c=>c.key!==key);
+  updateCartUI();
+}
+function chgCartQty(key,d){
+  const it=CART.find(c=>c.key===key);
+  if(it){
+    const newQty=Math.max(1,it.qty+d);
+    // cap at plan size
+    if(d>0){const box=skGetBox(),size=skPlanSize(),cur=skBoxQty(box);if(cur>=size){showToast('📦 Box is full',`${size} meals selected`);return;}}
+    it.qty=newQty;
+    // sync sk_box
+    const box=skGetBox();
+    const vid=String(it.variant.id);
+    if(box[vid])box[vid].qty=newQty;
+    skSaveBox(box);
+    skRenderTally();
+  }
+  updateCartUI();
+}
+function updateCartUI(){
+  const count=CART.reduce((s,c)=>s+c.qty,0);
+  const planSize=skPlanSize();
+  // bar
+  document.getElementById('cb-count').textContent=count>0?`${count} of ${planSize} meals selected`:'Your cart is empty';
+  document.getElementById('cb-total').textContent=count>0?`${count} / ${planSize} meals in your box`:'Add meals to start your order';
+  document.getElementById('cart-bar').classList.toggle('on',count>0);
+  // dot
+  const dot=document.getElementById('cart-dot');
+  dot.textContent=count;dot.classList.toggle('on',count>0);
+  // subtotal (show meal count instead of $0 price)
+  const sv=document.getElementById('cart-sub-val');
+  if(sv)sv.textContent=`${count} meal${count!==1?'s':''}`;
+  // free-delivery progress ($149 threshold, excludes the fee's own line) —
+  // uses the real box price + real variant upcharges (sp), never the
+  // marketing display price (p), so this matches what checkout actually charges.
+  const cbPlan=SUB_PLANS.find(p=>p.meals===planSize)||SUB_PLANS[1];
+  const cartSubtotal=(count>0?cbPlan.weekly:0)+CART.reduce((s,c)=>s+((c.variant.sp||0)*c.qty),0);
+  const feeApplies=cartSubtotal<149;
+  const fsFill=document.getElementById('cart-freeship-fill');
+  const fsMsg=document.getElementById('cart-freeship-msg');
+  if(fsFill){
+    const pct=Math.min(100,Math.round((cartSubtotal/149)*100));
+    fsFill.style.width=pct+'%';
+    fsFill.classList.toggle('complete',!feeApplies);
+  }
+  if(fsMsg){
+    fsMsg.textContent=(count===0)
+      ? '🚚 Free delivery on orders over $149 · Powered by Shopify'
+      : (feeApplies
+        ? `🚚 Add $${(149-cartSubtotal).toFixed(2)} more for free delivery`
+        : "🎉 You've unlocked free delivery!");
+  }
+  // body
+  const body=document.getElementById('cart-body');
+  if(!body)return;
+  if(CART.length===0){
+    body.innerHTML='<div class="cart-empty"><div class="ce-icon">🛒</div><p>Your cart is empty.<br>Browse the menu and add some meals!</p></div>';
+  }else{
+    body.innerHTML=CART.map(c=>`
+      <div class="cart-row">
+        <div class="cart-thumb">${c.meal.img?`<img src="${c.meal.img}" onerror="this.style.display='none'"/>`:'🥩'}</div>
+        <div class="cart-info">
+          <div class="cart-name">${c.meal.name}</div>
+          ${c.variant.t!=='Default Title'?`<div class="cart-var">${c.variant.t}</div>`:''}
+          <div class="cart-qty">
+            <button class="cq" onclick="chgCartQty('${c.key}',-1)">−</button>
+            <span style="font-weight:700;font-size:.82rem;min-width:18px;text-align:center">${c.qty}</span>
+            <button class="cq" onclick="chgCartQty('${c.key}',1)">+</button>
+          </div>
+        </div>
+        <div class="cart-right">
+          <button class="cart-rm" onclick="removeItem('${c.key}')">Remove</button>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+function openCartModal(){skInitCartFromBox();updateCartUI();openM('cart-modal');}
+function closeCart(e,f){if(f)closeM('cart-modal');else bdClose(e,'cart-modal');}
+const SK_SELLING_PLAN_ID = 692247331121;
+// Build checkout query params (guest email prefill from Step 1 capture) so
+// email is never asked twice — Shopify's hosted checkout accepts checkout[email].
+// The first-order discount is automatic (built into the selling plan's own
+// pricing), so no discount code needs to be passed here.
+function buildCheckoutParams(){
+  const params=new URLSearchParams();
+  try{const em=sessionStorage.getItem('sk_session_email');if(em)params.set('checkout[email]',em);}catch(e){}
+  const qs=params.toString();
+  return qs?`?${qs}`:'';
+}
+
+function goCheckout(){
+  skInitCartFromBox();// ensure CART matches sk_box before checkout
+  if(CART.length===0){showToast('🛒 Cart Empty','Add some meals first!');return;}
+  const planSize=skPlanSize();
+  const plan=SUB_PLANS.find(p=>p.meals===planSize)||SUB_PLANS[1];
+  if(!plan.box){showToast('⚠️ Checkout Error',"This box size isn't available yet — please contact support.");return;}
+  showToast('🔒 Secure Checkout','Sending your box to Shopify checkout...');
+
+  // The box itself is one priced line item (selected meals ride along as
+  // properties); individual box-meal variants are $0 in Shopify by design,
+  // so they must never be added as their own priced line — only real
+  // upgrade variants (sp > 0, e.g. "Double Protein") get their own line.
+  const mealProps={};
+  let mc=1;
+  CART.forEach(c=>{
+    const title=c.meal.name+(c.variant.t!=='Default Title'?` (${c.variant.t})`:'');
+    mealProps['Meal '+mc++]=title+(c.qty>1?` x${c.qty}`:'');
+  });
+  const boxItem={id:plan.box,quantity:1,selling_plan:SK_SELLING_PLAN_ID,properties:mealProps};
+  const extraItems=[];
+  let variantUpcharge=0;
+  CART.forEach(c=>{
+    if(c.variant.sp){
+      variantUpcharge+=c.variant.sp*c.qty;
+      extraItems.push({id:c.variant.id,quantity:c.qty,selling_plan:SK_SELLING_PLAN_ID,properties:{Meal:c.meal.name+' ('+c.variant.t+')'}});
+    }else{
+      // $0 box-meal variant — added as its own zero-priced line (in addition to
+      // the human-readable summary in the box's own properties above) so the
+      // order exposes real, SKU'd line items for kitchen prep reporting.
+      extraItems.push({id:c.variant.id,quantity:c.qty,selling_plan:SK_SELLING_PLAN_ID,properties:{Box:plan.label+' Box'}});
+    }
+  });
+  // Free-delivery threshold ($149) — box price plus any priced variant upcharges.
+  const checkoutSubtotal=plan.weekly+variantUpcharge;
+  if(checkoutSubtotal<149)extraItems.push({id:SK_DELIVERY_FEE_VARIANT,quantity:1});
+  // Clear the real cart first so a repeat checkout (e.g. back-button then retry)
+  // never doubles up items or stale delivery-fee lines.
+  fetch(`https://${DOMAIN}/cart/clear.js`,{method:'POST'})
+    .then(r=>{ if(!r.ok) throw new Error('Could not reset your cart. Please try again.'); return r; })
+    .then(()=>fetch(`https://${DOMAIN}/cart/add.js`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({items:[boxItem]})
+    }))
+    .then(r=>r.json().then(data=>{
+      // The box item is the whole order — unlike the extras below, its
+      // failure must stop checkout instead of silently redirecting to an
+      // empty/wrong cart (this was the root cause of "can't checkout").
+      if(!r.ok) throw new Error((data&&(data.description||data.message))||'Your box could not be added to checkout.');
+      return data;
+    }))
+    .then(()=>
+      // Add each priced upcharge/delivery-fee line as its own request.
+      // Shopify's /cart/add.js is all-or-nothing for a batched items array —
+      // a single rejected line must never silently drop every other add-on.
+      extraItems.reduce((chain,item)=>chain.then(()=>
+        fetch(`https://${DOMAIN}/cart/add.js`,{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({items:[item]})
+        }).then(r=>{ if(!r.ok) return r.json().then(e=>console.error('SmoKeto add-on failed:',item,e)); })
+      ).catch(e=>console.error('SmoKeto add-on network error:',item,e)),Promise.resolve())
+    )
+    .then(()=>{
+      window.location.href=`https://${DOMAIN}/checkout${buildCheckoutParams()}`;
+    }).catch(err=>{
+      console.error('SmoKeto checkout error:',err);
+      showToast('⚠️ Checkout Error',(err&&err.message)||'Please try again.');
+    });
+}
+
+// ── MEAL OVERLAY ──
+let CUR=null,OV_QTY=1,OV_VAR=0;
+const BG={keto:'#e8f4ec',breakfast:'#e8f0fb',seafood:'#faf0e8',popular:'#1c1c1c',new:'#f5ebe3'};
+const FG={keto:'#2d6a3f',breakfast:'#2c5fad',seafood:'#c0692a',popular:'#fff',new:'#b85c2a'};
+
+function openMeal(id){
+  const m=PRODUCTS.find(p=>p.id===id);
+  if(!m)return;
+  CUR=m;OV_QTY=1;OV_VAR=0;
+  document.getElementById('ov-img').innerHTML=`
+    <img src="${m.img}" alt="${m.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:100%;height:100%;object-fit:cover"/>
+    <div class="meal-img-fallback">🥩</div>
+    <div class="meal-badge-bar">
+      <span class="m-badge" style="background:${BG[m.bt]||BG.keto};color:${FG[m.bt]||FG.keto}">${m.bl}</span>
+    </div>
+  `;
+  document.getElementById('ov-name').textContent=m.name;
+  document.getElementById('ov-desc').textContent=m.full;
+  document.getElementById('ov-macros').innerHTML=`
+    <div class="mg-item"><span class="mg-val">${m.cal}</span><span class="mg-lbl">Calories</span></div>
+    <div class="mg-item"><span class="mg-val">${m.prot}</span><span class="mg-lbl">Protein</span></div>
+    <div class="mg-item"><span class="mg-val">${m.fat}</span><span class="mg-lbl">Fat</span></div>
+    <div class="mg-item"><span class="mg-val">${m.carbs}</span><span class="mg-lbl">Net Carbs</span></div>
+  `;
+  const vw=document.getElementById('ov-var-wrap');
+  const vb=document.getElementById('ov-var-btns');
+  if(m.vars.length>1){
+    vw.style.display='block';
+    vb.innerHTML=m.vars.map((v,i)=>`<button class="var-btn${i===0?' sel':''}" onclick="selVar(${i})">${v.t}</button>`).join('');
+  }else vw.style.display='none';
+  document.getElementById('ov-tags').innerHTML=(m.dtags||[]).map(t=>`<span class="dtag">${t}</span>`).join('');
+  document.getElementById('ov-qty').textContent=1;
+  updOverlay();
+  openM('meal-modal');
+}
+function closeMeal(e,f){if(f)closeM('meal-modal');else bdClose(e,'meal-modal');}
+function selVar(i){
+  OV_VAR=i;
+  document.querySelectorAll('.var-btn').forEach((b,j)=>b.classList.toggle('sel',j===i));
+  updOverlay();
+}
+function chgQty(d){OV_QTY=Math.max(1,Math.min(10,OV_QTY+d));document.getElementById('ov-qty').textContent=OV_QTY;updOverlay();}
+function updOverlay(){
+  if(!CUR)return;
+  document.getElementById('ov-add-btn').textContent=`🥩 Add ${OV_QTY>1?OV_QTY+'× ':''}to Box`;
+}
+function addFromOverlay(){
+  if(!CUR)return;
+  addToCart(CUR,CUR.vars[OV_VAR],OV_QTY);
+  closeM('meal-modal');
+}
+
+// ── MENU RENDER ──
+const TC={keto:'mc-b-keto',breakfast:'mc-b-breakfast',seafood:'mc-b-seafood',popular:'mc-b-popular',new:'mc-b-new',bowls:'mc-b-keto'};
+let _activeDiet=[];
+function starRow(s){const f=Math.floor(s),h=s-f>=.5;let r='';for(let i=0;i<5;i++){if(i<f)r+='★';else if(i===f&&h)r+='½';else r+='☆';}return r;}
+function renderMenu(filter='all'){
+  const grid=document.getElementById('meal-grid');
+  let list=filter==='all'?PRODUCTS:PRODUCTS.filter(p=>p.cat===filter||p.tags.includes(filter));
+  if(_activeDiet.length){list=list.filter(p=>_activeDiet.every(d=>p.dietTags&&p.dietTags.includes(d)));}
+  const count=document.getElementById('menu-count');
+  if(count)count.textContent=list.length+' meal'+(list.length!==1?'s':'');
+  grid.innerHTML=list.map((m,i)=>`
+    <div class="meal-card reveal" style="transition-delay:${i*0.055}s" onclick="openMeal(${m.id})">
+      <div class="mc-img-wrap">
+        ${m.img
+          ?`<img src="${m.img}" alt="${m.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="mc-img-fallback" style="display:none">🥩</div>`
+          :`<div class="mc-img-fallback">🥩</div>`}
+        <span class="mc-badge ${TC[m.bt]||'mc-b-keto'}">${m.bl}</span>
+        <button class="mc-quick-add" onclick="event.stopPropagation();openMeal(${m.id})" title="View meal">👁</button>
+      </div>
+      <div class="mc-body">
+        <div class="mc-chef">
+          <div class="mc-chef-av">${(m.chef||'Chef').split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+          <span class="mc-chef-name">${m.chef||'House Kitchen'}</span>
+        </div>
+        <div class="mc-name">${m.name}</div>
+        <div class="mc-stars">
+          <span class="mc-star-row">${starRow(m.stars||4.8)}</span>
+          <span class="mc-rating">${(m.stars||4.8).toFixed(1)} (${m.rc||100})</span>
+        </div>
+        <div class="mc-tags">${(m.dtags||[]).slice(0,3).map(t=>{
+          const cls=t.toLowerCase().includes('keto')?'mc-tag-keto':t.toLowerCase().includes('gluten')?'mc-tag-gf':t.toLowerCase().includes('protein')?'mc-tag-hp':'';
+          return `<span class="mc-tag ${cls}">${t}</span>`;
+        }).join('')}</div>
+        <div class="mc-macros">
+          <div class="mc-macro"><span class="mc-mv">${m.cal}</span><span class="mc-ml">kcal</span></div>
+          <div class="mc-macro"><span class="mc-mv">${m.prot}</span><span class="mc-ml">protein</span></div>
+          <div class="mc-macro"><span class="mc-mv">${m.fat}</span><span class="mc-ml">fat</span></div>
+          <div class="mc-macro"><span class="mc-mv">${m.carbs}</span><span class="mc-ml">carbs</span></div>
+        </div>
+        <div class="mc-footer">
+          <button class="mc-add-btn" onclick="event.stopPropagation();openMeal(${m.id})">View Meal →</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  setTimeout(activateReveal,40);
+}
+function filterMenu(el,f){
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');renderMenu(f);
+}
+function toggleDiet(el,tag){
+  el.classList.toggle('on');
+  if(_activeDiet.includes(tag)){_activeDiet=_activeDiet.filter(d=>d!==tag);}else{_activeDiet.push(tag);}
+  const active=document.querySelector('.ftab.on');
+  const curFilter=active?active.getAttribute('onclick').match(/filterMenu\(this,'(.+?)'\)/)?.[1]||'all':'all';
+  renderMenu(curFilter);
+}
+
+// ── REVIEWS ──
+function renderReviews(){
+  const doubled=[...REVIEWS,...REVIEWS];
+  document.getElementById('rev-track').innerHTML=doubled.map(r=>`
+    <div class="rev-card">
+      <div class="rev-stars">${'★'.repeat(r.s)}</div>
+      <p class="rev-text">"${r.txt}"</p>
+      <div class="rev-author"><div class="rev-av">${r.av}</div><div><div class="rev-name">${r.name}</div><div class="rev-loc">📍 ${r.loc}</div></div></div>
+    </div>
+  `).join('');
+}
+
+// ── SURVEY ──
+function openSurvey(){svStep(1);openM('survey-modal');}
+function closeSurvey(e,f){if(f)closeM('survey-modal');else bdClose(e,'survey-modal');}
+function svStep(n){
+  document.querySelectorAll('.survey-step').forEach(s=>s.classList.remove('on'));
+  document.getElementById('sv'+n).classList.add('on');
+  if(n<=3){const p=document.getElementById('sv-prog');p.innerHTML='';for(let i=1;i<=3;i++){const d=document.createElement('div');d.className='sp-dot'+(i<=n?' done':'');p.appendChild(d);}}
+  else document.getElementById('sv-prog').innerHTML='';
+}
+function finishSv(){
+  svStep(4);
+  try{
+    // Save dietary preferences from quiz steps sv2 + sv3
+    var goals=[];
+    document.querySelectorAll('#sv1 .chip.sel').forEach(function(c){goals.push(c.textContent.trim());});
+    var dietary=[];
+    document.querySelectorAll('#sv2 .chip.sel').forEach(function(c){dietary.push(c.textContent.trim());});
+    var allergens=[];
+    document.querySelectorAll('#sv3 .chip.sel').forEach(function(c){allergens.push(c.textContent.trim());});
+    var prefs=dietary.concat(allergens);
+    if(prefs.length)localStorage.setItem('sk_dietary',JSON.stringify(prefs));
+    // Save selected plan so /pages/weekly picks it up
+    localStorage.setItem('sk_plan',JSON.stringify({meals:SUB_PLANS[selPlan].meals}));
+    // Push quiz answers to cart attributes (guest + signed-in), and — for
+    // signed-in customers only — queue them for the smoketo customer metafields.
+    pushQuizToCart(dietary,allergens,goals);
+    // Update quiz result with actual selected plan
+    var resEl=document.getElementById('sv4-plan-summary');
+    if(resEl){var p=SUB_PLANS[selPlan];resEl.innerHTML='<strong style="color:var(--ember)">'+p.meals+' meals/week · Keto · High Protein · Southern Nevada Delivery</strong>';}
+  }catch(e){}
+  // Auto-redirect to meal selection after showing the plan result
+  setTimeout(function(){window.location.href='/pages/weekly';},2800);
+}
+// Cart attributes are safe to write from theme JS (Cart AJAX API needs no auth).
+// Customer metafields are NOT — writing them needs the Admin API, whose access
+// token must never ship inside public theme code. pushToCustomerMetafields()
+// is therefore a placeholder until a backend (Shopify Flow / app-proxy holding
+// the token server-side) copies these cart attributes onto the customer record
+// in the `smoketo` namespace after order creation.
+function pushQuizToCart(dietary,allergens,goals){
+  var attrs={};
+  if(dietary.length)attrs['dietary_preferences']=dietary.join(', ');
+  if(allergens.length)attrs['allergens']=allergens.join(', ');
+  if(goals.length)attrs['meal_notes']='Goal: '+goals.join(', ');
+  if(!Object.keys(attrs).length)return;
+  fetch(`https://${DOMAIN}/cart/update.js`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({attributes:attrs})
+  }).catch(function(){});
+  {% if customer %}
+  pushToCustomerMetafields(attrs);
+  {% endif %}
+}
+function pushToCustomerMetafields(attrs){
+  // TODO: wire up a backend (Shopify Flow trigger on order creation reading the
+  // cart attributes set above, or an app-proxy endpoint) to write these onto
+  // customer.metafields.smoketo.allergens / dietary_preferences / meal_notes.
+  // Not implemented client-side — see comment above pushQuizToCart().
+}
+function tgl(el){el.classList.toggle('sel');}
+
+// ── PARTICLES ──
+function spawnParticles(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='pt';
+    p.style.left=Math.random()*100+'%';p.style.top=Math.random()*100+'%';
+    p.style.setProperty('--d',(6+Math.random()*8)+'s');
+    p.style.setProperty('--dl',(-Math.random()*10)+'s');
+    c.appendChild(p);
+  }
+}
+
+// ── REVEAL ──
+function activateReveal(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});
+  },{threshold:.08});
+  document.querySelectorAll('.reveal:not(.vis)').forEach(el=>obs.observe(el));
+}
+
+// ── TOAST ──
+let _tt;
+function showToast(title,msg){
+  clearTimeout(_tt);
+  document.getElementById('t-title').textContent=title;
+  document.getElementById('t-msg').textContent=msg;
+  document.getElementById('toast').classList.add('on');
+  _tt=setTimeout(()=>document.getElementById('toast').classList.remove('on'),3200);
+}
+
+// ── NAV SCROLL ──
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60);});
+
+// ── MOBILE MENU ──
+function openMob(){document.getElementById('mob-menu').classList.add('on');document.getElementById('mob-overlay').classList.add('on');}
+function closeMob(){document.getElementById('mob-menu').classList.remove('on');document.getElementById('mob-overlay').classList.remove('on');}
+
+// ── INIT ──
+renderMenu();
+renderReviews();
+renderSubMini();
+renderSubCards();
+spawnParticles();
+activateReveal();
+updateCartUI();
+window.addEventListener('scroll',activateReveal,{passive:true});
+
+// ── NUKE HOPPY POPUPS BAR ──
+(function killHoppyBar(){
+  function removeBar(){
+    // Target by known Hoppy selectors + any dark top bar injected before our nav
+    var selectors=[
+      '[id*="hoppy"]','[class*="hoppy"]',
+      '[id*="email-bar"]','[class*="email-bar"]',
+      '[id*="email_bar"]','[class*="email_bar"]',
+      '[id*="collection-bar"]','[class*="collection-bar"]',
+      'iframe[src*="hoppy"]'
+    ];
+    selectors.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(el){
+        el.style.cssText='display:none!important;height:0!important;overflow:hidden!important;';
+      });
+    });
+    // Also kill any fixed/sticky element sitting above our nav (z-index > 300 and top:0)
+    document.querySelectorAll('body > *:not(#sk-root):not(script):not(style)').forEach(function(el){
+      var st=window.getComputedStyle(el);
+      var bg=st.backgroundColor;
+      var pos=st.position;
+      var top=st.top;
+      // Dark background bar at top of page
+      if((pos==='fixed'||pos==='sticky')&&top==='0px'&&(bg.includes('0, 0, 0')||bg.includes('17, 17')||bg.includes('rgb(0')||bg==='rgb(0, 0, 0)')){
+        el.style.cssText='display:none!important;height:0!important;';
+      }
+    });
+  }
+  // Run immediately, after DOM ready, and watch for late injections
+  removeBar();
+  document.addEventListener('DOMContentLoaded',removeBar);
+  var obs=new MutationObserver(removeBar);
+  obs.observe(document.body||document.documentElement,{childList:true,subtree:false});
+  // Stop watching after 5s
+  setTimeout(function(){obs.disconnect();},5000);
+})();
+
+</script>
+
+
+
+ 
