@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 """
-Normalize the vendored ad-library scrapers' bundled sample data into a
-single lead list for the ad-scraper email outreach pipeline.
+Build a lead list for the ad-scraper email outreach pipeline, either from
+the vendored scrapers' bundled sample data (default) or from live Apify
+Actor runs (--live).
 
 Usage:
     python3 scripts/ad-outreach/find_leads.py [--skip-facebook] [--skip-google]
+    python3 scripts/ad-outreach/find_leads.py --live   # requires APIFY_API_TOKEN
+                                                          # and apify_config.json
 
 NOTE: As of the pinned submodule commits, every .py file in both
 tools/facebook-ads-library-scraper and tools/google-ad-transparency-scraper
 has a corrupted first line (a stray "thon" prefix from a broken markdown
 export, e.g. "thonimport argparse" instead of "import argparse") and will
-not run — see tools/README.md. Until that's fixed upstream (or patched
-locally), this script reads each submodule's bundled data/*.sample.json
-directly instead of shelling out to their src/main.py.
+not run — see tools/README.md. This script never shells out to their
+src/main.py; the default (offline) mode reads their bundled
+data/*.sample.json directly, and --live mode fetches real data via Apify
+Actors instead (see apify_config.example.json).
 """
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -24,6 +29,9 @@ FB_SCRAPER_DIR = REPO_ROOT / "tools" / "facebook-ads-library-scraper"
 GOOGLE_SCRAPER_DIR = REPO_ROOT / "tools" / "google-ad-transparency-scraper"
 OUTPUT_DIR = Path(__file__).resolve().parent
 LEADS_PATH = OUTPUT_DIR / "leads.json"
+APIFY_CONFIG_PATH = OUTPUT_DIR / "apify_config.json"
+
+sys.path.insert(0, str(REPO_ROOT / "tools"))
 
 
 def load_facebook_ads() -> list:
@@ -44,6 +52,29 @@ def load_google_ads() -> list:
                 "advertiserName": advertiser.get("advertiserName"),
             })
     return ads
+
+
+def load_apify_config() -> dict:
+    if not APIFY_CONFIG_PATH.exists():
+        raise SystemExit(
+            f"--live requires {APIFY_CONFIG_PATH}. Copy apify_config.example.json "
+            "to apify_config.json and fill in your actor IDs + input."
+        )
+    return json.loads(APIFY_CONFIG_PATH.read_text())
+
+
+def load_facebook_ads_live(config: dict) -> list:
+    from apify_client import run_actor  # tools/apify_client.py
+
+    token = os.environ["APIFY_API_TOKEN"]
+    return run_actor(config["facebook_actor_id"], config["facebook_actor_input"], token)
+
+
+def load_google_ads_live(config: dict) -> list:
+    from apify_client import run_actor  # tools/apify_client.py
+
+    token = os.environ["APIFY_API_TOKEN"]
+    return run_actor(config["google_actor_id"], config["google_actor_input"], token)
 
 
 def normalize_facebook_ads(raw: list) -> list:
@@ -103,15 +134,30 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skip-facebook", action="store_true")
     parser.add_argument("--skip-google", action="store_true")
+    parser.add_argument(
+        "--live", action="store_true",
+        help="Fetch real ads via Apify Actors instead of bundled sample data.",
+    )
     args = parser.parse_args()
+
+    if args.live and "APIFY_API_TOKEN" not in os.environ:
+        raise SystemExit("--live requires the APIFY_API_TOKEN environment variable.")
+
+    apify_config = load_apify_config() if args.live else None
 
     leads = []
 
     if not args.skip_facebook:
-        leads.extend(normalize_facebook_ads(load_facebook_ads()))
+        raw_fb = (
+            load_facebook_ads_live(apify_config) if args.live else load_facebook_ads()
+        )
+        leads.extend(normalize_facebook_ads(raw_fb))
 
     if not args.skip_google:
-        leads.extend(normalize_google_ads(load_google_ads()))
+        raw_google = (
+            load_google_ads_live(apify_config) if args.live else load_google_ads()
+        )
+        leads.extend(normalize_google_ads(raw_google))
 
     leads = dedupe(leads)
     LEADS_PATH.write_text(json.dumps(leads, indent=2))

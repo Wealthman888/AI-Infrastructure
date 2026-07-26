@@ -1,0 +1,16 @@
+{
+  "_comment": "Copy this file to apify_config.json (gitignored) and fill in real actor IDs + input. Find actor IDs on the Actor's page in the Apify Console (Store > search 'Facebook Ads Library' / 'Google Ads Transparency'); the exact input field names are actor-specific, so check the Actor's Input tab and adjust the *_actor_input objects below to match.",
+
+  "facebook_actor_id": "REPLACE_ME/facebook-ads-library-scraper",
+  "facebook_actor_input": {
+    "search_terms": ["salon"],
+    "countries": ["US"],
+    "max_items": 50
+  },
+
+  "google_actor_id": "REPLACE_ME/google-ads-transparency-scraper",
+  "google_actor_input": {
+    "advertiser_ids": ["AR13129532367502835713"],
+    "max_pages": 1
+  }
+}
