@@ -3,3 +3,8 @@
 *.env
 __pycache__/
 node_modules/
+
+# generated ad-outreach pipeline output
+scripts/ad-outreach/leads.json
+scripts/ad-outreach/raw_facebook_ads.json
+scripts/ad-outreach/raw_google_ads.json

@@ -1,0 +1,6 @@
+[submodule "tools/facebook-ads-library-scraper"]
+	path = tools/facebook-ads-library-scraper
+	url = https://github.com/domini-67/facebook-ads-library-scraper.git
+[submodule "tools/google-ad-transparency-scraper"]
+	path = tools/google-ad-transparency-scraper
+	url = https://github.com/sufixZoi/google-ad-transparency-scraper.git
