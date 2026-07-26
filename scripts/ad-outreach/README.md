@@ -52,35 +52,42 @@ scrapers' own scraping code:
 
 1. Sign up at [apify.com](https://apify.com) and grab an API token from
    *Settings → Integrations*.
-2. In the Apify Store, find an actor for the Facebook Ads Library and one
-   for Google's Ads Transparency Center (search those terms in the Store).
-   Note each actor's ID (shown as `username/actor-name` on its page) and
-   check its **Input** tab for the exact fields it expects.
-3. `cp scripts/ad-outreach/apify_config.example.json scripts/ad-outreach/apify_config.json`
-   and fill in the real `facebook_actor_id` / `google_actor_id` and their
-   `*_actor_input` objects to match what each actor's Input tab documents
-   (search terms + countries for Facebook; advertiser IDs for Google — note
-   the Google actor is an *enrichment* tool, not discovery: you need to
-   already know advertiser IDs, e.g. from the Facebook side or manually
-   found in the Ads Transparency Center UI).
-4. `export APIFY_API_TOKEN=...` and run:
+2. `cp scripts/ad-outreach/apify_config.example.json scripts/ad-outreach/apify_config.json`.
+   The example file already has candidate actors filled in:
+   - **Facebook**: `apify/facebook-ads-scraper` (official Apify actor).
+     Discovery works by giving it a Facebook Ad Library *search URL* you
+     build yourself (keyword + country baked into the URL), not a plain
+     `searchTerms` field.
+   - **Google**: `parseforge/google-ads-scraper` — notable because it
+     supports keyword-based *discovery* (mixing keywords, advertiser IDs,
+     and domains in one run), unlike most Google Ads Transparency actors
+     which only enrich advertiser IDs you already know.
+
+   **These are unverified, best-effort picks** — reconstructed from
+   search-engine snippets because no environment available to us could
+   actually load apify.com's pages (both this repo's sandbox and a
+   separate "unrestricted" environment we tried got blocked fetching it).
+   Before running, open each actor's page in the Apify Console yourself and
+   confirm the actor ID and its **Input** tab's exact field names against
+   what's in `apify_config.example.json`; fix anything that's changed or
+   wrong. Cheaper/alternate actors are noted in the `_facebook_actor_notes`
+   / `_google_actor_notes` fields if the primary picks don't work out.
+3. `export APIFY_API_TOKEN=...` and run:
    ```
    python3 scripts/ad-outreach/find_leads.py --live
    ```
 
 `find_leads.py --live` calls `tools/apify_client.py` (a minimal, stdlib-only
-Apify REST client) and feeds the returned dataset items into the same
-`normalize_facebook_ads` / `normalize_google_ads` functions used for the
-sample data — this assumes the actor's output uses the same field names as
-Meta's/Google's real Ad Library APIs (`ad_archive_id`, `page_name`,
-`snapshot.body.text`, ... / `advertiserId`, `advertiserName`, ...), which is
-typical for actors scraping those same endpoints, but not guaranteed for
-every actor. If a chosen actor uses different field names, adjust the
-relevant `normalize_*` function in `find_leads.py` to match. This path
-hasn't been tested against a real Apify run (this repo's dev sandbox has no
-network access to apify.com) — the HTTP layer (`tools/apify_client.py`) was
-verified against a local mock server, but verify the first real `--live`
-run's output before relying on it.
+Apify REST client, verified against a local mock server) and feeds the
+returned dataset items into the same `normalize_facebook_ads` /
+`normalize_google_ads` functions used for the sample data — this assumes
+each actor's *output* uses field names close to Meta's/Google's real Ad
+Library APIs (`ad_archive_id`, `page_name`, `snapshot.body.text`, ... /
+`advertiserId`, `advertiserName`, ...), which is typical but, again,
+unverified for these specific actors. Treat the first `--live` run as a
+smoke test: inspect `leads.json` closely and adjust the relevant
+`normalize_*` function in `find_leads.py` if fields come back empty or
+misnamed.
 
 ## Adding more sources
 

@@ -1,16 +1,22 @@
 {
-  "_comment": "Copy this file to apify_config.json (gitignored) and fill in real actor IDs + input. Find actor IDs on the Actor's page in the Apify Console (Store > search 'Facebook Ads Library' / 'Google Ads Transparency'); the exact input field names are actor-specific, so check the Actor's Input tab and adjust the *_actor_input objects below to match.",
+  "_comment": "Copy this file to apify_config.json (gitignored) and confirm/adjust before use. The actor IDs and input fields below are BEST-EFFORT, UNVERIFIED research (reconstructed from search-engine snippets, not the live Apify Input schema — no session available to us could actually load apify.com's pages). Open each actor's page in the Apify Console and check its 'Input' tab before running; fix field names here if they differ.",
 
-  "facebook_actor_id": "REPLACE_ME/facebook-ads-library-scraper",
+  "facebook_actor_id": "apify/facebook-ads-scraper",
+  "_facebook_actor_notes": "Official Apify actor. Discovery is via a Facebook Ad Library *search URL* you build yourself (not a plain keyword field) — see https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&q=KEYWORD&search_type=keyword_unordered, swap KEYWORD/country. Pay-per-result, roughly $3.40-5.80 per 1,000 ads depending on plan. Alternative with a richer schema (EU transparency/reach data): memo23/facebook-ads-library-scraper-cheerio ($31/mo rental + usage).",
   "facebook_actor_input": {
-    "search_terms": ["salon"],
-    "countries": ["US"],
-    "max_items": 50
+    "urls": [
+      {
+        "url": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=salon&search_type=keyword_unordered"
+      }
+    ],
+    "count": 50
   },
 
-  "google_actor_id": "REPLACE_ME/google-ads-transparency-scraper",
+  "google_actor_id": "parseforge/google-ads-scraper",
+  "_google_actor_notes": "Supports keyword-based discovery (not just known advertiser IDs), mixing keywords/advertiserIds/domains in one run. Pay-per-event, roughly $0.80 per 1,000 ads. Alternative (URL-driven, hits Google's internal RPC directly, no browser): memo23/google-ad-transparency-scraper-cheerio (~$1.20/1,000 ads).",
   "google_actor_input": {
-    "advertiser_ids": ["AR13129532367502835713"],
-    "max_pages": 1
+    "keywords": ["salon"],
+    "region": "US",
+    "maxItems": 50
   }
 }
