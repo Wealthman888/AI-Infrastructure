@@ -1,21 +1,21 @@
 {
-  "_comment": "Copy this file to apify_config.json (gitignored) and confirm/adjust before use. The actor IDs and input fields below are BEST-EFFORT, UNVERIFIED research (reconstructed from search-engine snippets, not the live Apify Input schema — no session available to us could actually load apify.com's pages). Open each actor's page in the Apify Console and check its 'Input' tab before running; fix field names here if they differ.",
+  "_comment": "Copy this file to apify_config.json (gitignored) and confirm/adjust before use. Both actor IDs below were re-confirmed to exist as real, live Apify Store listings (via web search, since this session's network policy blocks api.apify.com and apify.com outright — see tools/README.md / the ad-outreach README's 'Going live' section for details). Input field names were refined via multiple corroborating searches of the actors' own doc pages, but were STILL NOT checked against the live Input schema tab or a real run, because that same network block prevented it. Open each actor's page in the Apify Console and check its 'Input' tab before running; fix field names here if they differ.",
 
   "facebook_actor_id": "apify/facebook-ads-scraper",
-  "_facebook_actor_notes": "Official Apify actor. Discovery is via a Facebook Ad Library *search URL* you build yourself (not a plain keyword field) — see https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&q=KEYWORD&search_type=keyword_unordered, swap KEYWORD/country. Pay-per-result, roughly $3.40-5.80 per 1,000 ads depending on plan. Alternative with a richer schema (EU transparency/reach data): memo23/facebook-ads-library-scraper-cheerio ($31/mo rental + usage).",
+  "_facebook_actor_notes": "Official Apify actor, confirmed live at apify.com/apify/facebook-ads-scraper. Must provide either 'startUrls' (Ad Library search URLs or Facebook Page URLs, built yourself — see https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&q=KEYWORD&search_type=keyword_unordered, swap KEYWORD/country) or 'searchTerms' (plain keywords, paired with 'countryCode'), or both. Result-count field name is best-effort 'resultsLimit'. Pay-per-result, roughly $0.40-5.80 per 1,000 ads depending on plan/variant. Alternative with a richer schema (EU transparency/reach data): memo23/facebook-ads-library-scraper-cheerio ($31/mo rental + usage).",
   "facebook_actor_input": {
-    "urls": [
+    "startUrls": [
       {
         "url": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=US&q=salon&search_type=keyword_unordered"
       }
     ],
-    "count": 50
+    "resultsLimit": 50
   },
 
   "google_actor_id": "parseforge/google-ads-scraper",
-  "_google_actor_notes": "Supports keyword-based discovery (not just known advertiser IDs), mixing keywords/advertiserIds/domains in one run. Pay-per-event, roughly $0.80 per 1,000 ads. Alternative (URL-driven, hits Google's internal RPC directly, no browser): memo23/google-ad-transparency-scraper-cheerio (~$1.20/1,000 ads).",
+  "_google_actor_notes": "Confirmed live at apify.com/parseforge/google-ads-scraper. Supports keyword-based discovery via 'searchTerms' (best-effort field name; alternatives for known-target lookups are 'advertiserIds' and 'searchDomains'), mixing types in one run. Output items are one row per ad *creative*, with fields (per the actor's own output-schema page) including advertiserId, advertiserName, creativeId, domain, format, firstShown, lastShown, globalImpressions — notably different from the raw Google Ads Transparency Center API shape this repo's normalize_google_ads() used to assume. Pay-per-event, roughly $0.80 per 1,000 ads. Alternative (URL-driven, hits Google's internal RPC directly, no browser): memo23/google-ad-transparency-scraper-cheerio (~$1.20/1,000 ads).",
   "google_actor_input": {
-    "keywords": ["salon"],
+    "searchTerms": ["salon"],
     "region": "US",
     "maxItems": 50
   }

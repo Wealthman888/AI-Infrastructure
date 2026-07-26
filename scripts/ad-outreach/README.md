@@ -55,23 +55,28 @@ scrapers' own scraping code:
 2. `cp scripts/ad-outreach/apify_config.example.json scripts/ad-outreach/apify_config.json`.
    The example file already has candidate actors filled in:
    - **Facebook**: `apify/facebook-ads-scraper` (official Apify actor).
-     Discovery works by giving it a Facebook Ad Library *search URL* you
-     build yourself (keyword + country baked into the URL), not a plain
-     `searchTerms` field.
+     Discovery works either via a Facebook Ad Library *search URL* you
+     build yourself (`startUrls`, keyword + country baked into the URL) or
+     a plain `searchTerms` + `countryCode` pair.
    - **Google**: `parseforge/google-ads-scraper` — notable because it
-     supports keyword-based *discovery* (mixing keywords, advertiser IDs,
-     and domains in one run), unlike most Google Ads Transparency actors
-     which only enrich advertiser IDs you already know.
+     supports keyword-based *discovery* (via `searchTerms`, optionally
+     mixed with `advertiserIds` / `searchDomains` for known targets in the
+     same run), unlike most Google Ads Transparency actors which only
+     enrich advertiser IDs you already know.
 
-   **These are unverified, best-effort picks** — reconstructed from
-   search-engine snippets because no environment available to us could
-   actually load apify.com's pages (both this repo's sandbox and a
-   separate "unrestricted" environment we tried got blocked fetching it).
-   Before running, open each actor's page in the Apify Console yourself and
-   confirm the actor ID and its **Input** tab's exact field names against
-   what's in `apify_config.example.json`; fix anything that's changed or
-   wrong. Cheaper/alternate actors are noted in the `_facebook_actor_notes`
-   / `_google_actor_notes` fields if the primary picks don't work out.
+   **Both actor IDs are confirmed to be real, live Apify Store listings**
+   (checked via web search). Their exact input/output field names,
+   however, are still **best-effort, not live-verified** — we could not
+   confirm them directly because this repo's sandbox (and every other
+   environment we've tried so far) has its outbound network policy block
+   `api.apify.com` *and* `apify.com` entirely, so neither the Apify API nor
+   the Console/Store pages are reachable to double-check the **Input**
+   tab. Before running for real, open each actor's page in the Apify
+   Console yourself from an unrestricted network and confirm the exact
+   field names in `apify_config.example.json`; fix anything that's changed
+   or wrong. Cheaper/alternate actors are noted in the
+   `_facebook_actor_notes` / `_google_actor_notes` fields if the primary
+   picks don't work out.
 3. `export APIFY_API_TOKEN=...` and run:
    ```
    python3 scripts/ad-outreach/find_leads.py --live
@@ -80,14 +85,20 @@ scrapers' own scraping code:
 `find_leads.py --live` calls `tools/apify_client.py` (a minimal, stdlib-only
 Apify REST client, verified against a local mock server) and feeds the
 returned dataset items into the same `normalize_facebook_ads` /
-`normalize_google_ads` functions used for the sample data — this assumes
-each actor's *output* uses field names close to Meta's/Google's real Ad
-Library APIs (`ad_archive_id`, `page_name`, `snapshot.body.text`, ... /
-`advertiserId`, `advertiserName`, ...), which is typical but, again,
-unverified for these specific actors. Treat the first `--live` run as a
-smoke test: inspect `leads.json` closely and adjust the relevant
-`normalize_*` function in `find_leads.py` if fields come back empty or
-misnamed.
+`normalize_google_ads` functions used for the sample data.
+`normalize_facebook_ads` assumes Meta's own Ad Library API field names
+(`ad_archive_id`, `page_name`, `snapshot.body.text`, ...), which the
+official Apify actor is likely to mirror but which remains unverified here.
+`normalize_google_ads` expects one dataset item per ad *creative* with
+fields matching `parseforge/google-ads-scraper`'s own output schema
+(`advertiserId`, `advertiserName`, `creativeId`, `domain`, `format`,
+`globalImpressions`, ...) — this is a real, corroborated schema (found via
+its output-schema doc page) and is notably **not** the same shape as
+Google's raw Ads Transparency Center API that an earlier version of this
+function assumed. Both remain unverified against a real run for the reason
+above. Treat the first `--live` run as a smoke test: inspect `leads.json`
+closely and adjust the relevant `normalize_*` function in `find_leads.py`
+if fields come back empty or misnamed.
 
 ## Adding more sources
 

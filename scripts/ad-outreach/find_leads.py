@@ -94,23 +94,23 @@ def normalize_facebook_ads(raw: list) -> list:
 
 
 def normalize_google_ads(raw: list) -> list:
+    """Flatten parseforge/google-ads-scraper's per-creative dataset items into one lead per advertiser."""
     by_advertiser = {}
     for ad in raw:
         advertiser_id = ad.get("advertiserId")
         if advertiser_id not in by_advertiser:
-            cta_url = None
-            for variation in ad.get("variations", []):
-                cta_url = variation.get("youtubeMetadata", {}).get("ctaUrl")
-                if cta_url:
-                    break
+            domain = ad.get("domain")
+            impressions = ad.get("globalImpressions")
+            if isinstance(impressions, dict):
+                impressions = impressions.get("total") or impressions.get("max")
             by_advertiser[advertiser_id] = {
                 "business_name": ad.get("advertiserName"),
                 "source": "google_ad_transparency",
                 "source_id": advertiser_id,
-                "profile_url": cta_url,
+                "profile_url": f"https://{domain}" if domain and not domain.startswith("http") else domain,
                 "sample_ad_text": None,
-                "ad_platforms": ["Google", "YouTube"],
-                "engagement": ad.get("stats", {}).get("impressions", {}).get("total"),
+                "ad_platforms": ["Google Ads Transparency Center"],
+                "engagement": impressions,
             }
     return list(by_advertiser.values())
 
