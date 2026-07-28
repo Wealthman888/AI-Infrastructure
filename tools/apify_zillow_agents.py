@@ -22,6 +22,7 @@ def run_zillow_agent_scraper(
     status_type="ForSale",
     max_properties_per_zip=0,
     api_token=None,
+    **extra_filters,
 ):
     """Run the actor in ZIP-code mode and return the resulting dataset items.
 
@@ -30,10 +31,13 @@ def run_zillow_agent_scraper(
         status_type: "ForSale", "ForRent", or "RecentlySold".
         max_properties_per_zip: cap per ZIP code (0 = actor default).
         api_token: Apify API token; defaults to the APIFY_API_TOKEN env var.
+        **extra_filters: additional actor input fields passed through as-is
+            (e.g. price_min, price_max, enrichPhotos, beds_min).
 
     Returns:
         List of dicts, one per property, including agentName, agentEmail,
-        cellPhone, agentLicenseNumber, brokerName, and brokerPhoneNumber.
+        cellPhone, agentLicenseNumber, brokerName, brokerPhoneNumber,
+        hasVideo, has3DModel, photos, pageViewCount, and daysOnZillow.
     """
     token = api_token or os.environ.get("APIFY_API_TOKEN")
     if not token:
@@ -45,6 +49,7 @@ def run_zillow_agent_scraper(
         "status_type": status_type,
         "maxPropertiesPerZip": max_properties_per_zip,
         "isForSaleByAgent": True,
+        **extra_filters,
     }
 
     response = requests.post(
