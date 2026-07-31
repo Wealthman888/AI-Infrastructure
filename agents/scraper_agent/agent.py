@@ -1,56 +1,73 @@
 """
-Scraper agent scaffolding.
+Scraper agent, backed by ScrapeGraphAI (https://github.com/ScrapeGraphAI/Scrapegraph-ai).
 
 Follows the tool-use loop pattern from /CLAUDE.md:
 1. Send a user message + tool definitions to the Claude API
 2. If the response contains tool_use blocks, execute the tool and return a tool_result
 3. Continue the loop until the model returns a final text response
 
-Fill in `fetch_url` with real extraction logic (selectors, pagination, etc.)
-for the site(s) this agent targets.
+The orchestrator (this loop) decides *which* URLs to scrape and *what* to
+extract from each; the `smart_scrape` tool delegates the actual fetch +
+LLM-driven extraction to ScrapeGraphAI's SmartScraperGraph.
 """
 
 import os
 
-import requests
 from anthropic import Anthropic
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from scrapegraphai.graphs import SmartScraperGraph
 
 load_dotenv()
 
 MODEL = os.environ.get("SCRAPER_MODEL", "claude-haiku-4-5-20251001")
 
-SYSTEM_PROMPT = """You are a web scraping agent. Use the fetch_url tool to \
+SYSTEM_PROMPT = """You are a web scraping agent. Use the smart_scrape tool to \
 retrieve pages and extract the structured data the user asks for. Only \
-fetch URLs that are relevant to the request."""
+scrape URLs that are relevant to the request, and write a specific \
+extraction prompt per URL describing exactly what to pull out."""
 
 TOOLS = [
     {
-        "name": "fetch_url",
-        "description": "Fetch a URL and return its visible text content.",
+        "name": "smart_scrape",
+        "description": (
+            "Fetch a URL and use an LLM to extract the data described in "
+            "the extraction prompt, returning it as structured data."
+        ),
         "input_schema": {
             "type": "object",
             "properties": {
-                "url": {"type": "string", "description": "The URL to fetch"},
+                "url": {"type": "string", "description": "The URL to scrape"},
+                "extraction_prompt": {
+                    "type": "string",
+                    "description": "What to extract from the page, e.g. 'list all product names and prices'",
+                },
             },
-            "required": ["url"],
+            "required": ["url", "extraction_prompt"],
         },
     }
 ]
 
 
-def fetch_url(url: str) -> str:
-    """Stub tool implementation. Replace with real parsing for target sites."""
-    response = requests.get(url, timeout=10)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.text, "html.parser")
-    return soup.get_text(separator="\n", strip=True)[:5000]
+def smart_scrape(url: str, extraction_prompt: str) -> dict:
+    graph_config = {
+        "llm": {
+            "api_key": os.environ["ANTHROPIC_API_KEY"],
+            "model": f"anthropic/{MODEL}",
+        },
+        "verbose": False,
+        "headless": True,
+    }
+    scraper = SmartScraperGraph(
+        prompt=extraction_prompt,
+        source=url,
+        config=graph_config,
+    )
+    return scraper.run()
 
 
-def run_tool(name: str, tool_input: dict) -> str:
-    if name == "fetch_url":
-        return fetch_url(tool_input["url"])
+def run_tool(name: str, tool_input: dict) -> dict:
+    if name == "smart_scrape":
+        return smart_scrape(tool_input["url"], tool_input["extraction_prompt"])
     raise ValueError(f"Unknown tool: {name}")
 
 
@@ -89,7 +106,7 @@ def run(user_message: str) -> str:
                 {
                     "type": "tool_result",
                     "tool_use_id": block.id,
-                    "content": result,
+                    "content": str(result),
                 }
             )
         messages.append({"role": "user", "content": tool_results})
