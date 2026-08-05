@@ -3,3 +3,9 @@
 *.env
 __pycache__/
 node_modules/
+
+# SEO Agent isolated runtime (created by `/seo setup`, machine-specific)
+.claude/skills/seo-agent/.venv/
+.claude/skills/seo-agent/ms-playwright/
+.claude/skills/seo-agent/runtime-state.json
+.claude/skills/seo-agent/.setup.lock
