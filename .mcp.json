@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "instantly": {
+      "command": "node",
+      "args": ["tools/instantly-mcp-server/dist/index.js"],
+      "env": {
+        "INSTANTLY_API_KEY": "${INSTANTLY_API_KEY}"
+      }
+    }
+  }
+}

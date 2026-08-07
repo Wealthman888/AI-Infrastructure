@@ -61,3 +61,13 @@ Use Claude Code's `/schedule` skill to create cron-based remote agents. Store cr
 This environment has MCP servers configured for Gmail, Google Calendar, and Google Drive. When building tools that wrap these services, prefer the MCP tool calls over raw API calls — they handle auth automatically.
 
 Available MCP namespaces: `mcp__claude_ai_Gmail__*`, `mcp__claude_ai_Google_Calendar__*`, `mcp__claude_ai_Google_Drive__*`.
+
+### Instantly (cold email outreach)
+
+Instantly.ai has no official Anthropic connector, so it's wired up as a
+project-local MCP server instead: `tools/instantly-mcp-server/` (Node/TypeScript,
+stdio transport), registered in the repo's `.mcp.json` under the `instantly`
+key. It authenticates with `INSTANTLY_API_KEY` (set in your shell/`.env`, never
+committed) and exposes tools for campaigns, leads, sending accounts, and
+analytics — namespace `mcp__instantly__*`. See
+`tools/instantly-mcp-server/README.md` for setup and the full tool list.
