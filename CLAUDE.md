@@ -61,3 +61,9 @@ Use Claude Code's `/schedule` skill to create cron-based remote agents. Store cr
 This environment has MCP servers configured for Gmail, Google Calendar, and Google Drive. When building tools that wrap these services, prefer the MCP tool calls over raw API calls — they handle auth automatically.
 
 Available MCP namespaces: `mcp__claude_ai_Gmail__*`, `mcp__claude_ai_Google_Calendar__*`, `mcp__claude_ai_Google_Drive__*`.
+
+### Apify (lead scraping)
+
+`.mcp.json` configures the official Apify MCP server (`@apify/actors-mcp-server` via `npx`) for lead-generation scraping — Google Maps, LinkedIn, Instagram, and other Apify Store actors. It runs in actor-discovery mode: Claude searches the Apify Store and calls actors as needed rather than a fixed, pre-pinned list.
+
+Requires an `APIFY_TOKEN` environment variable (from apify.com → Settings → Integrations → API token) set in your shell or Claude Code environment config before the server can connect — it is intentionally not committed to this repo.
