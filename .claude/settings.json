@@ -10,5 +10,16 @@
         ]
       }
     ]
+  },
+  "extraKnownMarketplaces": {
+    "linkedin-skills": {
+      "source": {
+        "source": "github",
+        "repo": "sergebulaev/linkedin-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "linkedin-skills@linkedin-skills": true
   }
 }
