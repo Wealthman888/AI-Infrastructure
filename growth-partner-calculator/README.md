@@ -114,6 +114,27 @@ explicit rules in `determineEconomicStatus()` in `lib/calculations/engine.ts`, b
 contribution sign and magnitude relative to spend, break-even customers vs. projected customers,
 and capacity constraints.
 
+## Staged spend and commercial fit vs. projection confidence
+
+Step 5 includes a **staged spend plan** (total approved test budget, initial/second release
+amounts, scale/pause thresholds, max acceptable CPL/CPA, start date, review date) — purely
+descriptive planning fields that surface in the 30-day plan, sales-call mode, and the
+presentation mode's Final Decision Panel, and never feed the calculation engine.
+
+Step 4 also has two one-click bulk actions (`lib/forms/apply-economics.ts`,
+`applyPresetToAllScenarios` in `lib/calculations/presets.ts`):
+- **Apply business economics to all scenarios** — copies ad spend, AOV, gross margin, refund
+  rate, and capacity from Business Economics into Conservative/Expected/Best case only; CPM and
+  funnel-conversion assumptions stay scenario-specific, and Current Actual is never touched.
+- **Apply recommended preset to all scenarios** — applies the matching preset's CPM/CTR/conversion
+  rates to all three scenarios at once, preserving whatever economics are already entered.
+
+The 100-point qualification score (commercial readiness) and the credibility panel's
+evidence-confidence percentage are deliberately kept separate (`lib/calculations/combined-fit.ts`).
+When a prospect is qualified (score ≥ 70) but evidence confidence is below 80%, the app shows:
+*"Strong commercial fit. Additional data is required before treating the expected projection as
+decision-grade."* A high qualification score is never presented as certainty about the numbers.
+
 ## Projection limitations
 
 - Projections are scenario planning, not forecasts or guarantees — every screen that shows them

@@ -168,6 +168,17 @@ export const qualificationAssessmentSchema = z.object({
   launchReadiness: assessmentBandEnum,
 });
 
+export const stagedSpendPlanSchema = z.object({
+  totalApprovedTestBudget: nonNegativeNullableNumber,
+  initialReleaseAmount: nonNegativeNullableNumber,
+  secondReleaseAmount: nonNegativeNullableNumber,
+  scaleThreshold: z.string(),
+  pauseThreshold: z.string(),
+  maxAcceptableCpa: nonNegativeNullableNumber,
+  startDate: z.string().nullable(),
+  reviewDate: z.string().nullable(),
+});
+
 export const creativeConceptSchema = z.object({
   conceptName: z.string(),
   customerProblem: z.string(),
@@ -211,6 +222,7 @@ export const auditSchema = z.object({
   scenarios: scenarioAssumptionSetSchema,
   findings: auditFindingsSchema,
   qualificationAssessment: qualificationAssessmentSchema,
+  stagedSpendPlan: stagedSpendPlanSchema,
   aiAudit: aiAuditResultSchema.nullable(),
   callStatus: z.enum(["not_scheduled", "scheduled", "completed", "no_show", "rescheduled"]),
   proposalStatus: z.enum(["not_sent", "sent", "under_review", "accepted", "declined"]),
@@ -228,6 +240,7 @@ export const auditFormSchema = z.object({
   scenarios: scenarioAssumptionSetSchema,
   findings: auditFindingsSchema,
   qualificationAssessment: qualificationAssessmentSchema,
+  stagedSpendPlan: stagedSpendPlanSchema,
 });
 
 export type AuditFormValues = z.infer<typeof auditFormSchema>;

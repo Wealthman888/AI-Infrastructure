@@ -7,14 +7,29 @@ export interface ObjectionResponse {
   response: string;
 }
 
+export const CONSERVATIVE_BUDGET_OBJECTION =
+  "The conservative scenario does not reach break-even, which is why we would use staged spending and predefined stop-loss thresholds. The pilot's purpose is to determine whether performance begins tracking toward the expected case before releasing the full budget.";
+
+/** True when the conservative scenario is not projected to clear break-even — either the contribution is negative, or projected customers fall short of the break-even count. */
+function conservativeMissesBreakEven(conservative: ScenarioResult): boolean {
+  if (isAvailable(conservative.contributionAfterMarketing) && conservative.contributionAfterMarketing < 0) {
+    return true;
+  }
+  if (isAvailable(conservative.newCustomers) && isAvailable(conservative.breakEvenCustomers)) {
+    return conservative.newCustomers < conservative.breakEvenCustomers;
+  }
+  return false;
+}
+
 /** Deterministic, template-based objection responses personalized with this audit's own numbers — never AI-generated, so they're always available and never invent figures. */
 export function buildObjectionResponses(audit: Audit, expected: ScenarioResult, conservative: ScenarioResult): ObjectionResponse[] {
   const responses: ObjectionResponse[] = [];
 
   responses.push({
     objection: "It's too expensive / we don't have the budget right now.",
-    response:
-      isAvailable(conservative.breakEvenCustomers) && isAvailable(conservative.newCustomers)
+    response: conservativeMissesBreakEven(conservative)
+      ? CONSERVATIVE_BUDGET_OBJECTION
+      : isAvailable(conservative.breakEvenCustomers) && isAvailable(conservative.newCustomers)
         ? `The conservative scenario only needs ${formatCount(conservative.breakEvenCustomers)} customers to break even, against a projected ${formatCount(conservative.newCustomers)}. We can also start with a smaller test spend and scale only once the numbers hold up.`
         : `We can start with a smaller test budget to validate before scaling — enter break-even inputs to see the exact threshold for this account.`,
   });

@@ -1,17 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Alert } from "@/components/ui/alert";
 import { ScenarioNumberField, ScenarioPercentField } from "./plain-fields";
 import { useForceDirectFunnelValues } from "@/lib/forms/use-force-direct-funnel";
-import { BusinessModel, PerformanceFeeModel } from "@/types/audit";
-import { PRESET_LABELS, PresetTier, loadScenarioPresets, presetKeyForBusinessModel } from "@/lib/calculations/presets";
+import { BusinessEconomics, BusinessModel, PerformanceFeeModel, ScenarioAssumptionSet } from "@/types/audit";
+import { PRESET_LABELS, PresetTier, applyPresetToAllScenarios, loadScenarioPresets, presetKeyForBusinessModel } from "@/lib/calculations/presets";
+import { applyEconomicsToAllScenarios } from "@/lib/forms/apply-economics";
 import { calculateScenario } from "@/lib/calculations/engine";
 import { FeeInputs, ScenarioCalcInput } from "@/lib/calculations/types";
 import { formatCurrency, formatRatio, formatCount } from "@/lib/calculations/formatting";
 import { isAvailable } from "@/lib/calculations/types";
+import { CheckCircle2, Copy, Sparkles } from "lucide-react";
 
 const TIERS: { key: "current" | PresetTier; label: string; isPreset: boolean }[] = [
   { key: "current", label: "Current actual", isPreset: false },
@@ -51,10 +55,12 @@ function ScenarioColumn({ tier, mode }: { tier: "current" | PresetTier; mode: "f
   };
   const preview = scenarioValues ? calculateScenario(scenarioValues, fees) : null;
 
+  const tierLabel = TIERS.find((t) => t.key === tier)?.label ?? tier;
+
   return (
     <div className="min-w-[240px] flex-1 rounded-lg border border-border bg-navy-900 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">{TIERS.find((t) => t.key === tier)?.label}</h3>
+        <h3 className="text-sm font-semibold text-white">{tierLabel}</h3>
         {tier === "current" ? (
           <Badge variant="outline">Verified only</Badge>
         ) : (
@@ -64,21 +70,25 @@ function ScenarioColumn({ tier, mode }: { tier: "current" | PresetTier; mode: "f
         )}
       </div>
       <div className="space-y-3">
-        <ScenarioNumberField name={`scenarios.${tier}.monthlyAdSpend`} label="Monthly ad spend" prefix="$" />
-        <ScenarioNumberField name={`scenarios.${tier}.cpm`} label="CPM" prefix="$" />
-        <ScenarioPercentField name={`scenarios.${tier}.clickThroughRate`} label="Click-through rate" />
-        <ScenarioPercentField name={`scenarios.${tier}.conversionRate`} label={mode === "direct" ? "Purchase conversion rate" : "Landing conversion rate"} />
+        <ScenarioNumberField name={`scenarios.${tier}.monthlyAdSpend`} label="Monthly ad spend" prefix="$" scenarioLabel={tierLabel} />
+        <ScenarioNumberField name={`scenarios.${tier}.cpm`} label="CPM" prefix="$" scenarioLabel={tierLabel} />
+        <ScenarioPercentField name={`scenarios.${tier}.clickThroughRate`} label="Click-through rate" scenarioLabel={tierLabel} />
+        <ScenarioPercentField
+          name={`scenarios.${tier}.conversionRate`}
+          label={mode === "direct" ? "Purchase conversion rate" : "Landing conversion rate"}
+          scenarioLabel={tierLabel}
+        />
         {mode === "full" && (
           <>
-            <ScenarioPercentField name={`scenarios.${tier}.leadToBookedCallRate`} label="Lead-to-booked-call rate" />
-            <ScenarioPercentField name={`scenarios.${tier}.showRate`} label="Show rate" />
-            <ScenarioPercentField name={`scenarios.${tier}.closeRate`} label="Close rate" />
+            <ScenarioPercentField name={`scenarios.${tier}.leadToBookedCallRate`} label="Lead-to-booked-call rate" scenarioLabel={tierLabel} />
+            <ScenarioPercentField name={`scenarios.${tier}.showRate`} label="Show rate" scenarioLabel={tierLabel} />
+            <ScenarioPercentField name={`scenarios.${tier}.closeRate`} label="Close rate" scenarioLabel={tierLabel} />
           </>
         )}
-        <ScenarioNumberField name={`scenarios.${tier}.averageCollectedSale`} label="Average collected sale" prefix="$" />
-        <ScenarioPercentField name={`scenarios.${tier}.grossMargin`} label="Gross margin" />
-        <ScenarioPercentField name={`scenarios.${tier}.refundRate`} label="Refund rate" />
-        <ScenarioNumberField name={`scenarios.${tier}.maxCustomerCapacity`} label="Maximum customer capacity" />
+        <ScenarioNumberField name={`scenarios.${tier}.averageCollectedSale`} label="Average collected sale" prefix="$" scenarioLabel={tierLabel} />
+        <ScenarioPercentField name={`scenarios.${tier}.grossMargin`} label="Gross margin" scenarioLabel={tierLabel} />
+        <ScenarioPercentField name={`scenarios.${tier}.refundRate`} label="Refund rate" scenarioLabel={tierLabel} />
+        <ScenarioNumberField name={`scenarios.${tier}.maxCustomerCapacity`} label="Maximum customer capacity" scenarioLabel={tierLabel} />
       </div>
 
       {preview && (
@@ -118,8 +128,35 @@ function ScenarioColumn({ tier, mode }: { tier: "current" | PresetTier; mode: "f
   );
 }
 
+type BulkAction = "economics" | "preset" | null;
+
 export function Step4Scenarios() {
   const mode = useForceDirectFunnelValues();
+  const { control, getValues, setValue } = useFormContext();
+  const businessModel: BusinessModel = useWatch({ control, name: "prospect.businessModel" });
+  const [confirmed, setConfirmed] = useState<BulkAction>(null);
+
+  const flashConfirmation = (action: BulkAction) => {
+    setConfirmed(action);
+    setTimeout(() => setConfirmed((current) => (current === action ? null : current)), 2500);
+  };
+
+  const handleApplyEconomicsToAll = () => {
+    const scenarios = getValues("scenarios") as ScenarioAssumptionSet;
+    const economics = getValues("economics") as BusinessEconomics;
+    const updated = applyEconomicsToAllScenarios(scenarios, economics);
+    setValue("scenarios", updated, { shouldDirty: true, shouldValidate: true });
+    flashConfirmation("economics");
+  };
+
+  const handleApplyPresetToAll = () => {
+    const scenarios = getValues("scenarios") as ScenarioAssumptionSet;
+    const presets = loadScenarioPresets();
+    const presetKey = presetKeyForBusinessModel(businessModel);
+    const updated = applyPresetToAllScenarios(scenarios, presetKey, presets);
+    setValue("scenarios", updated, { shouldDirty: true, shouldValidate: true });
+    flashConfirmation("preset");
+  };
 
   return (
     <Card>
@@ -130,7 +167,32 @@ export function Step4Scenarios() {
           and best-case start from illustrative planning presets — every value is editable and none are guarantees.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="secondary" size="sm" onClick={handleApplyEconomicsToAll}>
+            <Copy className="h-3.5 w-3.5" /> Apply business economics to all scenarios
+          </Button>
+          <Button type="button" variant="secondary" size="sm" onClick={handleApplyPresetToAll}>
+            <Sparkles className="h-3.5 w-3.5" /> Apply {PRESET_LABELS[presetKeyForBusinessModel(businessModel)]} preset to all scenarios
+          </Button>
+        </div>
+        {confirmed === "economics" && (
+          <Alert tone="positive" title="Applied">
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="h-3.5 w-3.5" /> Monthly ad spend, average collected sale, gross margin, refund
+              rate, and customer capacity copied into Conservative, Expected, and Best case. Current actual was not
+              changed.
+            </span>
+          </Alert>
+        )}
+        {confirmed === "preset" && (
+          <Alert tone="positive" title="Applied">
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="h-3.5 w-3.5" /> {PRESET_LABELS[presetKeyForBusinessModel(businessModel)]}{" "}
+              conservative, expected, and best-case rates applied. Prospect-specific economics were preserved.
+            </span>
+          </Alert>
+        )}
         <div className="flex gap-4 overflow-x-auto pb-2">
           {TIERS.map((t) => (
             <ScenarioColumn key={t.key} tier={t.key} mode={mode} />

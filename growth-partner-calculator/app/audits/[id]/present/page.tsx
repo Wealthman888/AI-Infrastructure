@@ -7,13 +7,18 @@ import { Alert } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAudit } from "@/lib/storage/audits";
-import { Audit, RELIABLE_STATUSES } from "@/types/audit";
+import { Audit } from "@/types/audit";
 import { calculateAllScenarios } from "@/lib/calculations/audit-scenarios";
-import { formatCurrency, formatPercent } from "@/lib/calculations/formatting";
+import { calculateQualificationScore } from "@/lib/calculations/qualification";
+import { calculateCredibilityPanel } from "@/lib/calculations/credibility";
+import { formatCurrency } from "@/lib/calculations/formatting";
 import { ClientScenarioCard } from "@/components/presentation/client-scenario-card";
+import { ConfirmedInputsCard } from "@/components/presentation/confirmed-inputs";
+import { FinalDecisionPanel } from "@/components/presentation/final-decision-panel";
 import { buildThirtyDayPlan } from "@/lib/thirty-day-plan";
 import { buildAgreementSummary } from "@/lib/objections";
-import { PROJECTION_DISCLAIMER, DECISION_QUESTION } from "@/lib/presentation";
+import { PROJECTION_DISCLAIMER, DECISION_QUESTION, buildConfirmedInputs } from "@/lib/presentation";
+import { combinedFitMessage } from "@/lib/calculations/combined-fit";
 import { Printer, Copy, Check, ArrowLeft } from "lucide-react";
 
 function useCopy() {
@@ -36,9 +41,14 @@ export default function PresentationPage() {
   }, [params.id]);
 
   const scenarios = useMemo(() => (audit ? calculateAllScenarios(audit) : null), [audit]);
+  const qualification = useMemo(() => (audit ? calculateQualificationScore(audit) : null), [audit]);
+  const credibility = useMemo(
+    () => (audit && scenarios ? calculateCredibilityPanel(audit, scenarios.best_case) : null),
+    [audit, scenarios],
+  );
 
   if (audit === undefined) return <div className="h-64 animate-pulse rounded-lg bg-navy-800" />;
-  if (audit === null || !scenarios) {
+  if (audit === null || !scenarios || !qualification || !credibility) {
     return (
       <Alert tone="danger" title="Audit not found">
         <Link href="/audits" className="underline">Return to saved audits</Link>
@@ -46,13 +56,8 @@ export default function PresentationPage() {
     );
   }
 
-  const verifiedBaseline = [
-    { label: "Average collected sale", tracked: audit.economics.averageCollectedSale, fmt: formatCurrency },
-    { label: "Gross margin", tracked: audit.economics.grossMarginPercent, fmt: (v: number) => formatPercent(v) },
-    { label: "Current monthly revenue", tracked: audit.economics.currentMonthlyCollectedRevenue, fmt: formatCurrency },
-    { label: "Existing monthly ad spend", tracked: audit.economics.existingMonthlyAdSpend, fmt: formatCurrency },
-  ].filter((f) => RELIABLE_STATUSES.includes(f.tracked.status) && f.tracked.value !== null);
-
+  const confirmedInputs = buildConfirmedInputs(audit);
+  const fitMessage = combinedFitMessage(qualification, credibility);
   const tests = audit.findings.creativeTests.filter((t) => t.trim());
   const plan = buildThirtyDayPlan(audit);
   const investmentSummary = buildAgreementSummary(audit, scenarios.expected);
@@ -97,23 +102,9 @@ export default function PresentationPage() {
         <CardContent><p className="text-sm text-muted-foreground">{audit.prospect.currentAcquisitionProblem || "Not specified."}</p></CardContent>
       </Card>
 
-      <Card>
-        <CardHeader><CardTitle>Verified baseline</CardTitle></CardHeader>
-        <CardContent>
-          {verifiedBaseline.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No verified baseline data yet — we recommend confirming these figures before the pilot begins.</p>
-          ) : (
-            <div className="grid gap-2 sm:grid-cols-2">
-              {verifiedBaseline.map((f) => (
-                <div key={f.label} className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{f.label}</span>
-                  <span className="text-white">{f.fmt(f.tracked.value as number)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <ConfirmedInputsCard rows={confirmedInputs} />
+
+      {fitMessage && <Alert tone="warning" title="Commercial fit vs. projection confidence">{fitMessage}</Alert>}
 
       <Card>
         <CardHeader><CardTitle>Three proposed tests</CardTitle></CardHeader>
@@ -173,6 +164,8 @@ export default function PresentationPage() {
       </Card>
 
       <Alert tone="info">{PROJECTION_DISCLAIMER}</Alert>
+
+      <FinalDecisionPanel audit={audit} expected={scenarios.expected} />
 
       <Card className="border-brand-blue/40 bg-brand-blue/5">
         <CardContent className="p-6 text-center">

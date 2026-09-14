@@ -11,6 +11,7 @@ import { Audit, BUSINESS_MODEL_OPTIONS, SCENARIO_KEYS, SCENARIO_LABELS, Scenario
 import { calculateAllScenarios } from "@/lib/calculations/audit-scenarios";
 import { calculateQualificationScore } from "@/lib/calculations/qualification";
 import { calculateCredibilityPanel } from "@/lib/calculations/credibility";
+import { combinedFitMessage } from "@/lib/calculations/combined-fit";
 import { ScenarioCard } from "@/components/results/scenario-card";
 import { FunnelVisualization } from "@/components/results/funnel-visualization";
 import { ComparisonCharts } from "@/components/results/comparison-charts";
@@ -106,9 +107,16 @@ export default function AuditDetailPage() {
         <ComparisonCharts results={scenarioResults} includeCurrent={hasCurrent} />
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <CredibilityPanelCard panel={credibility} />
-        <QualificationPanel result={qualification} />
+      <section className="space-y-3">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <CredibilityPanelCard panel={credibility} />
+          <QualificationPanel result={qualification} />
+        </div>
+        {combinedFitMessage(qualification, credibility) && (
+          <Alert tone="warning" title="Commercial fit vs. projection confidence">
+            {combinedFitMessage(qualification, credibility)}
+          </Alert>
+        )}
       </section>
 
       <section className="space-y-3">

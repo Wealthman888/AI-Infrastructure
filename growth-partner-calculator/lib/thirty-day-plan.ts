@@ -1,4 +1,5 @@
 import { Audit } from "@/types/audit";
+import { formatCurrency } from "@/lib/calculations/formatting";
 
 export interface PlanPhase {
   range: string;
@@ -14,6 +15,33 @@ export function buildThirtyDayPlan(audit: Audit): PlanPhase[] {
   const funnelRec = audit.findings.funnelRecommendation.trim();
   const salesRec = audit.findings.salesProcessRecommendation.trim();
   const tests = audit.findings.creativeTests.filter((t) => t.trim().length > 0);
+  const staged = audit.stagedSpendPlan;
+
+  const controlledLaunchStagedItems: string[] = [];
+  if (staged.initialReleaseAmount !== null) {
+    controlledLaunchStagedItems.push(`Release the initial approved tranche of ${formatCurrency(staged.initialReleaseAmount)}.`);
+  }
+  if (staged.pauseThreshold.trim()) {
+    controlledLaunchStagedItems.push(`Pause immediately if: ${staged.pauseThreshold.trim()}.`);
+  }
+  if (staged.maxAcceptableCpa !== null) {
+    controlledLaunchStagedItems.push(`Do not exceed a CPL/CPA of ${formatCurrency(staged.maxAcceptableCpa)}.`);
+  }
+
+  const iterateStagedItems: string[] = [];
+  if (staged.scaleThreshold.trim()) {
+    iterateStagedItems.push(
+      `Release the second tranche${staged.secondReleaseAmount !== null ? ` of ${formatCurrency(staged.secondReleaseAmount)}` : ""} once: ${staged.scaleThreshold.trim()}.`,
+    );
+  }
+
+  const scaleAndDecideStagedItems: string[] = [];
+  if (staged.reviewDate) {
+    scaleAndDecideStagedItems.push(`Formal review scheduled for ${staged.reviewDate}.`);
+  }
+  if (staged.totalApprovedTestBudget !== null) {
+    scaleAndDecideStagedItems.push(`Total approved test budget for this pilot: ${formatCurrency(staged.totalApprovedTestBudget)}.`);
+  }
 
   const phases: PlanPhase[] = [
     {
@@ -48,6 +76,7 @@ export function buildThirtyDayPlan(audit: Audit): PlanPhase[] {
         "Monitor delivery, spend pacing, and early funnel signals daily.",
         `Watch for early creative and funnel signals${primaryConstraint ? ` around the primary constraint: ${primaryConstraint}` : ""}.`,
         "Avoid premature scaling before signal is statistically meaningful.",
+        ...controlledLaunchStagedItems,
       ],
     },
     {
@@ -58,6 +87,7 @@ export function buildThirtyDayPlan(audit: Audit): PlanPhase[] {
         "Develop creative iterations from observed results.",
         funnelRec ? `Improve the funnel: ${funnelRec}.` : "Improve the landing page or sales follow-up sequence.",
         salesRec ? `Sales-process adjustment: ${salesRec}.` : "Add retargeting once traffic volume supports it.",
+        ...iterateStagedItems,
       ],
     },
     {
@@ -68,6 +98,7 @@ export function buildThirtyDayPlan(audit: Audit): PlanPhase[] {
         "Document performance against the conservative and expected scenarios.",
         "Compare actual results with the projected scenarios in this audit.",
         "Decide whether to continue, revise, or stop before committing further spend.",
+        ...scaleAndDecideStagedItems,
       ],
     },
   ];

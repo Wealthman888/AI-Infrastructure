@@ -24,6 +24,15 @@ function formatClock(totalSeconds: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+function StagedSpendRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-border p-2 text-xs">
+      <p className="text-muted-foreground">{label}</p>
+      <p className="font-medium text-white">{value}</p>
+    </div>
+  );
+}
+
 export default function SalesCallPage() {
   const params = useParams<{ id: string }>();
   const [audit, setAudit] = useState<Audit | null | undefined>(undefined);
@@ -157,9 +166,21 @@ export default function SalesCallPage() {
                 </div>
               )}
               {i === 4 && (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Setup fee {formatCurrency(audit.economics.ourSetupFee)} · Management fee {formatCurrency(audit.economics.ourMonthlyManagementFee)}/mo
-                </p>
+                <div className="mt-3 space-y-3">
+                  <p className="text-xs text-muted-foreground">
+                    Setup fee {formatCurrency(audit.economics.ourSetupFee)} · Management fee {formatCurrency(audit.economics.ourMonthlyManagementFee)}/mo
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <StagedSpendRow label="Total approved test budget" value={formatCurrency(audit.stagedSpendPlan.totalApprovedTestBudget ?? "unavailable")} />
+                    <StagedSpendRow label="Initial release" value={formatCurrency(audit.stagedSpendPlan.initialReleaseAmount ?? "unavailable")} />
+                    <StagedSpendRow label="Second release" value={formatCurrency(audit.stagedSpendPlan.secondReleaseAmount ?? "unavailable")} />
+                    <StagedSpendRow label="Max acceptable CPL/CPA" value={formatCurrency(audit.stagedSpendPlan.maxAcceptableCpa ?? "unavailable")} />
+                    <StagedSpendRow label="Scale threshold" value={audit.stagedSpendPlan.scaleThreshold || "Not set"} />
+                    <StagedSpendRow label="Pause threshold" value={audit.stagedSpendPlan.pauseThreshold || "Not set"} />
+                    <StagedSpendRow label="Start date" value={audit.stagedSpendPlan.startDate || "Not set"} />
+                    <StagedSpendRow label="Review date" value={audit.stagedSpendPlan.reviewDate || "Not set"} />
+                  </div>
+                </div>
               )}
               {i === 5 && <p className="mt-3 text-sm font-medium text-white">{DECISION_QUESTION}</p>}
             </CardContent>

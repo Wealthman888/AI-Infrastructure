@@ -194,6 +194,33 @@ export const DEFAULT_QUALIFICATION_ASSESSMENT: QualificationAssessment = {
   launchReadiness: "none",
 };
 
+/**
+ * Staged-spend controls for the pilot: releasing budget in tranches with
+ * predefined thresholds rather than committing the full test budget upfront.
+ * Purely descriptive/planning fields — never fed into the calculation engine.
+ */
+export interface StagedSpendPlan {
+  totalApprovedTestBudget: number | null;
+  initialReleaseAmount: number | null;
+  secondReleaseAmount: number | null;
+  scaleThreshold: string;
+  pauseThreshold: string;
+  maxAcceptableCpa: number | null;
+  startDate: string | null;
+  reviewDate: string | null;
+}
+
+export const DEFAULT_STAGED_SPEND_PLAN: StagedSpendPlan = {
+  totalApprovedTestBudget: null,
+  initialReleaseAmount: null,
+  secondReleaseAmount: null,
+  scaleThreshold: "",
+  pauseThreshold: "",
+  maxAcceptableCpa: null,
+  startDate: null,
+  reviewDate: null,
+};
+
 export interface AuditFindings {
   primaryConstraint: string;
   secondaryConstraint: string;
@@ -255,6 +282,7 @@ export interface Audit {
   scenarios: ScenarioAssumptionSet;
   findings: AuditFindings;
   qualificationAssessment: QualificationAssessment;
+  stagedSpendPlan: StagedSpendPlan;
 
   aiAudit: AIAuditResult | null;
 

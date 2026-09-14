@@ -1,4 +1,4 @@
-import { BusinessModel } from "@/types/audit";
+import { BusinessModel, ScenarioAssumptionSet } from "@/types/audit";
 
 export type PresetKey = "high_ticket_coaching" | "digital_products" | "ecommerce" | "local_lead_generation" | "saas";
 
@@ -99,4 +99,35 @@ export function saveScenarioPresets(presets: Record<PresetKey, PresetSet>): void
 export function resetScenarioPresets(): void {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(PRESET_STORAGE_KEY);
+}
+
+const PRESET_TIERS: PresetTier[] = ["conservative", "expected", "best_case"];
+
+/**
+ * Applies the recommended (conservative/expected/best-case) preset rates to
+ * every scenario column at once. Only touches CPM and the funnel-conversion
+ * rates (CTR, conversion, lead-to-call, show, close) — prospect-specific
+ * economics (ad spend, AOV, margin, refund rate, capacity) and "current
+ * actual" are always preserved untouched.
+ */
+export function applyPresetToAllScenarios(
+  scenarios: ScenarioAssumptionSet,
+  presetKey: PresetKey,
+  presets: Record<PresetKey, PresetSet> = DEFAULT_SCENARIO_PRESETS,
+): ScenarioAssumptionSet {
+  const preset = presets[presetKey] ?? DEFAULT_SCENARIO_PRESETS[presetKey];
+  const updated: ScenarioAssumptionSet = { ...scenarios };
+  for (const tier of PRESET_TIERS) {
+    const rates = preset[tier];
+    updated[tier] = {
+      ...updated[tier],
+      cpm: rates.cpm,
+      clickThroughRate: rates.clickThroughRate,
+      conversionRate: rates.conversionRate,
+      leadToBookedCallRate: rates.leadToBookedCallRate,
+      showRate: rates.showRate,
+      closeRate: rates.closeRate,
+    };
+  }
+  return updated;
 }

@@ -23,7 +23,9 @@ export function StatusSelect({ name }: { name: string }) {
           <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", STATUS_DOT_CLASS[field.value as InputStatus])} aria-hidden="true" />
           <select
             {...field}
+            id={name}
             aria-label="Input status"
+            aria-describedby={`${name}-description`}
             className="border-none bg-transparent text-xs text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-blue"
           >
             {INPUT_STATUS_OPTIONS.map((opt) => (
@@ -32,6 +34,9 @@ export function StatusSelect({ name }: { name: string }) {
               </option>
             ))}
           </select>
+          <span id={`${name}-description`} className="sr-only">
+            Data status for this figure: verified, client provided, publicly observed, estimated, or missing.
+          </span>
         </label>
       )}
     />

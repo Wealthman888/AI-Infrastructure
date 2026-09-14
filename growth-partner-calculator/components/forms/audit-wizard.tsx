@@ -19,10 +19,10 @@ const STEPS = [
   { label: "Economics", fields: ["economics"] },
   { label: "Funnel", fields: ["funnel"] },
   { label: "Scenarios", fields: ["scenarios"] },
-  { label: "Findings", fields: ["findings", "qualificationAssessment"] },
+  { label: "Findings", fields: ["findings", "qualificationAssessment", "stagedSpendPlan"] },
 ] as const;
 
-function formValuesFromAudit(audit: Audit): AuditFormValues {
+export function formValuesFromAudit(audit: Audit): AuditFormValues {
   return {
     prospect: audit.prospect,
     economics: audit.economics,
@@ -31,6 +31,7 @@ function formValuesFromAudit(audit: Audit): AuditFormValues {
     scenarios: audit.scenarios,
     findings: audit.findings,
     qualificationAssessment: audit.qualificationAssessment,
+    stagedSpendPlan: audit.stagedSpendPlan,
   };
 }
 

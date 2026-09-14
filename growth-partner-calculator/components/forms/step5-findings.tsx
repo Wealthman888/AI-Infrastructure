@@ -1,4 +1,4 @@
-import { TextField, TextAreaField, SelectField } from "./plain-fields";
+import { TextField, TextAreaField, SelectField, PlainNumberField } from "./plain-fields";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 const BAND_OPTIONS = [
@@ -46,6 +46,26 @@ export function Step5Findings() {
           <SelectField name="qualificationAssessment.buyingSignalStrength" label="Current buying signal (10 pts)" options={BAND_OPTIONS} />
           <SelectField name="qualificationAssessment.tiktokAdvertisingGap" label="TikTok advertising gap (5 pts)" options={BAND_OPTIONS} />
           <SelectField name="qualificationAssessment.launchReadiness" label="Launch readiness (5 pts)" options={BAND_OPTIONS} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Staged spend plan</CardTitle>
+          <CardDescription>
+            Release budget in tranches with predefined thresholds rather than committing the full test budget upfront.
+            These are planning fields — they never feed the calculation engine.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-2">
+          <PlainNumberField name="stagedSpendPlan.totalApprovedTestBudget" label="Total approved test budget" prefix="$" />
+          <PlainNumberField name="stagedSpendPlan.initialReleaseAmount" label="Initial release amount" prefix="$" />
+          <PlainNumberField name="stagedSpendPlan.secondReleaseAmount" label="Second release amount" prefix="$" />
+          <PlainNumberField name="stagedSpendPlan.maxAcceptableCpa" label="Maximum acceptable CPL/CPA" prefix="$" />
+          <TextAreaField name="stagedSpendPlan.scaleThreshold" label="Scale threshold" hint="The condition that triggers releasing the next tranche." rows={2} />
+          <TextAreaField name="stagedSpendPlan.pauseThreshold" label="Pause threshold" hint="The condition that triggers pausing spend for review." rows={2} />
+          <TextField name="stagedSpendPlan.startDate" label="Start date" type="date" />
+          <TextField name="stagedSpendPlan.reviewDate" label="Review date" type="date" />
         </CardContent>
       </Card>
     </div>
