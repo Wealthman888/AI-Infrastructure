@@ -61,3 +61,7 @@ Use Claude Code's `/schedule` skill to create cron-based remote agents. Store cr
 This environment has MCP servers configured for Gmail, Google Calendar, and Google Drive. When building tools that wrap these services, prefer the MCP tool calls over raw API calls — they handle auth automatically.
 
 Available MCP namespaces: `mcp__claude_ai_Gmail__*`, `mcp__claude_ai_Google_Calendar__*`, `mcp__claude_ai_Google_Drive__*`.
+
+For optional web search and page fetching in Claude Code, see the
+[Parallel Search MCP setup guide](docs/parallel-search-mcp.md), including a
+competitor-discovery workflow for the marketing skills.
